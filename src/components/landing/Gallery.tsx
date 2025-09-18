@@ -1,13 +1,20 @@
-import Image from 'next/image';
-import { initialGalleryItems } from '@/lib/data';
 
-export function Gallery() {
+'use client';
+
+import Image from 'next/image';
+import type { GalleryItem } from '@/lib/types';
+
+interface GalleryProps {
+  galleryItems: GalleryItem[];
+}
+
+export function Gallery({ galleryItems }: GalleryProps) {
   return (
     <section id="mis-trabajos" className="py-16 md:py-24 bg-secondary">
       <div className="container mx-auto px-4">
         <h2 className="text-4xl font-bold font-headline text-center mb-12">Mis Trabajos</h2>
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6">
-          {initialGalleryItems.map((item) => (
+          {galleryItems.map((item) => (
             <div key={item.id} className="relative group overflow-hidden rounded-xl shadow-lg aspect-square">
               <Image
                 src={item.url}

@@ -1,11 +1,13 @@
+
 'use client';
-import { useState } from 'react';
 import Image from 'next/image';
-import { initialAboutMeContent } from '@/lib/data';
+import type { AboutMeContent } from '@/lib/types';
 
-export function AboutMe() {
-  const [content] = useState(initialAboutMeContent);
+interface AboutMeProps {
+  content: AboutMeContent;
+}
 
+export function AboutMe({ content }: AboutMeProps) {
   return (
     <section id="sobre-mi" className="container mx-auto px-4 py-16 md:py-24">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">

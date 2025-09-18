@@ -1,7 +1,7 @@
+
 'use client';
 
 import * as React from 'react';
-import { initialTestimonials } from '@/lib/data';
 import { Card, CardContent } from '@/components/ui/card';
 import { Quote } from 'lucide-react';
 import {
@@ -12,12 +12,21 @@ import {
   CarouselPrevious,
 } from "@/components/ui/carousel";
 import Autoplay from "embla-carousel-autoplay";
+import type { Testimonial } from '@/lib/types';
 
-export function Testimonials() {
-  const approvedTestimonials = initialTestimonials.filter(t => t.status === 'approved');
+interface TestimonialsProps {
+  testimonials: Testimonial[];
+}
+
+export function Testimonials({ testimonials }: TestimonialsProps) {
+  const approvedTestimonials = testimonials.filter(t => t.status === 'approved');
   const plugin = React.useRef(
     Autoplay({ delay: 3000, stopOnInteraction: false })
   );
+
+  if (approvedTestimonials.length === 0) {
+    return null;
+  }
 
   return (
     <section id="testimonios" className="container mx-auto px-4 py-16 md:py-24">

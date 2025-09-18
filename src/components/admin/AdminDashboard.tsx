@@ -2,7 +2,6 @@
 'use client';
 
 import { useState } from 'react';
-import { initialHeroContent, initialServices, initialGalleryItems, initialTestimonials, initialProducts, initialAboutMeContent } from '@/lib/data';
 import type { HeroContent, Service, GalleryItem, Testimonial, Product, AboutMeContent, User } from '@/lib/types';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -23,15 +22,38 @@ interface AdminDashboardProps {
   onLogout: () => void;
   users: User[];
   setUsers: React.Dispatch<React.SetStateAction<User[]>>;
+  heroContent: HeroContent;
+  setHeroContent: React.Dispatch<React.SetStateAction<HeroContent>>;
+  services: Service[];
+  setServices: React.Dispatch<React.SetStateAction<Service[]>>;
+  products: Product[];
+  setProducts: React.Dispatch<React.SetStateAction<Product[]>>;
+  galleryItems: GalleryItem[];
+  setGalleryItems: React.Dispatch<React.SetStateAction<GalleryItem[]>>;
+  testimonials: Testimonial[];
+  setTestimonials: React.Dispatch<React.SetStateAction<Testimonial[]>>;
+  aboutMeContent: AboutMeContent;
+  setAboutMeContent: React.Dispatch<React.SetStateAction<AboutMeContent>>;
 }
 
-export function AdminDashboard({ loggedInUser, onLogout, users, setUsers }: AdminDashboardProps) {
-  const [hero, setHero] = useState<HeroContent>(initialHeroContent);
-  const [services, setServices] = useState<Service[]>(initialServices);
-  const [products, setProducts] = useState<Product[]>(initialProducts);
-  const [gallery, setGallery] = useState<GalleryItem[]>(initialGalleryItems);
-  const [testimonials, setTestimonials] = useState<Testimonial[]>(initialTestimonials);
-  const [aboutMe, setAboutMe] = useState<AboutMeContent>(initialAboutMeContent);
+export function AdminDashboard({
+  loggedInUser,
+  onLogout,
+  users,
+  setUsers,
+  heroContent,
+  setHeroContent,
+  services,
+  setServices,
+  products,
+  setProducts,
+  galleryItems,
+  setGalleryItems,
+  testimonials,
+  setTestimonials,
+  aboutMeContent,
+  setAboutMeContent
+}: AdminDashboardProps) {
   const [openUserDialog, setOpenUserDialog] = useState(false);
   const [openPasswordDialog, setOpenPasswordDialog] = useState(false);
   const [currentUserForPasswordChange, setCurrentUserForPasswordChange] = useState<User | null>(null);
@@ -61,10 +83,10 @@ export function AdminDashboard({ loggedInUser, onLogout, users, setUsers }: Admi
     const imageFile = formData.get('imageFile') as File;
     
     const updateContent = (newImageUrl?: string) => {
-       setHero({
+       setHeroContent({
         title: formData.get('title') as string,
         subtitle: formData.get('subtitle') as string,
-        imageUrl: newImageUrl || hero.imageUrl,
+        imageUrl: newImageUrl || heroContent.imageUrl,
       });
       toast({ title: "Éxito", description: "Contenido de la sección inicial actualizado." });
     }
@@ -154,14 +176,14 @@ export function AdminDashboard({ loggedInUser, onLogout, users, setUsers }: Admi
         url: newUrl,
         alt: formData.get('alt') as string,
       };
-      setGallery([...gallery, newGalleryItem]);
+      setGalleryItems([...galleryItems, newGalleryItem]);
       form.reset();
       toast({ title: "Éxito", description: "Nueva imagen añadida." });
     });
   };
 
   const handleDeleteGalleryItem = (id: string) => {
-    setGallery(gallery.filter(g => g.id !== id));
+    setGalleryItems(galleryItems.filter(g => g.id !== id));
     toast({ title: "Éxito", description: "Imagen eliminada." });
   };
   
@@ -181,9 +203,9 @@ export function AdminDashboard({ loggedInUser, onLogout, users, setUsers }: Admi
     const imageFile = formData.get('imageFile') as File;
 
     const updateContent = (newImageUrl?: string) => {
-      setAboutMe({
+      setAboutMeContent({
         text: formData.get('text') as string,
-        imageUrl: newImageUrl || aboutMe.imageUrl,
+        imageUrl: newImageUrl || aboutMeContent.imageUrl,
       });
       toast({ title: "Éxito", description: "La sección 'Sobre Mí' ha sido actualizada." });
     };
@@ -298,11 +320,11 @@ export function AdminDashboard({ loggedInUser, onLogout, users, setUsers }: Admi
                 <form onSubmit={handleHeroUpdate} className="space-y-4">
                   <div>
                     <Label htmlFor="title">Título</Label>
-                    <Input id="title" name="title" defaultValue={hero.title} />
+                    <Input id="title" name="title" defaultValue={heroContent.title} />
                   </div>
                   <div>
                     <Label htmlFor="subtitle">Subtítulo</Label>
-                    <Textarea id="subtitle" name="subtitle" defaultValue={hero.subtitle} />
+                    <Textarea id="subtitle" name="subtitle" defaultValue={heroContent.subtitle} />
                   </div>
                   <div>
                     <Label htmlFor="imageFile">Imagen de Fondo</Label>
@@ -322,7 +344,7 @@ export function AdminDashboard({ loggedInUser, onLogout, users, setUsers }: Admi
                 <form onSubmit={handleAboutMeUpdate} className="space-y-4">
                   <div>
                     <Label htmlFor="about-text">Texto de Presentación</Label>
-                    <Textarea id="about-text" name="text" defaultValue={aboutMe.text} rows={6} />
+                    <Textarea id="about-text" name="text" defaultValue={aboutMeContent.text} rows={6} />
                   </div>
                   <div>
                     <Label htmlFor="about-imageFile">Foto</Label>
@@ -414,7 +436,7 @@ export function AdminDashboard({ loggedInUser, onLogout, users, setUsers }: Admi
                   <Button type="submit" className="rounded-full">Añadir Imagen</Button>
                 </form>
                 <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
-                  {gallery.map(item => (
+                  {galleryItems.map(item => (
                     <div key={item.id} className="relative group">
                       <Image src={item.url} alt={item.alt} width={200} height={200} className="rounded-md object-cover aspect-square" />
                        <Button variant="destructive" size="icon" className="absolute top-2 right-2 h-7 w-7 opacity-0 group-hover:opacity-100 transition-opacity" onClick={() => handleDeleteGalleryItem(item.id)}><Trash2 className="w-4 h-4" /></Button>
@@ -543,5 +565,3 @@ export function AdminDashboard({ loggedInUser, onLogout, users, setUsers }: Admi
     </div>
   );
 }
-
-    

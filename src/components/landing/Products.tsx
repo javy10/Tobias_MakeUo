@@ -1,17 +1,23 @@
+
+'use client';
 import Image from 'next/image';
-import { initialProducts } from '@/lib/data';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '../ui/button';
 import { ShoppingCart } from 'lucide-react';
 import { Badge } from '../ui/badge';
+import type { Product } from '@/lib/types';
 
-export function Products() {
+interface ProductsProps {
+  products: Product[];
+}
+
+export function Products({ products }: ProductsProps) {
   return (
     <section id="productos" className="py-16 md:py-24 bg-secondary">
       <div className="container mx-auto px-4">
         <h2 className="text-4xl font-bold font-headline text-center mb-12">Nuestros Productos</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {initialProducts.map((product) => (
+          {products.map((product) => (
             <Card key={product.id} className="bg-card text-left shadow-lg hover:shadow-xl transition-shadow duration-300 transform hover:-translate-y-1 flex flex-col">
               <CardHeader>
                 <div className="relative aspect-[4/3] w-full rounded-t-lg overflow-hidden">

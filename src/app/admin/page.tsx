@@ -1,20 +1,51 @@
 
 'use client';
 import { useState } from 'react';
-import { AdminDashboard } from '@/components/admin/AdminDashboard';
+import { AdminDashboard as AdminDashboardComponent } from '@/components/admin/AdminDashboard';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { initialUsers } from '@/lib/data';
-import type { User } from '@/lib/types';
+import type { User, HeroContent, Service, Product, GalleryItem, Testimonial, AboutMeContent } from '@/lib/types';
+import { useRouter } from 'next/navigation';
 
-export default function AdminPage() {
+interface AdminPageProps {
+  heroContent: HeroContent;
+  setHeroContent: React.Dispatch<React.SetStateAction<HeroContent>>;
+  services: Service[];
+  setServices: React.Dispatch<React.SetStateAction<Service[]>>;
+  products: Product[];
+  setProducts: React.Dispatch<React.SetStateAction<Product[]>>;
+  galleryItems: GalleryItem[];
+  setGalleryItems: React.Dispatch<React.SetStateAction<GalleryItem[]>>;
+  testimonials: Testimonial[];
+  setTestimonials: React.Dispatch<React.SetStateAction<Testimonial[]>>;
+  aboutMeContent: AboutMeContent;
+  setAboutMeContent: React.Dispatch<React.SetStateAction<AboutMeContent>>;
+}
+
+
+export default function AdminPage({
+  heroContent,
+  setHeroContent,
+  services,
+  setServices,
+  products,
+  setProducts,
+  galleryItems,
+  setGalleryItems,
+  testimonials,
+  setTestimonials,
+  aboutMeContent,
+  setAboutMeContent
+}: AdminPageProps) {
   const [users, setUsers] = useState<User[]>(initialUsers);
   const [authenticatedUser, setAuthenticatedUser] = useState<User | null>(null);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
+  const router = useRouter();
 
   const handleLogin = (e: React.FormEvent) => {
     e.preventDefault();
@@ -30,6 +61,7 @@ export default function AdminPage() {
 
   const handleLogout = () => {
     setAuthenticatedUser(null);
+    router.push('/');
   };
 
   if (!authenticatedUser) {
@@ -76,11 +108,23 @@ export default function AdminPage() {
   }
 
   return (
-    <AdminDashboard
+    <AdminDashboardComponent
       loggedInUser={authenticatedUser}
       users={users}
       setUsers={setUsers}
       onLogout={handleLogout}
+      heroContent={heroContent}
+      setHeroContent={setHeroContent}
+      services={services}
+      setServices={setServices}
+      products={products}
+      setProducts={setProducts}
+      galleryItems={galleryItems}
+      setGalleryItems={setGalleryItems}
+      testimonials={testimonials}
+      setTestimonials={setTestimonials}
+      aboutMeContent={aboutMeContent}
+      setAboutMeContent={setAboutMeContent}
     />
   );
 }

@@ -1,12 +1,15 @@
+
 'use client';
-import { useState } from 'react';
 import Image from 'next/image';
 import { Button } from '@/components/ui/button';
-import { initialHeroContent } from '@/lib/data';
 import { PlaceHolderImages } from '@/lib/placeholder-images';
+import type { HeroContent } from '@/lib/types';
 
-export function Hero() {
-  const [content] = useState(initialHeroContent);
+interface HeroProps {
+  content: HeroContent;
+}
+
+export function Hero({ content }: HeroProps) {
   const heroImageHint = PlaceHolderImages.find(img => img.id === 'hero-background')?.imageHint || 'makeup artistry';
 
   return (
@@ -18,6 +21,7 @@ export function Hero() {
         className="object-cover"
         priority
         data-ai-hint={heroImageHint}
+        key={content.imageUrl}
       />
       <div className="absolute inset-0 bg-black/40"></div>
       <div className="text-center z-10 p-4 animate-fade-in-up">
