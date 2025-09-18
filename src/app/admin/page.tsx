@@ -9,37 +9,45 @@ import { Label } from '@/components/ui/label';
 import { initialUsers } from '@/lib/data';
 import type { User, HeroContent, Service, Product, GalleryItem, Testimonial, AboutMeContent } from '@/lib/types';
 import { useRouter } from 'next/navigation';
+import { initialAboutMeContent, initialGalleryItems, initialHeroContent, initialProducts, initialServices, initialTestimonials } from '@/lib/data';
+
 
 interface AdminPageProps {
-  heroContent: HeroContent;
-  setHeroContent: React.Dispatch<React.SetStateAction<HeroContent>>;
-  services: Service[];
-  setServices: React.Dispatch<React.SetStateAction<Service[]>>;
-  products: Product[];
-  setProducts: React.Dispatch<React.SetStateAction<Product[]>>;
-  galleryItems: GalleryItem[];
-  setGalleryItems: React.Dispatch<React.SetStateAction<GalleryItem[]>>;
-  testimonials: Testimonial[];
-  setTestimonials: React.Dispatch<React.SetStateAction<Testimonial[]>>;
-  aboutMeContent: AboutMeContent;
-  setAboutMeContent: React.Dispatch<React.SetStateAction<AboutMeContent>>;
+  heroContent?: HeroContent;
+  setHeroContent?: React.Dispatch<React.SetStateAction<HeroContent>>;
+  services?: Service[];
+  setServices?: React.Dispatch<React.SetStateAction<Service[]>>;
+  products?: Product[];
+  setProducts?: React.Dispatch<React.SetStateAction<Product[]>>;
+  galleryItems?: GalleryItem[];
+  setGalleryItems?: React.Dispatch<React.SetStateAction<GalleryItem[]>>;
+  testimonials?: Testimonial[];
+  setTestimonials?: React.Dispatch<React.SetStateAction<Testimonial[]>>;
+  aboutMeContent?: AboutMeContent;
+  setAboutMeContent?: React.Dispatch<React.SetStateAction<AboutMeContent>>;
 }
 
-
-export default function AdminPage({
-  heroContent,
-  setHeroContent,
-  services,
-  setServices,
-  products,
-  setProducts,
-  galleryItems,
-  setGalleryItems,
-  testimonials,
-  setTestimonials,
-  aboutMeContent,
-  setAboutMeContent
-}: AdminPageProps) {
+export default function AdminPage(props: AdminPageProps) {
+  const [internalHeroContent, setInternalHeroContent] = useState<HeroContent>(initialHeroContent);
+  const [internalServices, setInternalServices] = useState<Service[]>(initialServices);
+  const [internalProducts, setInternalProducts] = useState<Product[]>(initialProducts);
+  const [internalGalleryItems, setInternalGalleryItems] = useState<GalleryItem[]>(initialGalleryItems);
+  const [internalTestimonials, setInternalTestimonials] = useState<Testimonial[]>(initialTestimonials);
+  const [internalAboutMeContent, setInternalAboutMeContent] = useState<AboutMeContent>(initialAboutMeContent);
+  
+  const heroContent = props.heroContent ?? internalHeroContent;
+  const setHeroContent = props.setHeroContent ?? setInternalHeroContent;
+  const services = props.services ?? internalServices;
+  const setServices = props.setServices ?? setInternalServices;
+  const products = props.products ?? internalProducts;
+  const setProducts = props.setProducts ?? setInternalProducts;
+  const galleryItems = props.galleryItems ?? internalGalleryItems;
+  const setGalleryItems = props.setGalleryItems ?? setInternalGalleryItems;
+  const testimonials = props.testimonials ?? internalTestimonials;
+  const setTestimonials = props.setTestimonials ?? setInternalTestimonials;
+  const aboutMeContent = props.aboutMeContent ?? internalAboutMeContent;
+  const setAboutMeContent = props.setAboutMeContent ?? setInternalAboutMeContent;
+  
   const [users, setUsers] = useState<User[]>(initialUsers);
   const [authenticatedUser, setAuthenticatedUser] = useState<User | null>(null);
   const [email, setEmail] = useState('');
