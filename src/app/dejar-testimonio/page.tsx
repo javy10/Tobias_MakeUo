@@ -61,6 +61,10 @@ export default function LeaveTestimonialPage() {
                     <Label htmlFor="author">Tu Nombre</Label>
                     <Input id="author" name="author" type="text" placeholder="Nombre y Apellido" required />
                   </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="text">Tu Opinión</Label>
+                    <Textarea id="text" name="text" placeholder="Cuéntanos cómo fue tu experiencia..." required rows={6} />
+                  </div>
                    <div className="space-y-2">
                     <Label>Calificación</Label>
                     <div className="flex items-center gap-2">
@@ -86,10 +90,6 @@ export default function LeaveTestimonialPage() {
                       })}
                        <input type="hidden" name="rating" value={rating} />
                     </div>
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="text">Tu Opinión</Label>
-                    <Textarea id="text" name="text" placeholder="Cuéntanos cómo fue tu experiencia..." required rows={6} />
                   </div>
                   <Button type="submit" className="w-full rounded-full bg-primary text-primary-foreground hover:bg-primary/90 text-lg py-6" disabled={status === 'submitting'}>
                     {status === 'submitting' ? 'Enviando...' : 'Enviar Opinión'}
