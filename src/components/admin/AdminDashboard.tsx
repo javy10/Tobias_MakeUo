@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState } from 'react';
@@ -18,10 +19,11 @@ import { cn } from '@/lib/utils';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '../ui/dialog';
 
 interface AdminDashboardProps {
+  loggedInUser: User;
   onLogout: () => void;
 }
 
-export function AdminDashboard({ onLogout }: AdminDashboardProps) {
+export function AdminDashboard({ loggedInUser, onLogout }: AdminDashboardProps) {
   const [hero, setHero] = useState<HeroContent>(initialHeroContent);
   const [services, setServices] = useState<Service[]>(initialServices);
   const [products, setProducts] = useState<Product[]>(initialProducts);
@@ -31,7 +33,7 @@ export function AdminDashboard({ onLogout }: AdminDashboardProps) {
   const [users, setUsers] = useState<User[]>(initialUsers);
   const [openUserDialog, setOpenUserDialog] = useState(false);
   const [openPasswordDialog, setOpenPasswordDialog] = useState(false);
-  const [currentUser, setCurrentUser] = useState<User | null>(null);
+  const [currentUserForPasswordChange, setCurrentUserForPasswordChange] = useState<User | null>(null);
 
   const { toast } = useToast();
 
@@ -146,10 +148,10 @@ export function AdminDashboard({ onLogout }: AdminDashboardProps) {
     e.preventDefault();
     const formData = new FormData(e.currentTarget);
     const newPassword = formData.get('newPassword') as string;
-    if (currentUser) {
-      setUsers(users.map(u => u.id === currentUser.id ? { ...u, password: newPassword } : u));
+    if (currentUserForPasswordChange) {
+      setUsers(users.map(u => u.id === currentUserForPasswordChange.id ? { ...u, password: newPassword } : u));
       setOpenPasswordDialog(false);
-      setCurrentUser(null);
+      setCurrentUserForPasswordChange(null);
       toast({ title: "Éxito", description: "Contraseña actualizada." });
     }
   };
@@ -165,7 +167,10 @@ export function AdminDashboard({ onLogout }: AdminDashboardProps) {
     <div className="min-h-dvh bg-secondary p-4 md:p-8">
       <div className="max-w-5xl mx-auto">
         <header className="flex justify-between items-center mb-8">
-          <h1 className="text-4xl font-bold font-headline text-primary">Panel Administrativo</h1>
+          <div>
+            <h1 className="text-4xl font-bold font-headline text-primary">Panel Administrativo</h1>
+            <p className="text-muted-foreground">Bienvenido, {loggedInUser.name}</p>
+          </div>
           <Button onClick={onLogout} variant="outline" className="rounded-full">Salir</Button>
         </header>
 
@@ -407,9 +412,13 @@ export function AdminDashboard({ onLogout }: AdminDashboardProps) {
                         <p className="text-sm text-muted-foreground">{user.email}</p>
                       </div>
                       <div className="flex items-center gap-2">
-                         <Dialog open={openPasswordDialog && currentUser?.id === user.id} onOpenChange={(isOpen) => { if (!isOpen) setCurrentUser(null); setOpenPasswordDialog(isOpen); }}>
+                         <Dialog open={openPasswordDialog && currentUserForPasswordChange?.id === user.id} onOpenChange={(isOpen) => { if (!isOpen) setCurrentUserForPasswordChange(null); setOpenPasswordDialog(isOpen); }}>
                           <DialogTrigger asChild>
-                            <Button variant="outline" size="icon" onClick={() => { setCurrentUser(user); setOpenPasswordDialog(true); }}>
+                            <Button 
+                              variant="outline" 
+                              size="icon"
+                              disabled={loggedInUser.id !== user.id}
+                              onClick={() => { setCurrentUserForPasswordChange(user); setOpenPasswordDialog(true); }}>
                               <KeyRound className="w-4 h-4" />
                             </Button>
                           </DialogTrigger>
