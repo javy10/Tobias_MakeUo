@@ -3,6 +3,7 @@ import { initialProducts } from '@/lib/data';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '../ui/button';
 import { ShoppingCart } from 'lucide-react';
+import { Badge } from '../ui/badge';
 
 export function Products() {
   return (
@@ -29,8 +30,10 @@ export function Products() {
                 <CardDescription>{product.description}</CardDescription>
               </CardContent>
                <CardFooter className="flex justify-between items-center">
-                <p className="text-2xl font-bold text-foreground">${product.price.toFixed(2)}</p>
-                <Button className="rounded-full">
+                <Badge variant={product.stock > 0 ? 'default' : 'destructive'} className={product.stock > 0 ? 'bg-green-100 text-green-800' : ''}>
+                  {product.stock > 0 ? `En Stock: ${product.stock}` : 'Agotado'}
+                </Badge>
+                <Button className="rounded-full" disabled={product.stock === 0}>
                   <ShoppingCart className="mr-2 h-4 w-4"/>
                   Añadir al Carrito
                 </Button>

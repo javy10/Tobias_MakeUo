@@ -1,4 +1,4 @@
-import type { HeroContent, Service, GalleryItem, Testimonial, Product } from './types';
+import type { HeroContent, Service, GalleryItem, Testimonial, Product, AboutMeContent, User } from './types';
 import { PlaceHolderImages } from './placeholder-images';
 
 export const initialHeroContent: HeroContent = {
@@ -32,21 +32,21 @@ export const initialProducts: Product[] = [
     id: '1',
     name: "Paleta de Sombras 'Ocaso'",
     description: "12 tonos cálidos y vibrantes para un look perfecto del día a la noche.",
-    price: 45.00,
+    stock: 15,
     imageUrl: "https://picsum.photos/seed/product1/400/400"
   },
   {
     id: '2',
     name: "Base de Maquillaje 'Piel de Seda'",
     description: "Cobertura media y acabado natural para una piel impecable todo el día.",
-    price: 35.50,
+    stock: 25,
     imageUrl: "https://picsum.photos/seed/product2/400/400"
   },
   {
     id: '3',
     name: "Labial Líquido Mate 'Rojo Pasión'",
     description: "Color intenso de larga duración que no reseca tus labios.",
-    price: 22.00,
+    stock: 30,
     imageUrl: "https://picsum.photos/seed/product3/400/400"
   },
 ];
@@ -82,4 +82,18 @@ export const initialTestimonials: Testimonial[] = [
     author: "Sofía Martínez",
     status: 'pending'
   }
+];
+
+export const initialAboutMeContent: AboutMeContent = {
+  text: "¡Hola! Soy Tobias, un apasionado maquillador profesional con más de 5 años de experiencia en realzar la belleza única de cada persona. Mi objetivo es que te sientas segura y radiante en cualquier ocasión. Me especializo en maquillaje para novias, eventos sociales y clases personalizadas. ¡Espero conocerte pronto!",
+  imageUrl: "https://picsum.photos/seed/aboutme/600/600"
+};
+
+export const initialUsers: User[] = [
+  {
+    id: '1',
+    name: 'Admin User',
+    email: 'admin@example.com',
+    password: 'admin', // This should be hashed in a real app
+  },
 ];

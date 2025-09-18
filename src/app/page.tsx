@@ -3,6 +3,7 @@ import { Hero } from "@/components/landing/Hero";
 import { Services } from "@/components/landing/Services";
 import { Products } from "@/components/landing/Products";
 import { Gallery } from "@/components/landing/Gallery";
+import { AboutMe } from "@/components/landing/AboutMe";
 import { Testimonials } from "@/components/landing/Testimonials";
 import { Contact } from "@/components/landing/Contact";
 import { Footer } from "@/components/landing/Footer";
@@ -14,6 +15,7 @@ export default function Home() {
       <main className="flex-1">
         <Hero />
         <Services />
+        <AboutMe />
         <Products />
         <Gallery />
         <Testimonials />

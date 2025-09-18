@@ -1,8 +1,8 @@
 'use client';
 
 import { useState } from 'react';
-import { initialHeroContent, initialServices, initialGalleryItems, initialTestimonials, initialProducts } from '@/lib/data';
-import type { HeroContent, Service, GalleryItem, Testimonial, Product } from '@/lib/types';
+import { initialHeroContent, initialServices, initialGalleryItems, initialTestimonials, initialProducts, initialAboutMeContent, initialUsers } from '@/lib/data';
+import type { HeroContent, Service, GalleryItem, Testimonial, Product, AboutMeContent, User } from '@/lib/types';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -11,10 +11,11 @@ import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { useToast } from '@/hooks/use-toast';
 import { AIContentGenerator } from './AIContentGenerator';
-import { Trash2, Check, X, ThumbsUp, ThumbsDown } from 'lucide-react';
+import { Trash2, Check, X, ThumbsUp, ThumbsDown, UserPlus, KeyRound } from 'lucide-react';
 import Image from 'next/image';
 import { Badge } from '../ui/badge';
 import { cn } from '@/lib/utils';
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '../ui/dialog';
 
 interface AdminDashboardProps {
   onLogout: () => void;
@@ -26,6 +27,12 @@ export function AdminDashboard({ onLogout }: AdminDashboardProps) {
   const [products, setProducts] = useState<Product[]>(initialProducts);
   const [gallery, setGallery] = useState<GalleryItem[]>(initialGalleryItems);
   const [testimonials, setTestimonials] = useState<Testimonial[]>(initialTestimonials);
+  const [aboutMe, setAboutMe] = useState<AboutMeContent>(initialAboutMeContent);
+  const [users, setUsers] = useState<User[]>(initialUsers);
+  const [openUserDialog, setOpenUserDialog] = useState(false);
+  const [openPasswordDialog, setOpenPasswordDialog] = useState(false);
+  const [currentUser, setCurrentUser] = useState<User | null>(null);
+
   const { toast } = useToast();
 
   const handleHeroUpdate = (e: React.FormEvent<HTMLFormElement>) => {
@@ -66,7 +73,7 @@ export function AdminDashboard({ onLogout }: AdminDashboardProps) {
       id: crypto.randomUUID(),
       name: formData.get('name') as string,
       description: formData.get('description') as string,
-      price: parseFloat(formData.get('price') as string),
+      stock: parseInt(formData.get('stock') as string, 10),
       imageUrl: formData.get('imageUrl') as string,
     };
     setProducts([...products, newProduct]);
@@ -108,6 +115,50 @@ export function AdminDashboard({ onLogout }: AdminDashboardProps) {
     toast({ title: "Éxito", description: "Testimonio eliminado." });
   };
 
+  const handleAboutMeUpdate = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    const formData = new FormData(e.currentTarget);
+    setAboutMe({
+      text: formData.get('text') as string,
+      imageUrl: formData.get('imageUrl') as string,
+    });
+    toast({ title: "Éxito", description: "La sección 'Sobre Mí' ha sido actualizada." });
+  };
+
+  const handleAddUser = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    const formData = new FormData(e.currentTarget);
+    const newUser: User = {
+      id: crypto.randomUUID(),
+      name: formData.get('name') as string,
+      email: formData.get('email') as string,
+      password: 'temporal123',
+    };
+    setUsers([...users, newUser]);
+    setOpenUserDialog(false);
+    toast({ 
+      title: "Éxito", 
+      description: `Usuario ${newUser.name} añadido con contraseña temporal 'temporal123'.` 
+    });
+  };
+
+  const handleChangePassword = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    const formData = new FormData(e.currentTarget);
+    const newPassword = formData.get('newPassword') as string;
+    if (currentUser) {
+      setUsers(users.map(u => u.id === currentUser.id ? { ...u, password: newPassword } : u));
+      setOpenPasswordDialog(false);
+      setCurrentUser(null);
+      toast({ title: "Éxito", description: "Contraseña actualizada." });
+    }
+  };
+
+  const handleDeleteUser = (id: string) => {
+    setUsers(users.filter(u => u.id !== id));
+    toast({ title: "Éxito", description: "Usuario eliminado." });
+  };
+
   const testimonialsByStatus = (status: Testimonial['status']) => testimonials.filter(t => t.status === status);
 
   return (
@@ -119,12 +170,14 @@ export function AdminDashboard({ onLogout }: AdminDashboardProps) {
         </header>
 
         <Tabs defaultValue="hero">
-          <TabsList className="grid w-full grid-cols-2 md:grid-cols-6 mb-6">
+          <TabsList className="grid w-full grid-cols-2 md:grid-cols-8 mb-6">
             <TabsTrigger value="hero">Sección Inicial</TabsTrigger>
+            <TabsTrigger value="about">Sobre Mí</TabsTrigger>
             <TabsTrigger value="services">Servicios</TabsTrigger>
             <TabsTrigger value="products">Productos</TabsTrigger>
-            <TabsTrigger value="gallery">Galería</TabsTrigger>
+            <TabsTrigger value="gallery">Mis Trabajos</TabsTrigger>
             <TabsTrigger value="testimonials">Testimonios</TabsTrigger>
+            <TabsTrigger value="users">Usuarios</TabsTrigger>
             <TabsTrigger value="ai-content">Ideas con IA</TabsTrigger>
           </TabsList>
           
@@ -142,6 +195,25 @@ export function AdminDashboard({ onLogout }: AdminDashboardProps) {
                     <Textarea id="subtitle" name="subtitle" defaultValue={hero.subtitle} />
                   </div>
                   <Button type="submit" className="rounded-full">Actualizar</Button>
+                </form>
+              </CardContent>
+            </Card>
+          </TabsContent>
+          
+          <TabsContent value="about">
+            <Card>
+              <CardHeader><CardTitle className="font-headline">Gestionar 'Sobre Mí'</CardTitle></CardHeader>
+              <CardContent>
+                <form onSubmit={handleAboutMeUpdate} className="space-y-4">
+                  <div>
+                    <Label htmlFor="about-text">Texto de Presentación</Label>
+                    <Textarea id="about-text" name="text" defaultValue={aboutMe.text} rows={6} />
+                  </div>
+                  <div>
+                    <Label htmlFor="about-imageUrl">URL de la Foto</Label>
+                    <Input id="about-imageUrl" name="imageUrl" type="url" defaultValue={aboutMe.imageUrl} />
+                  </div>
+                  <Button type="submit" className="rounded-full">Actualizar 'Sobre Mí'</Button>
                 </form>
               </CardContent>
             </Card>
@@ -184,7 +256,7 @@ export function AdminDashboard({ onLogout }: AdminDashboardProps) {
                   <h3 className="font-semibold">Añadir Nuevo Producto</h3>
                   <Input name="name" placeholder="Nombre del producto" required />
                   <Textarea name="description" placeholder="Descripción del producto" required />
-                  <Input name="price" type="number" step="0.01" placeholder="Precio (ej: 25.99)" required />
+                  <Input name="stock" type="number" placeholder="Stock disponible (ej: 25)" required />
                   <Input name="imageUrl" type="url" placeholder="URL de la imagen del producto" required />
                   <Button type="submit" className="rounded-full">Añadir Producto</Button>
                 </form>
@@ -194,7 +266,7 @@ export function AdminDashboard({ onLogout }: AdminDashboardProps) {
                       <div className="flex items-center gap-4">
                         <Image src={product.imageUrl} alt={product.name} width={64} height={64} className="rounded object-cover aspect-square"/>
                         <div>
-                          <p className="font-bold">{product.name} - ${product.price.toFixed(2)}</p>
+                          <p className="font-bold">{product.name} - Stock: {product.stock}</p>
                           <p className="text-sm text-muted-foreground">{product.description}</p>
                         </div>
                       </div>
@@ -208,7 +280,7 @@ export function AdminDashboard({ onLogout }: AdminDashboardProps) {
           
           <TabsContent value="gallery">
             <Card>
-              <CardHeader><CardTitle className="font-headline">Gestionar Galería</CardTitle></CardHeader>
+              <CardHeader><CardTitle className="font-headline">Gestionar Mis Trabajos</CardTitle></CardHeader>
               <CardContent className="space-y-6">
                 <form onSubmit={handleAddGalleryItem} className="bg-muted p-4 rounded-lg space-y-4">
                   <h3 className="font-semibold">Añadir Nueva Imagen</h3>
@@ -288,6 +360,79 @@ export function AdminDashboard({ onLogout }: AdminDashboardProps) {
                     </TabsContent>
                   ))}
                 </Tabs>
+              </CardContent>
+            </Card>
+          </TabsContent>
+          
+          <TabsContent value="users">
+            <Card>
+              <CardHeader className="flex flex-row items-center justify-between">
+                <div>
+                  <CardTitle className="font-headline">Gestionar Usuarios</CardTitle>
+                  <CardDescription>Añade, elimina y gestiona los usuarios del panel.</CardDescription>
+                </div>
+                <Dialog open={openUserDialog} onOpenChange={setOpenUserDialog}>
+                  <DialogTrigger asChild>
+                    <Button className="rounded-full"><UserPlus className="mr-2 h-4 w-4" />Añadir Usuario</Button>
+                  </DialogTrigger>
+                  <DialogContent>
+                    <DialogHeader>
+                      <DialogTitle>Añadir Nuevo Usuario</DialogTitle>
+                      <DialogDescription>
+                        Se creará un nuevo usuario con una contraseña temporal.
+                      </DialogDescription>
+                    </DialogHeader>
+                    <form onSubmit={handleAddUser} className="space-y-4">
+                      <div className="space-y-2">
+                        <Label htmlFor="new-user-name">Nombre</Label>
+                        <Input id="new-user-name" name="name" required />
+                      </div>
+                      <div className="space-y-2">
+                        <Label htmlFor="new-user-email">Email</Label>
+                        <Input id="new-user-email" name="email" type="email" required />
+                      </div>
+                      <DialogFooter>
+                        <Button type="submit">Crear Usuario</Button>
+                      </DialogFooter>
+                    </form>
+                  </DialogContent>
+                </Dialog>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-2">
+                  {users.map(user => (
+                    <div key={user.id} className="flex justify-between items-center p-2 bg-background rounded">
+                      <div>
+                        <p className="font-bold">{user.name}</p>
+                        <p className="text-sm text-muted-foreground">{user.email}</p>
+                      </div>
+                      <div className="flex items-center gap-2">
+                         <Dialog open={openPasswordDialog && currentUser?.id === user.id} onOpenChange={(isOpen) => { if (!isOpen) setCurrentUser(null); setOpenPasswordDialog(isOpen); }}>
+                          <DialogTrigger asChild>
+                            <Button variant="outline" size="icon" onClick={() => { setCurrentUser(user); setOpenPasswordDialog(true); }}>
+                              <KeyRound className="w-4 h-4" />
+                            </Button>
+                          </DialogTrigger>
+                          <DialogContent>
+                            <DialogHeader>
+                              <DialogTitle>Cambiar Contraseña para {user.name}</DialogTitle>
+                            </DialogHeader>
+                            <form onSubmit={handleChangePassword} className="space-y-4">
+                              <div className="space-y-2">
+                                <Label htmlFor="new-password">Nueva Contraseña</Label>
+                                <Input id="new-password" name="newPassword" type="password" required />
+                              </div>
+                              <DialogFooter>
+                                <Button type="submit">Actualizar Contraseña</Button>
+                              </DialogFooter>
+                            </form>
+                          </DialogContent>
+                        </Dialog>
+                        <Button variant="ghost" size="icon" onClick={() => handleDeleteUser(user.id)}><Trash2 className="w-4 h-4 text-red-500" /></Button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
               </CardContent>
             </Card>
           </TabsContent>
