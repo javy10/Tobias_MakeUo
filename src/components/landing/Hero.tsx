@@ -24,7 +24,7 @@ export function Hero({ content }: HeroProps) {
         key={content.imageUrl}
       />
       <div className="absolute inset-0 bg-black/40"></div>
-      <div className="text-center z-10 p-4 animate-fade-in-up">
+      <div className="text-center z-10 p-4">
         <h1 className="text-4xl md:text-6xl font-extrabold font-headline mb-4 drop-shadow-lg">
           {content.title}
         </h1>
