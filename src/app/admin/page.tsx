@@ -1,84 +1,37 @@
 
 'use client';
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { AdminDashboard as AdminDashboardComponent } from '@/components/admin/AdminDashboard';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { initialUsers } from '@/lib/data';
-import type { User, HeroContent, Service, Product, GalleryItem, Testimonial, AboutMeContent } from '@/lib/types';
+import type { User } from '@/lib/types';
 import { useRouter } from 'next/navigation';
-import { appState } from '@/app/page';
+import { useAppContext } from '../layout';
 
 
-interface AdminPageProps {
-  heroContent?: HeroContent;
-  setHeroContent?: React.Dispatch<React.SetStateAction<HeroContent>>;
-  services?: Service[];
-  setServices?: React.Dispatch<React.SetStateAction<Service[]>>;
-  products?: Product[];
-  setProducts?: React.Dispatch<React.SetStateAction<Product[]>>;
-  galleryItems?: GalleryItem[];
-  setGalleryItems?: React.Dispatch<React.SetStateAction<GalleryItem[]>>;
-  testimonials?: Testimonial[];
-  setTestimonials?: React.Dispatch<React.SetStateAction<Testimonial[]>>;
-  aboutMeContent?: AboutMeContent;
-  setAboutMeContent?: React.Dispatch<React.SetStateAction<AboutMeContent>>;
-}
-
-export default function AdminPage(props: AdminPageProps) {
-  const [internalHeroContent, setInternalHeroContent] = useState<HeroContent>(appState.heroContent);
-  const [internalServices, setInternalServices] = useState<Service[]>(appState.services);
-  const [internalProducts, setInternalProducts] = useState<Product[]>(appState.products);
-  const [internalGalleryItems, setInternalGalleryItems] = useState<GalleryItem[]>(appState.galleryItems);
-  const [internalTestimonials, setInternalTestimonials] = useState<Testimonial[]>(appState.testimonials);
-  const [internalAboutMeContent, setInternalAboutMeContent] = useState<AboutMeContent>(appState.aboutMeContent);
+export default function AdminPage() {
+  const { 
+    appState, 
+    setHeroContent,
+    setServices,
+    setProducts,
+    setGalleryItems,
+    setTestimonials,
+    setAboutMeContent,
+    setUsers
+  } = useAppContext();
   
-  const heroContent = props.heroContent ?? internalHeroContent;
-  const setHeroContent = props.setHeroContent ?? setInternalHeroContent;
-  const services = props.services ?? internalServices;
-  const setServices = props.setServices ?? setInternalServices;
-  const products = props.products ?? internalProducts;
-  const setProducts = props.setProducts ?? setInternalProducts;
-  const galleryItems = props.galleryItems ?? internalGalleryItems;
-  const setGalleryItems = props.setGalleryItems ?? setInternalGalleryItems;
-  const testimonials = props.testimonials ?? internalTestimonials;
-  const setTestimonials = props.setTestimonials ?? setInternalTestimonials;
-  const aboutMeContent = props.aboutMeContent ?? internalAboutMeContent;
-  const setAboutMeContent = props.setAboutMeContent ?? setInternalAboutMeContent;
-  
-  const [users, setUsers] = useState<User[]>(initialUsers);
   const [authenticatedUser, setAuthenticatedUser] = useState<User | null>(null);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const router = useRouter();
-  
-  // Persist state changes to the global object
-  useEffect(() => {
-    appState.heroContent = heroContent;
-  }, [heroContent]);
-  useEffect(() => {
-    appState.services = services;
-  }, [services]);
-  useEffect(() => {
-    appState.products = products;
-  }, [products]);
-  useEffect(() => {
-    appState.galleryItems = galleryItems;
-  }, [galleryItems]);
-  useEffect(() => {
-    appState.testimonials = testimonials;
-  }, [testimonials]);
-  useEffect(() => {
-    appState.aboutMeContent = aboutMeContent;
-  }, [aboutMeContent]);
-
 
   const handleLogin = (e: React.FormEvent) => {
     e.preventDefault();
-    const user = users.find(u => u.email === email && u.password === password);
+    const user = appState.users.find(u => u.email === email && u.password === password);
 
     if (user) {
       setAuthenticatedUser(user);
@@ -139,20 +92,20 @@ export default function AdminPage(props: AdminPageProps) {
   return (
     <AdminDashboardComponent
       loggedInUser={authenticatedUser}
-      users={users}
+      users={appState.users}
       setUsers={setUsers}
       onLogout={handleLogout}
-      heroContent={heroContent}
+      heroContent={appState.heroContent}
       setHeroContent={setHeroContent}
-      services={services}
+      services={appState.services}
       setServices={setServices}
-      products={products}
+      products={appState.products}
       setProducts={setProducts}
-      galleryItems={galleryItems}
+      galleryItems={appState.galleryItems}
       setGalleryItems={setGalleryItems}
-      testimonials={testimonials}
+      testimonials={appState.testimonials}
       setTestimonials={setTestimonials}
-      aboutMeContent={aboutMeContent}
+      aboutMeContent={appState.aboutMeContent}
       setAboutMeContent={setAboutMeContent}
     />
   );
