@@ -37,31 +37,69 @@ export function AdminDashboard({ loggedInUser, onLogout, users, setUsers }: Admi
   const [currentUserForPasswordChange, setCurrentUserForPasswordChange] = useState<User | null>(null);
 
   const { toast } = useToast();
+  
+  const handleImageChange = (file: File | null, callback: (url: string) => void) => {
+    if (file && file.type.startsWith('image/')) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        callback(reader.result as string);
+      };
+      reader.readAsDataURL(file);
+    } else if (file) {
+      toast({
+        variant: "destructive",
+        title: "Archivo inválido",
+        description: "Por favor, selecciona un archivo de imagen.",
+      });
+    }
+  };
+
 
   const handleHeroUpdate = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const formData = new FormData(e.currentTarget);
-    setHero({
-      title: formData.get('title') as string,
-      subtitle: formData.get('subtitle') as string,
-      imageUrl: formData.get('imageUrl') as string,
-    });
-    toast({ title: "Éxito", description: "Contenido de la sección inicial actualizado." });
+    const imageFile = formData.get('imageFile') as File;
+    
+    const updateContent = (newImageUrl?: string) => {
+       setHero({
+        title: formData.get('title') as string,
+        subtitle: formData.get('subtitle') as string,
+        imageUrl: newImageUrl || hero.imageUrl,
+      });
+      toast({ title: "Éxito", description: "Contenido de la sección inicial actualizado." });
+    }
+
+    if(imageFile && imageFile.size > 0) {
+      handleImageChange(imageFile, (newUrl) => {
+        updateContent(newUrl);
+      });
+    } else {
+      updateContent();
+    }
   };
 
   const handleAddService = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const form = e.currentTarget;
     const formData = new FormData(form);
-    const newService: Service = {
-      id: crypto.randomUUID(),
-      title: formData.get('title') as string,
-      description: formData.get('description') as string,
-      imageUrl: formData.get('imageUrl') as string,
-    };
-    setServices([...services, newService]);
-    form.reset();
-    toast({ title: "Éxito", description: "Nuevo servicio añadido." });
+    const imageFile = formData.get('imageFile') as File;
+
+    if (!imageFile || imageFile.size === 0) {
+      toast({ variant: "destructive", title: "Error", description: "Debes seleccionar una imagen para el servicio." });
+      return;
+    }
+    
+    handleImageChange(imageFile, (newUrl) => {
+      const newService: Service = {
+        id: crypto.randomUUID(),
+        title: formData.get('title') as string,
+        description: formData.get('description') as string,
+        imageUrl: newUrl,
+      };
+      setServices([...services, newService]);
+      form.reset();
+      toast({ title: "Éxito", description: "Nuevo servicio añadido." });
+    });
   };
   
   const handleDeleteService = (id: string) => {
@@ -73,16 +111,25 @@ export function AdminDashboard({ loggedInUser, onLogout, users, setUsers }: Admi
     e.preventDefault();
     const form = e.currentTarget;
     const formData = new FormData(form);
-    const newProduct: Product = {
-      id: crypto.randomUUID(),
-      name: formData.get('name') as string,
-      description: formData.get('description') as string,
-      stock: parseInt(formData.get('stock') as string, 10),
-      imageUrl: formData.get('imageUrl') as string,
-    };
-    setProducts([...products, newProduct]);
-    form.reset();
-    toast({ title: "Éxito", description: "Nuevo producto añadido." });
+    const imageFile = formData.get('imageFile') as File;
+    
+     if (!imageFile || imageFile.size === 0) {
+      toast({ variant: "destructive", title: "Error", description: "Debes seleccionar una imagen para el producto." });
+      return;
+    }
+
+    handleImageChange(imageFile, (newUrl) => {
+      const newProduct: Product = {
+        id: crypto.randomUUID(),
+        name: formData.get('name') as string,
+        description: formData.get('description') as string,
+        stock: parseInt(formData.get('stock') as string, 10),
+        imageUrl: newUrl,
+      };
+      setProducts([...products, newProduct]);
+      form.reset();
+      toast({ title: "Éxito", description: "Nuevo producto añadido." });
+    });
   };
 
   const handleDeleteProduct = (id: string) => {
@@ -94,14 +141,23 @@ export function AdminDashboard({ loggedInUser, onLogout, users, setUsers }: Admi
     e.preventDefault();
     const form = e.currentTarget;
     const formData = new FormData(form);
-    const newGalleryItem: GalleryItem = {
-      id: crypto.randomUUID(),
-      url: formData.get('url') as string,
-      alt: formData.get('alt') as string,
-    };
-    setGallery([...gallery, newGalleryItem]);
-    form.reset();
-    toast({ title: "Éxito", description: "Nueva imagen añadida." });
+    const imageFile = formData.get('imageFile') as File;
+    
+    if (!imageFile || imageFile.size === 0) {
+      toast({ variant: "destructive", title: "Error", description: "Debes seleccionar una imagen para la galería." });
+      return;
+    }
+    
+    handleImageChange(imageFile, (newUrl) => {
+      const newGalleryItem: GalleryItem = {
+        id: crypto.randomUUID(),
+        url: newUrl,
+        alt: formData.get('alt') as string,
+      };
+      setGallery([...gallery, newGalleryItem]);
+      form.reset();
+      toast({ title: "Éxito", description: "Nueva imagen añadida." });
+    });
   };
 
   const handleDeleteGalleryItem = (id: string) => {
@@ -122,11 +178,23 @@ export function AdminDashboard({ loggedInUser, onLogout, users, setUsers }: Admi
   const handleAboutMeUpdate = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const formData = new FormData(e.currentTarget);
-    setAboutMe({
-      text: formData.get('text') as string,
-      imageUrl: formData.get('imageUrl') as string,
-    });
-    toast({ title: "Éxito", description: "La sección 'Sobre Mí' ha sido actualizada." });
+    const imageFile = formData.get('imageFile') as File;
+
+    const updateContent = (newImageUrl?: string) => {
+      setAboutMe({
+        text: formData.get('text') as string,
+        imageUrl: newImageUrl || aboutMe.imageUrl,
+      });
+      toast({ title: "Éxito", description: "La sección 'Sobre Mí' ha sido actualizada." });
+    };
+    
+    if (imageFile && imageFile.size > 0) {
+      handleImageChange(imageFile, (newUrl) => {
+        updateContent(newUrl);
+      });
+    } else {
+      updateContent();
+    }
   };
 
   const handleAddUser = (e: React.FormEvent<HTMLFormElement>) => {
@@ -237,8 +305,9 @@ export function AdminDashboard({ loggedInUser, onLogout, users, setUsers }: Admi
                     <Textarea id="subtitle" name="subtitle" defaultValue={hero.subtitle} />
                   </div>
                   <div>
-                    <Label htmlFor="imageUrl">URL de la Imagen de Fondo</Label>
-                    <Input id="imageUrl" name="imageUrl" type="url" defaultValue={hero.imageUrl} />
+                    <Label htmlFor="imageFile">Imagen de Fondo</Label>
+                    <Input id="imageFile" name="imageFile" type="file" accept="image/*" />
+                    <p className="text-sm text-muted-foreground mt-2">Sube una nueva imagen para reemplazar la actual. Si no seleccionas ninguna, se mantendrá la imagen existente.</p>
                   </div>
                   <Button type="submit" className="rounded-full">Actualizar</Button>
                 </form>
@@ -256,8 +325,9 @@ export function AdminDashboard({ loggedInUser, onLogout, users, setUsers }: Admi
                     <Textarea id="about-text" name="text" defaultValue={aboutMe.text} rows={6} />
                   </div>
                   <div>
-                    <Label htmlFor="about-imageUrl">URL de la Foto</Label>
-                    <Input id="about-imageUrl" name="imageUrl" type="url" defaultValue={aboutMe.imageUrl} />
+                    <Label htmlFor="about-imageFile">Foto</Label>
+                    <Input id="about-imageFile" name="imageFile" type="file" accept="image/*" />
+                     <p className="text-sm text-muted-foreground mt-2">Sube una nueva foto para reemplazar la actual. Si no seleccionas ninguna, se mantendrá la foto existente.</p>
                   </div>
                   <Button type="submit" className="rounded-full">Actualizar 'Sobre Mí'</Button>
                 </form>
@@ -273,7 +343,10 @@ export function AdminDashboard({ loggedInUser, onLogout, users, setUsers }: Admi
                   <h3 className="font-semibold">Añadir Nuevo Servicio</h3>
                   <Input name="title" placeholder="Título del servicio" required />
                   <Textarea name="description" placeholder="Descripción del servicio" required />
-                  <Input name="imageUrl" type="url" placeholder="URL de la imagen del servicio" required />
+                  <div className="space-y-2">
+                    <Label htmlFor="service-imageFile">Imagen del servicio</Label>
+                    <Input id="service-imageFile" name="imageFile" type="file" accept="image/*" required />
+                  </div>
                   <Button type="submit" className="rounded-full">Añadir Servicio</Button>
                 </form>
                 <div className="space-y-2">
@@ -303,7 +376,10 @@ export function AdminDashboard({ loggedInUser, onLogout, users, setUsers }: Admi
                   <Input name="name" placeholder="Nombre del producto" required />
                   <Textarea name="description" placeholder="Descripción del producto" required />
                   <Input name="stock" type="number" placeholder="Stock disponible (ej: 25)" required />
-                  <Input name="imageUrl" type="url" placeholder="URL de la imagen del producto" required />
+                  <div className="space-y-2">
+                    <Label htmlFor="product-imageFile">Imagen del producto</Label>
+                    <Input id="product-imageFile" name="imageFile" type="file" accept="image/*" required />
+                  </div>
                   <Button type="submit" className="rounded-full">Añadir Producto</Button>
                 </form>
                 <div className="space-y-2">
@@ -330,7 +406,10 @@ export function AdminDashboard({ loggedInUser, onLogout, users, setUsers }: Admi
               <CardContent className="space-y-6">
                 <form onSubmit={handleAddGalleryItem} className="bg-muted p-4 rounded-lg space-y-4">
                   <h3 className="font-semibold">Añadir Nueva Imagen</h3>
-                  <Input name="url" type="url" placeholder="URL de la imagen" required />
+                   <div className="space-y-2">
+                    <Label htmlFor="gallery-imageFile">Imagen</Label>
+                    <Input id="gallery-imageFile" name="imageFile" type="file" accept="image/*" required />
+                  </div>
                   <Input name="alt" placeholder="Descripción (texto alt)" required />
                   <Button type="submit" className="rounded-full">Añadir Imagen</Button>
                 </form>
@@ -464,3 +543,5 @@ export function AdminDashboard({ loggedInUser, onLogout, users, setUsers }: Admi
     </div>
   );
 }
+
+    
