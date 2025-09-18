@@ -16,7 +16,7 @@ import Autoplay from "embla-carousel-autoplay";
 export function Testimonials() {
   const approvedTestimonials = initialTestimonials.filter(t => t.status === 'approved');
   const plugin = React.useRef(
-    Autoplay({ delay: 3000, stopOnInteraction: true })
+    Autoplay({ delay: 3000, stopOnInteraction: false })
   );
 
   return (
@@ -28,8 +28,6 @@ export function Testimonials() {
           align: "start",
           loop: true,
         }}
-        onMouseEnter={plugin.current.stop}
-        onMouseLeave={plugin.current.reset}
         className="w-full max-w-xs sm:max-w-xl md:max-w-2xl lg:max-w-4xl mx-auto"
       >
         <CarouselContent>
