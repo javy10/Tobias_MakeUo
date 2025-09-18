@@ -1,6 +1,6 @@
 
 'use client';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { AdminDashboard as AdminDashboardComponent } from '@/components/admin/AdminDashboard';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -9,7 +9,7 @@ import { Label } from '@/components/ui/label';
 import { initialUsers } from '@/lib/data';
 import type { User, HeroContent, Service, Product, GalleryItem, Testimonial, AboutMeContent } from '@/lib/types';
 import { useRouter } from 'next/navigation';
-import { initialAboutMeContent, initialGalleryItems, initialHeroContent, initialProducts, initialServices, initialTestimonials } from '@/lib/data';
+import { appState } from '@/app/page';
 
 
 interface AdminPageProps {
@@ -28,12 +28,12 @@ interface AdminPageProps {
 }
 
 export default function AdminPage(props: AdminPageProps) {
-  const [internalHeroContent, setInternalHeroContent] = useState<HeroContent>(initialHeroContent);
-  const [internalServices, setInternalServices] = useState<Service[]>(initialServices);
-  const [internalProducts, setInternalProducts] = useState<Product[]>(initialProducts);
-  const [internalGalleryItems, setInternalGalleryItems] = useState<GalleryItem[]>(initialGalleryItems);
-  const [internalTestimonials, setInternalTestimonials] = useState<Testimonial[]>(initialTestimonials);
-  const [internalAboutMeContent, setInternalAboutMeContent] = useState<AboutMeContent>(initialAboutMeContent);
+  const [internalHeroContent, setInternalHeroContent] = useState<HeroContent>(appState.heroContent);
+  const [internalServices, setInternalServices] = useState<Service[]>(appState.services);
+  const [internalProducts, setInternalProducts] = useState<Product[]>(appState.products);
+  const [internalGalleryItems, setInternalGalleryItems] = useState<GalleryItem[]>(appState.galleryItems);
+  const [internalTestimonials, setInternalTestimonials] = useState<Testimonial[]>(appState.testimonials);
+  const [internalAboutMeContent, setInternalAboutMeContent] = useState<AboutMeContent>(appState.aboutMeContent);
   
   const heroContent = props.heroContent ?? internalHeroContent;
   const setHeroContent = props.setHeroContent ?? setInternalHeroContent;
@@ -54,6 +54,27 @@ export default function AdminPage(props: AdminPageProps) {
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const router = useRouter();
+  
+  // Persist state changes to the global object
+  useEffect(() => {
+    appState.heroContent = heroContent;
+  }, [heroContent]);
+  useEffect(() => {
+    appState.services = services;
+  }, [services]);
+  useEffect(() => {
+    appState.products = products;
+  }, [products]);
+  useEffect(() => {
+    appState.galleryItems = galleryItems;
+  }, [galleryItems]);
+  useEffect(() => {
+    appState.testimonials = testimonials;
+  }, [testimonials]);
+  useEffect(() => {
+    appState.aboutMeContent = aboutMeContent;
+  }, [aboutMeContent]);
+
 
   const handleLogin = (e: React.FormEvent) => {
     e.preventDefault();

@@ -13,21 +13,41 @@ import { Contact } from "@/components/landing/Contact";
 import { Footer } from "@/components/landing/Footer";
 import { initialAboutMeContent, initialGalleryItems, initialHeroContent, initialProducts, initialServices, initialTestimonials } from '@/lib/data';
 import type { AboutMeContent, GalleryItem, HeroContent, Product, Service, Testimonial } from '@/lib/types';
-import AdminDashboard from './admin/page';
+import AdminPage from './admin/page';
+
+// This is a global state store that can be accessed by both pages.
+// In a real app, you'd use a state management library like Zustand or Redux.
+export const appState = {
+  heroContent: initialHeroContent,
+  services: initialServices,
+  products: initialProducts,
+  galleryItems: initialGalleryItems,
+  testimonials: initialTestimonials,
+  aboutMeContent: initialAboutMeContent,
+};
 
 export default function Home() {
-  const [heroContent, setHeroContent] = useState<HeroContent>(initialHeroContent);
-  const [services, setServices] = useState<Service[]>(initialServices);
-  const [products, setProducts] = useState<Product[]>(initialProducts);
-  const [galleryItems, setGalleryItems] = useState<GalleryItem[]>(initialGalleryItems);
-  const [testimonials, setTestimonials] = useState<Testimonial[]>(initialTestimonials);
-  const [aboutMeContent, setAboutMeContent] = useState<AboutMeContent>(initialAboutMeContent);
+  const [heroContent, setHeroContent] = useState<HeroContent>(appState.heroContent);
+  const [services, setServices] = useState<Service[]>(appState.services);
+  const [products, setProducts] = useState<Product[]>(appState.products);
+  const [galleryItems, setGalleryItems] = useState<GalleryItem[]>(appState.galleryItems);
+  const [testimonials, setTestimonials] = useState<Testimonial[]>(appState.testimonials);
+  const [aboutMeContent, setAboutMeContent] = useState<AboutMeContent>(appState.aboutMeContent);
  
+  // Update global state when local state changes
+  appState.heroContent = heroContent;
+  appState.services = services;
+  appState.products = products;
+  appState.galleryItems = galleryItems;
+  appState.testimonials = testimonials;
+  appState.aboutMeContent = aboutMeContent;
+
+
   // This is a simplified way to check for the admin route.
   // In a real app, you'd use Next.js router.
-  if (typeof window !== 'undefined' && window.location.pathname === '/admin') {
+  if (typeof window !== 'undefined' && window.location.pathname.startsWith('/admin')) {
     return (
-      <AdminDashboard
+      <AdminPage
         heroContent={heroContent}
         setHeroContent={setHeroContent}
         services={services}
