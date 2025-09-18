@@ -44,6 +44,7 @@ export function AdminDashboard({ loggedInUser, onLogout, users, setUsers }: Admi
     setHero({
       title: formData.get('title') as string,
       subtitle: formData.get('subtitle') as string,
+      imageUrl: formData.get('imageUrl') as string,
     });
     toast({ title: "Éxito", description: "Contenido de la sección inicial actualizado." });
   };
@@ -234,6 +235,10 @@ export function AdminDashboard({ loggedInUser, onLogout, users, setUsers }: Admi
                   <div>
                     <Label htmlFor="subtitle">Subtítulo</Label>
                     <Textarea id="subtitle" name="subtitle" defaultValue={hero.subtitle} />
+                  </div>
+                  <div>
+                    <Label htmlFor="imageUrl">URL de la Imagen de Fondo</Label>
+                    <Input id="imageUrl" name="imageUrl" type="url" defaultValue={hero.imageUrl} />
                   </div>
                   <Button type="submit" className="rounded-full">Actualizar</Button>
                 </form>

@@ -1,9 +1,12 @@
 import type { HeroContent, Service, GalleryItem, Testimonial, Product, AboutMeContent, User } from './types';
 import { PlaceHolderImages } from './placeholder-images';
 
+const heroImage = PlaceHolderImages.find(img => img.id === 'hero-background');
+
 export const initialHeroContent: HeroContent = {
   title: "Belleza que Transforma",
-  subtitle: "Tu estilo personal, realzado con el arte del maquillaje profesional."
+  subtitle: "Tu estilo personal, realzado con el arte del maquillaje profesional.",
+  imageUrl: heroImage?.imageUrl || "https://picsum.photos/seed/makeup1/1920/1080"
 };
 
 export const initialServices: Service[] = [

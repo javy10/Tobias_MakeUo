@@ -21,6 +21,7 @@ export interface Testimonial {
 export interface HeroContent {
   title: string;
   subtitle: string;
+  imageUrl: string;
 }
 
 export interface Product {
