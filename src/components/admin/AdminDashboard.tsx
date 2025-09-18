@@ -192,7 +192,7 @@ export function AdminDashboard({ loggedInUser, onLogout, users, setUsers }: Admi
             <ThumbsDown className="w-5 h-5" />
           </Button>
         )}
-        <Button variant="ghost" size="icon" className="text-red-600 hover:bg-red-100 hover:text-red-700" onClick={() => handleDeleteTestimonial(testimonial.id)}>
+        <Button variant="ghost" size="icon" className="text-destructive-foreground/50 hover:bg-destructive/80 hover:text-destructive-foreground" onClick={() => handleDeleteTestimonial(testimonial.id)}>
           <Trash2 className="w-5 h-5" />
         </Button>
       </div>
@@ -281,7 +281,7 @@ export function AdminDashboard({ loggedInUser, onLogout, users, setUsers }: Admi
                           <p className="text-sm text-muted-foreground">{service.description}</p>
                         </div>
                       </div>
-                      <Button variant="ghost" size="icon" onClick={() => handleDeleteService(service.id)}><Trash2 className="w-4 h-4 text-red-500" /></Button>
+                      <Button variant="ghost" size="icon" onClick={() => handleDeleteService(service.id)}><Trash2 className="w-4 h-4 text-destructive-foreground/50" /></Button>
                     </div>
                   ))}
                 </div>
@@ -311,7 +311,7 @@ export function AdminDashboard({ loggedInUser, onLogout, users, setUsers }: Admi
                           <p className="text-sm text-muted-foreground">{product.description}</p>
                         </div>
                       </div>
-                      <Button variant="ghost" size="icon" onClick={() => handleDeleteProduct(product.id)}><Trash2 className="w-4 h-4 text-red-500" /></Button>
+                      <Button variant="ghost" size="icon" onClick={() => handleDeleteProduct(product.id)}><Trash2 className="w-4 h-4 text-destructive-foreground/50" /></Button>
                     </div>
                   ))}
                 </div>
@@ -442,7 +442,7 @@ export function AdminDashboard({ loggedInUser, onLogout, users, setUsers }: Admi
                             </form>
                           </DialogContent>
                         </Dialog>
-                        <Button variant="ghost" size="icon" onClick={() => handleDeleteUser(user.id)}><Trash2 className="w-4 h-4 text-red-500" /></Button>
+                        <Button variant="ghost" size="icon" onClick={() => handleDeleteUser(user.id)}><Trash2 className="w-4 h-4 text-destructive-foreground/50" /></Button>
                       </div>
                     </div>
                   ))}

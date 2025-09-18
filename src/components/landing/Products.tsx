@@ -30,7 +30,7 @@ export function Products() {
                 <CardDescription>{product.description}</CardDescription>
               </CardContent>
                <CardFooter className="flex justify-between items-center">
-                <Badge variant={product.stock > 0 ? 'default' : 'destructive'} className={product.stock > 0 ? 'bg-green-100 text-green-800' : ''}>
+                <Badge variant={product.stock > 0 ? 'default' : 'destructive'} className={product.stock > 0 ? 'bg-green-600/20 text-green-300 border-green-600/50' : ''}>
                   {product.stock > 0 ? `En Stock: ${product.stock}` : 'Agotado'}
                 </Badge>
                 <Button className="rounded-full" disabled={product.stock === 0}>
