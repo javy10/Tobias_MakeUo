@@ -60,6 +60,13 @@ export function AdminDashboard({
 
   const { toast } = useToast();
   
+  // State for image previews
+  const [heroImagePreview, setHeroImagePreview] = useState<string | null>(null);
+  const [serviceImagePreview, setServiceImagePreview] = useState<string | null>(null);
+  const [productImagePreview, setProductImagePreview] = useState<string | null>(null);
+  const [galleryImagePreview, setGalleryImagePreview] = useState<string | null>(null);
+  const [aboutMeImagePreview, setAboutMeImagePreview] = useState<string | null>(null);
+
   const handleImageChange = (file: File | null, callback: (url: string) => void) => {
     if (file && file.type.startsWith('image/')) {
       const reader = new FileReader();
@@ -76,6 +83,26 @@ export function AdminDashboard({
     }
   };
 
+  const handleFilePreview = (e: React.ChangeEvent<HTMLInputElement>, setter: React.Dispatch<React.SetStateAction<string | null>>) => {
+    const file = e.target.files?.[0];
+    if (file && file.type.startsWith('image/')) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setter(reader.result as string);
+      };
+      reader.readAsDataURL(file);
+    } else {
+      setter(null);
+      if (file) {
+        toast({
+          variant: "destructive",
+          title: "Archivo inválido",
+          description: "Por favor, selecciona un archivo de imagen.",
+        });
+      }
+    }
+  };
+
 
   const handleHeroUpdate = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -89,6 +116,8 @@ export function AdminDashboard({
         imageUrl: newImageUrl || heroContent.imageUrl,
       });
       toast({ title: "Éxito", description: "Contenido de la sección inicial actualizado." });
+      setHeroImagePreview(null); // Reset preview
+      (e.target as HTMLFormElement).reset();
     }
 
     if(imageFile && imageFile.size > 0) {
@@ -120,6 +149,7 @@ export function AdminDashboard({
       };
       setServices([...services, newService]);
       form.reset();
+      setServiceImagePreview(null); // Reset preview
       toast({ title: "Éxito", description: "Nuevo servicio añadido." });
     });
   };
@@ -150,6 +180,7 @@ export function AdminDashboard({
       };
       setProducts([...products, newProduct]);
       form.reset();
+      setProductImagePreview(null);
       toast({ title: "Éxito", description: "Nuevo producto añadido." });
     });
   };
@@ -178,6 +209,7 @@ export function AdminDashboard({
       };
       setGalleryItems([...galleryItems, newGalleryItem]);
       form.reset();
+      setGalleryImagePreview(null);
       toast({ title: "Éxito", description: "Nueva imagen añadida." });
     });
   };
@@ -208,6 +240,8 @@ export function AdminDashboard({
         imageUrl: newImageUrl || aboutMeContent.imageUrl,
       });
       toast({ title: "Éxito", description: "La sección 'Sobre Mí' ha sido actualizada." });
+      setAboutMeImagePreview(null);
+      (e.target as HTMLFormElement).reset();
     };
     
     if (imageFile && imageFile.size > 0) {
@@ -328,8 +362,13 @@ export function AdminDashboard({
                   </div>
                   <div>
                     <Label htmlFor="imageFile">Imagen de Fondo</Label>
-                    <Input id="imageFile" name="imageFile" type="file" accept="image/*" />
+                    <Input id="imageFile" name="imageFile" type="file" accept="image/*" onChange={(e) => handleFilePreview(e, setHeroImagePreview)} />
                     <p className="text-sm text-muted-foreground mt-2">Sube una nueva imagen para reemplazar la actual. Si no seleccionas ninguna, se mantendrá la imagen existente.</p>
+                     {heroImagePreview && (
+                        <div className="mt-4 relative aspect-video w-full max-w-sm rounded-md overflow-hidden">
+                          <Image src={heroImagePreview} alt="Vista previa de la imagen de fondo" fill className="object-cover" />
+                        </div>
+                      )}
                   </div>
                   <Button type="submit" className="rounded-full">Actualizar</Button>
                 </form>
@@ -348,8 +387,13 @@ export function AdminDashboard({
                   </div>
                   <div>
                     <Label htmlFor="about-imageFile">Foto</Label>
-                    <Input id="about-imageFile" name="imageFile" type="file" accept="image/*" />
+                    <Input id="about-imageFile" name="imageFile" type="file" accept="image/*" onChange={(e) => handleFilePreview(e, setAboutMeImagePreview)} />
                      <p className="text-sm text-muted-foreground mt-2">Sube una nueva foto para reemplazar la actual. Si no seleccionas ninguna, se mantendrá la foto existente.</p>
+                      {aboutMeImagePreview && (
+                        <div className="mt-4 relative aspect-square w-40 h-40 rounded-full overflow-hidden">
+                          <Image src={aboutMeImagePreview} alt="Vista previa de la foto" fill className="object-cover" />
+                        </div>
+                      )}
                   </div>
                   <Button type="submit" className="rounded-full">Actualizar 'Sobre Mí'</Button>
                 </form>
@@ -367,7 +411,12 @@ export function AdminDashboard({
                   <Textarea name="description" placeholder="Descripción del servicio" required />
                   <div className="space-y-2">
                     <Label htmlFor="service-imageFile">Imagen del servicio</Label>
-                    <Input id="service-imageFile" name="imageFile" type="file" accept="image/*" required />
+                    <Input id="service-imageFile" name="imageFile" type="file" accept="image/*" required onChange={(e) => handleFilePreview(e, setServiceImagePreview)} />
+                     {serviceImagePreview && (
+                      <div className="mt-4 relative aspect-video w-full max-w-sm rounded-md overflow-hidden">
+                        <Image src={serviceImagePreview} alt="Vista previa del servicio" fill className="object-cover" />
+                      </div>
+                    )}
                   </div>
                   <Button type="submit" className="rounded-full">Añadir Servicio</Button>
                 </form>
@@ -400,7 +449,12 @@ export function AdminDashboard({
                   <Input name="stock" type="number" placeholder="Stock disponible (ej: 25)" required />
                   <div className="space-y-2">
                     <Label htmlFor="product-imageFile">Imagen del producto</Label>
-                    <Input id="product-imageFile" name="imageFile" type="file" accept="image/*" required />
+                    <Input id="product-imageFile" name="imageFile" type="file" accept="image/*" required onChange={(e) => handleFilePreview(e, setProductImagePreview)} />
+                      {productImagePreview && (
+                        <div className="mt-4 relative aspect-square w-40 h-40 rounded-md overflow-hidden">
+                          <Image src={productImagePreview} alt="Vista previa del producto" fill className="object-cover" />
+                        </div>
+                      )}
                   </div>
                   <Button type="submit" className="rounded-full">Añadir Producto</Button>
                 </form>
@@ -430,7 +484,12 @@ export function AdminDashboard({
                   <h3 className="font-semibold">Añadir Nueva Imagen</h3>
                    <div className="space-y-2">
                     <Label htmlFor="gallery-imageFile">Imagen</Label>
-                    <Input id="gallery-imageFile" name="imageFile" type="file" accept="image/*" required />
+                    <Input id="gallery-imageFile" name="imageFile" type="file" accept="image/*" required onChange={(e) => handleFilePreview(e, setGalleryImagePreview)} />
+                     {galleryImagePreview && (
+                        <div className="mt-4 relative aspect-square w-40 h-40 rounded-md overflow-hidden">
+                          <Image src={galleryImagePreview} alt="Vista previa de la galería" fill className="object-cover" />
+                        </div>
+                      )}
                   </div>
                   <Input name="alt" placeholder="Descripción (texto alt)" required />
                   <Button type="submit" className="rounded-full">Añadir Imagen</Button>
@@ -565,3 +624,5 @@ export function AdminDashboard({
     </div>
   );
 }
+
+    
