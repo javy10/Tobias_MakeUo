@@ -2,6 +2,7 @@ export interface Service {
   id: string;
   title: string;
   description: string;
+  imageUrl: string;
 }
 
 export interface GalleryItem {
@@ -14,9 +15,18 @@ export interface Testimonial {
   id: string;
   text: string;
   author: string;
+  status: 'pending' | 'approved' | 'rejected';
 }
 
 export interface HeroContent {
   title: string;
   subtitle: string;
+}
+
+export interface Product {
+  id: string;
+  name: string;
+  description: string;
+  price: number;
+  imageUrl: string;
 }
