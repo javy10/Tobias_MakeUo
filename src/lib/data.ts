@@ -96,4 +96,10 @@ export const initialUsers: User[] = [
     email: 'admin@example.com',
     password: 'admin', // This should be hashed in a real app
   },
+  {
+    id: '2',
+    name: 'Test User',
+    email: 'prueba@gmail.com',
+    password: 'temporal123',
+  }
 ];
