@@ -10,6 +10,7 @@ import { initialUsers } from '@/lib/data';
 import type { User } from '@/lib/types';
 
 export default function AdminPage() {
+  const [users, setUsers] = useState<User[]>(initialUsers);
   const [authenticatedUser, setAuthenticatedUser] = useState<User | null>(null);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -17,7 +18,7 @@ export default function AdminPage() {
 
   const handleLogin = (e: React.FormEvent) => {
     e.preventDefault();
-    const user = initialUsers.find(u => u.email === email && u.password === password);
+    const user = users.find(u => u.email === email && u.password === password);
 
     if (user) {
       setAuthenticatedUser(user);
@@ -25,6 +26,10 @@ export default function AdminPage() {
     } else {
       setError('Correo electrónico o contraseña incorrectos.');
     }
+  };
+
+  const handleLogout = () => {
+    setAuthenticatedUser(null);
   };
 
   if (!authenticatedUser) {
@@ -70,5 +75,12 @@ export default function AdminPage() {
     );
   }
 
-  return <AdminDashboard loggedInUser={authenticatedUser} onLogout={() => setAuthenticatedUser(null)} />;
+  return (
+    <AdminDashboard
+      loggedInUser={authenticatedUser}
+      users={users}
+      setUsers={setUsers}
+      onLogout={handleLogout}
+    />
+  );
 }

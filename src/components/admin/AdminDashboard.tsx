@@ -2,7 +2,7 @@
 'use client';
 
 import { useState } from 'react';
-import { initialHeroContent, initialServices, initialGalleryItems, initialTestimonials, initialProducts, initialAboutMeContent, initialUsers } from '@/lib/data';
+import { initialHeroContent, initialServices, initialGalleryItems, initialTestimonials, initialProducts, initialAboutMeContent } from '@/lib/data';
 import type { HeroContent, Service, GalleryItem, Testimonial, Product, AboutMeContent, User } from '@/lib/types';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -21,16 +21,17 @@ import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, D
 interface AdminDashboardProps {
   loggedInUser: User;
   onLogout: () => void;
+  users: User[];
+  setUsers: React.Dispatch<React.SetStateAction<User[]>>;
 }
 
-export function AdminDashboard({ loggedInUser, onLogout }: AdminDashboardProps) {
+export function AdminDashboard({ loggedInUser, onLogout, users, setUsers }: AdminDashboardProps) {
   const [hero, setHero] = useState<HeroContent>(initialHeroContent);
   const [services, setServices] = useState<Service[]>(initialServices);
   const [products, setProducts] = useState<Product[]>(initialProducts);
   const [gallery, setGallery] = useState<GalleryItem[]>(initialGalleryItems);
   const [testimonials, setTestimonials] = useState<Testimonial[]>(initialTestimonials);
   const [aboutMe, setAboutMe] = useState<AboutMeContent>(initialAboutMeContent);
-  const [users, setUsers] = useState<User[]>(initialUsers);
   const [openUserDialog, setOpenUserDialog] = useState(false);
   const [openPasswordDialog, setOpenPasswordDialog] = useState(false);
   const [currentUserForPasswordChange, setCurrentUserForPasswordChange] = useState<User | null>(null);
