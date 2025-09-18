@@ -164,6 +164,41 @@ export function AdminDashboard({ loggedInUser, onLogout, users, setUsers }: Admi
 
   const testimonialsByStatus = (status: Testimonial['status']) => testimonials.filter(t => t.status === status);
 
+  const TestimonialCard = ({ testimonial }: { testimonial: Testimonial }) => (
+    <div key={testimonial.id} className="flex flex-col sm:flex-row justify-between sm:items-center gap-4 p-4 bg-background rounded-lg shadow-sm">
+      <div>
+        <div className='flex items-center gap-2 mb-2'>
+          <p className="font-bold">- {testimonial.author}</p>
+          <Badge variant={
+            testimonial.status === 'approved' ? 'default' : testimonial.status === 'pending' ? 'secondary' : 'destructive'
+          } className={cn(
+            testimonial.status === 'approved' && 'bg-green-100 text-green-800',
+          )}>
+            {
+              { 'pending': 'Pendiente', 'approved': 'Aprobado', 'rejected': 'Rechazado' }[testimonial.status]
+            }
+          </Badge>
+        </div>
+        <p className="italic">"{testimonial.text}"</p>
+      </div>
+      <div className="flex gap-2 shrink-0">
+        {testimonial.status !== 'approved' && (
+          <Button variant="ghost" size="icon" className="text-green-600 hover:bg-green-100 hover:text-green-700" onClick={() => handleUpdateTestimonialStatus(testimonial.id, 'approved')}>
+            <ThumbsUp className="w-5 h-5" />
+          </Button>
+        )}
+        {testimonial.status !== 'rejected' && (
+          <Button variant="ghost" size="icon" className="text-orange-600 hover:bg-orange-100 hover:text-orange-700" onClick={() => handleUpdateTestimonialStatus(testimonial.id, 'rejected')}>
+            <ThumbsDown className="w-5 h-5" />
+          </Button>
+        )}
+        <Button variant="ghost" size="icon" className="text-red-600 hover:bg-red-100 hover:text-red-700" onClick={() => handleDeleteTestimonial(testimonial.id)}>
+          <Trash2 className="w-5 h-5" />
+        </Button>
+      </div>
+    </div>
+  );
+
   return (
     <div className="min-h-dvh bg-secondary p-4 md:p-8">
       <div className="max-w-5xl mx-auto">
@@ -328,38 +363,7 @@ export function AdminDashboard({ loggedInUser, onLogout, users, setUsers }: Admi
                           <p className="text-muted-foreground text-center py-8">No hay testimonios en esta categoría.</p>
                         ) : (
                           testimonialsByStatus(status as Testimonial['status']).map(testimonial => (
-                            <div key={testimonial.id} className="flex flex-col sm:flex-row justify-between sm:items-center gap-4 p-4 bg-background rounded-lg shadow-sm">
-                              <div>
-                                <div className='flex items-center gap-2 mb-2'>
-                                  <p className="font-bold">- {testimonial.author}</p>
-                                  <Badge variant={
-                                    testimonial.status === 'approved' ? 'default' : testimonial.status === 'pending' ? 'secondary' : 'destructive'
-                                  } className={cn(
-                                    testimonial.status === 'approved' && 'bg-green-100 text-green-800',
-                                  )}>
-                                    {
-                                      { 'pending': 'Pendiente', 'approved': 'Aprobado', 'rejected': 'Rechazado' }[testimonial.status]
-                                    }
-                                  </Badge>
-                                </div>
-                                <p className="italic">"{testimonial.text}"</p>
-                              </div>
-                              <div className="flex gap-2 shrink-0">
-                                {testimonial.status === 'pending' && (
-                                  <>
-                                    <Button variant="ghost" size="icon" className="text-green-600 hover:bg-green-100 hover:text-green-700" onClick={() => handleUpdateTestimonialStatus(testimonial.id, 'approved')}>
-                                      <ThumbsUp className="w-5 h-5" />
-                                    </Button>
-                                    <Button variant="ghost" size="icon" className="text-orange-600 hover:bg-orange-100 hover:text-orange-700" onClick={() => handleUpdateTestimonialStatus(testimonial.id, 'rejected')}>
-                                      <ThumbsDown className="w-5 h-5" />
-                                    </Button>
-                                  </>
-                                )}
-                                <Button variant="ghost" size="icon" className="text-red-600 hover:bg-red-100 hover:text-red-700" onClick={() => handleDeleteTestimonial(testimonial.id)}>
-                                  <Trash2 className="w-5 h-5" />
-                                </Button>
-                              </div>
-                            </div>
+                            <TestimonialCard key={testimonial.id} testimonial={testimonial} />
                           ))
                         )}
                       </div>
