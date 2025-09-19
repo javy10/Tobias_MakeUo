@@ -17,28 +17,6 @@ import { Badge } from '../ui/badge';
 import { cn } from '@/lib/utils';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '../ui/dialog';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select';
-import { Alert, AlertDescription, AlertTitle } from '../ui/alert';
-
-interface AdminDashboardProps {
-  loggedInUser: User;
-  onLogout: () => void;
-  users: User[];
-  setUsers: React.Dispatch<React.SetStateAction<User[]>>;
-  heroContent: HeroContent;
-  setHeroContent: React.Dispatch<React.SetStateAction<HeroContent>>;
-  services: Service[];
-  setServices: React.Dispatch<React.SetStateAction<Service[]>>;
-  products: Product[];
-  setProducts: React.Dispatch<React.SetStateAction<Product[]>>;
-  galleryItems: GalleryItem[];
-  setGalleryItems: React.Dispatch<React.SetStateAction<GalleryItem[]>>;
-  testimonials: Testimonial[];
-  setTestimonials: React.Dispatch<React.SetStateAction<Testimonial[]>>;
-  aboutMeContent: AboutMeContent;
-  setAboutMeContent: React.Dispatch<React.SetStateAction<AboutMeContent>>;
-  categories: Category[];
-  setCategories: React.Dispatch<React.SetStateAction<Category[]>>;
-}
 
 // Function to read a file as a Data URL (Base64)
 const readFileAsDataURL = (file: File): Promise<string> => {
@@ -90,68 +68,21 @@ export function AdminDashboard({
   const [productImagePreview, setProductImagePreview] = useState<string | null>(null);
   const [galleryMediaPreview, setGalleryMediaPreview] = useState<{ url: string; type: 'image' | 'video' } | null>(null);
   const [aboutMeImagePreview, setAboutMeImagePreview] = useState<string | null>(null);
-  
-  const handleFileChange = async (file: File | null, callback: (url: string, type: 'image' | 'video') => void) => {
-    if (file) {
-      const fileType = file.type.startsWith('image/') ? 'image' : file.type.startsWith('video/') ? 'video' : null;
-      if (!fileType) {
-        toast({
-          variant: "destructive",
-          title: "Archivo inválido",
-          description: "Por favor, selecciona un archivo de imagen o video.",
-        });
-        return;
-      }
 
-      if (fileType === 'image') {
-        try {
-          const dataUrl = await readFileAsDataURL(file);
-          callback(dataUrl, 'image');
-        } catch (error) {
-          toast({ variant: "destructive", title: "Error", description: "No se pudo cargar la imagen." });
-        }
-      } else { // It's a video
-        const objectUrl = URL.createObjectURL(file);
-        callback(objectUrl, 'video');
-      }
-    }
-  };
-  
-  const handleMediaFilePreview = (e: React.ChangeEvent<HTMLInputElement>, setter: React.Dispatch<React.SetStateAction<{ url: string; type: 'image' | 'video' } | null>>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      const fileType = file.type.startsWith('image/') ? 'image' : file.type.startsWith('video/') ? 'video' : null;
-      if (fileType) {
-         const url = URL.createObjectURL(file);
-        setter({ url: url, type: fileType });
-      } else {
-        setter(null);
-        toast({
-          variant: "destructive",
-          title: "Archivo inválido",
-          description: "Por favor, selecciona un archivo de imagen o video.",
-        });
+  const handleFileChange = async (file: File): Promise<{ url: string; type: 'image' | 'video' }> => {
+    const fileType = file.type.startsWith('image/') ? 'image' : 'video';
+    if (fileType === 'image') {
+      try {
+        const dataUrl = await readFileAsDataURL(file);
+        return { url: dataUrl, type: 'image' };
+      } catch (error) {
+        toast({ variant: 'destructive', title: 'Error', description: 'No se pudo cargar la imagen.' });
+        throw error;
       }
     } else {
-      setter(null);
-    }
-  };
-
-
-  const handleImageChange = async (file: File | null, callback: (url: string) => void) => {
-    if (file && file.type.startsWith('image/')) {
-       try {
-        const dataUrl = await readFileAsDataURL(file);
-        callback(dataUrl);
-      } catch (error) {
-        toast({ variant: "destructive", title: "Error", description: "No se pudo cargar la imagen." });
-      }
-    } else if (file) {
-      toast({
-        variant: "destructive",
-        title: "Archivo inválido",
-        description: "Por favor, selecciona un archivo de imagen.",
-      });
+      // For videos, create an Object URL to avoid browser freezing
+      const objectUrl = URL.createObjectURL(file);
+      return { url: objectUrl, type: 'video' };
     }
   };
 
@@ -164,215 +95,245 @@ export function AdminDashboard({
       setter(null);
       if (file) {
         toast({
-          variant: "destructive",
-          title: "Archivo inválido",
-          description: "Por favor, selecciona un archivo de imagen.",
+          variant: 'destructive',
+          title: 'Archivo inválido',
+          description: 'Por favor, selecciona un archivo de imagen.',
         });
       }
     }
   };
 
+  const handleMediaFilePreview = (e: React.ChangeEvent<HTMLInputElement>, setter: React.Dispatch<React.SetStateAction<{ url: string; type: 'image' | 'video' } | null>>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      const fileType = file.type.startsWith('image/') ? 'image' : file.type.startsWith('video/') ? 'video' : null;
+      if (fileType) {
+        const url = URL.createObjectURL(file);
+        setter({ url, type: fileType });
+      } else {
+        setter(null);
+        toast({
+          variant: 'destructive',
+          title: 'Archivo inválido',
+          description: 'Por favor, selecciona un archivo de imagen o video.',
+        });
+      }
+    } else {
+      setter(null);
+    }
+  };
 
-  const handleHeroUpdate = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleHeroUpdate = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const formData = new FormData(e.currentTarget);
     const imageFile = formData.get('imageFile') as File;
     
-    const updateContent = (newImageUrl?: string) => {
-       setHeroContent({
-        title: formData.get('title') as string,
-        subtitle: formData.get('subtitle') as string,
-        imageUrl: newImageUrl || heroContent.imageUrl,
-      });
-      toast({ title: "Éxito", description: "Contenido de la sección inicial actualizado." });
-      setHeroImagePreview(null); // Reset preview
-      (e.target as HTMLFormElement).reset();
+    let newImageUrl = heroContent.imageUrl;
+    if (imageFile && imageFile.size > 0) {
+      try {
+        const { url } = await handleFileChange(imageFile);
+        newImageUrl = url;
+      } catch {
+        return; // Stop if image processing fails
+      }
     }
-
-    if(imageFile && imageFile.size > 0) {
-      handleImageChange(imageFile, (newUrl) => {
-        updateContent(newUrl);
-      });
-    } else {
-      updateContent();
-    }
+    
+    setHeroContent({
+      title: formData.get('title') as string,
+      subtitle: formData.get('subtitle') as string,
+      imageUrl: newImageUrl,
+    });
+    toast({ title: 'Éxito', description: 'Contenido de la sección inicial actualizado.' });
+    setHeroImagePreview(null);
+    (e.target as HTMLFormElement).reset();
   };
-
-  const handleAddService = (e: React.FormEvent<HTMLFormElement>) => {
+  
+  const handleAddService = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const form = e.currentTarget;
     const formData = new FormData(form);
     const imageFile = formData.get('imageFile') as File;
 
     if (!imageFile || imageFile.size === 0) {
-      toast({ variant: "destructive", title: "Error", description: "Debes seleccionar una imagen para el servicio." });
+      toast({ variant: 'destructive', title: 'Error', description: 'Debes seleccionar una imagen para el servicio.' });
       return;
     }
     
-    handleImageChange(imageFile, (newUrl) => {
+    try {
+      const { url } = await handleFileChange(imageFile);
       const newService: Service = {
         id: crypto.randomUUID(),
         title: formData.get('title') as string,
         description: formData.get('description') as string,
-        imageUrl: newUrl,
+        imageUrl: url,
       };
       setServices([...services, newService]);
       form.reset();
-      setServiceImagePreview(null); // Reset preview
-      toast({ title: "Éxito", description: "Nuevo servicio añadido." });
-    });
+      setServiceImagePreview(null);
+      toast({ title: 'Éxito', description: 'Nuevo servicio añadido.' });
+    } catch {
+      // Error is handled in handleFileChange
+    }
   };
   
   const handleDeleteService = (id: string) => {
     setServices(services.filter(s => s.id !== id));
-    toast({ title: "Éxito", description: "Servicio eliminado." });
+    toast({ title: 'Éxito', description: 'Servicio eliminado.' });
   };
   
-  const handleUpdateService = (id: string, updatedService: Omit<Service, 'id' | 'imageUrl'>, newImageFile?: File) => {
-    const update = (imageUrl: string) => {
-      setServices(services.map(s => s.id === id ? { ...s, ...updatedService, imageUrl } : s));
-      toast({ title: "Éxito", description: "Servicio actualizado." });
-    };
+  const handleUpdateService = async (id: string, updatedService: Omit<Service, 'id' | 'imageUrl'>, newImageFile?: File) => {
+    let imageUrl = services.find(s => s.id === id)?.imageUrl;
+    if (!imageUrl) return;
 
     if (newImageFile) {
-      handleImageChange(newImageFile, update);
-    } else {
-      const currentService = services.find(s => s.id === id);
-      if (currentService) {
-        update(currentService.imageUrl);
+      try {
+        const { url } = await handleFileChange(newImageFile);
+        imageUrl = url;
+      } catch {
+        return;
       }
     }
+    
+    setServices(services.map(s => s.id === id ? { ...s, ...updatedService, imageUrl: imageUrl! } : s));
+    toast({ title: 'Éxito', description: 'Servicio actualizado.' });
   };
-
-
-  const handleAddProduct = (e: React.FormEvent<HTMLFormElement>) => {
+  
+  const handleAddProduct = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const form = e.currentTarget;
     const formData = new FormData(form);
     const imageFile = formData.get('imageFile') as File;
     
-     if (!imageFile || imageFile.size === 0) {
-      toast({ variant: "destructive", title: "Error", description: "Debes seleccionar una imagen para el producto." });
+    if (!imageFile || imageFile.size === 0) {
+      toast({ variant: 'destructive', title: 'Error', description: 'Debes seleccionar una imagen para el producto.' });
       return;
     }
 
-    handleImageChange(imageFile, (newUrl) => {
+    try {
+      const { url } = await handleFileChange(imageFile);
       const newProduct: Product = {
         id: crypto.randomUUID(),
         name: formData.get('name') as string,
         description: formData.get('description') as string,
         stock: parseInt(formData.get('stock') as string, 10),
-        imageUrl: newUrl,
+        imageUrl: url,
         categoryId: formData.get('categoryId') as string,
       };
       setProducts([...products, newProduct]);
       form.reset();
       setProductImagePreview(null);
-      toast({ title: "Éxito", description: "Nuevo producto añadido." });
-    });
+      toast({ title: 'Éxito', description: 'Nuevo producto añadido.' });
+    } catch {
+      // Error is handled
+    }
   };
 
   const handleDeleteProduct = (id: string) => {
     setProducts(products.filter(p => p.id !== id));
-    toast({ title: "Éxito", description: "Producto eliminado." });
+    toast({ title: 'Éxito', description: 'Producto eliminado.' });
   };
 
-  const handleUpdateProduct = (id: string, updatedProduct: Omit<Product, 'id' | 'imageUrl'>, newImageFile?: File) => {
-    const update = (imageUrl: string) => {
-        setProducts(products.map(p => p.id === id ? { ...p, ...updatedProduct, imageUrl } : p));
-        toast({ title: "Éxito", description: "Producto actualizado." });
-    };
+  const handleUpdateProduct = async (id: string, updatedProduct: Omit<Product, 'id' | 'imageUrl'>, newImageFile?: File) => {
+    let imageUrl = products.find(p => p.id === id)?.imageUrl;
+    if (!imageUrl) return;
 
     if (newImageFile) {
-        handleImageChange(newImageFile, update);
-    } else {
-        const currentProduct = products.find(p => p.id === id);
-        if (currentProduct) {
-            update(currentProduct.imageUrl);
-        }
+      try {
+        const { url } = await handleFileChange(newImageFile);
+        imageUrl = url;
+      } catch {
+        return;
+      }
     }
+    setProducts(products.map(p => p.id === id ? { ...p, ...updatedProduct, imageUrl: imageUrl! } : p));
+    toast({ title: 'Éxito', description: 'Producto actualizado.' });
   };
 
-
-  const handleAddGalleryItem = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleAddGalleryItem = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const form = e.currentTarget;
     const formData = new FormData(form);
     const mediaFile = formData.get('mediaFile') as File;
     
     if (!mediaFile || mediaFile.size === 0) {
-      toast({ variant: "destructive", title: "Error", description: "Debes seleccionar una imagen o video para la galería." });
+      toast({ variant: 'destructive', title: 'Error', description: 'Debes seleccionar una imagen o video para la galería.' });
       return;
     }
     
-    handleFileChange(mediaFile, (newUrl, type) => {
+    try {
+      const { url, type } = await handleFileChange(mediaFile);
       const newGalleryItem: GalleryItem = {
         id: crypto.randomUUID(),
-        url: newUrl,
+        url: url,
         alt: formData.get('alt') as string,
         type: type,
       };
       setGalleryItems([...galleryItems, newGalleryItem]);
       form.reset();
       setGalleryMediaPreview(null);
-      toast({ title: "Éxito", description: "Nuevo elemento añadido a la galería." });
-    });
+      toast({ title: 'Éxito', description: 'Nuevo elemento añadido a la galería.' });
+    } catch {
+      // Error handled
+    }
   };
 
   const handleDeleteGalleryItem = (id: string) => {
     setGalleryItems(galleryItems.filter(g => g.id !== id));
-    toast({ title: "Éxito", description: "Elemento eliminado de la galería." });
+    toast({ title: 'Éxito', description: 'Elemento eliminado de la galería.' });
   };
-
-  const handleUpdateGalleryItem = (id: string, updatedItem: Omit<GalleryItem, 'id' | 'url' | 'type'>, newMediaFile?: File) => {
-      const update = (url: string, type: 'image' | 'video') => {
-          setGalleryItems(galleryItems.map(item => item.id === id ? { ...item, ...updatedItem, url, type } : item));
-          toast({ title: "Éxito", description: "Elemento de la galería actualizado." });
-      };
-
-      if (newMediaFile) {
-          handleFileChange(newMediaFile, update);
-      } else {
-          const currentItem = galleryItems.find(item => item.id === id);
-          if (currentItem) {
-              update(currentItem.url, currentItem.type);
-          }
-      }
-  };
-
   
+  const handleUpdateGalleryItem = async (id: string, updatedItem: Omit<GalleryItem, 'id' | 'url' | 'type'>, newMediaFile?: File) => {
+    const currentItem = galleryItems.find(item => item.id === id);
+    if (!currentItem) return;
+
+    let { url, type } = currentItem;
+
+    if (newMediaFile) {
+        try {
+            const result = await handleFileChange(newMediaFile);
+            url = result.url;
+            type = result.type;
+        } catch {
+            return;
+        }
+    }
+
+    setGalleryItems(galleryItems.map(item => item.id === id ? { ...item, ...updatedItem, url, type } : item));
+    toast({ title: 'Éxito', description: 'Elemento de la galería actualizado.' });
+  };
+
   const handleUpdateTestimonialStatus = (id: string, status: 'approved' | 'rejected') => {
     setTestimonials(testimonials.map(t => t.id === id ? { ...t, status } : t));
-    toast({ title: "Éxito", description: `Testimonio ${status === 'approved' ? 'aprobado' : 'rechazado'}.` });
+    toast({ title: 'Éxito', description: `Testimonio ${status === 'approved' ? 'aprobado' : 'rechazado'}.` });
   };
 
   const handleDeleteTestimonial = (id: string) => {
     setTestimonials(testimonials.filter(t => t.id !== id));
-    toast({ title: "Éxito", description: "Testimonio eliminado." });
+    toast({ title: 'Éxito', description: 'Testimonio eliminado.' });
   };
 
-  const handleAboutMeUpdate = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleAboutMeUpdate = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const formData = new FormData(e.currentTarget);
     const imageFile = formData.get('imageFile') as File;
 
-    const updateContent = (newImageUrl?: string) => {
-      setAboutMeContent({
-        text: formData.get('text') as string,
-        imageUrl: newImageUrl || aboutMeContent.imageUrl,
-      });
-      toast({ title: "Éxito", description: "La sección 'Sobre Mí' ha sido actualizada." });
-      setAboutMeImagePreview(null);
-      (e.target as HTMLFormElement).reset();
-    };
-    
+    let newImageUrl = aboutMeContent.imageUrl;
     if (imageFile && imageFile.size > 0) {
-      handleImageChange(imageFile, (newUrl) => {
-        updateContent(newUrl);
-      });
-    } else {
-      updateContent();
+        try {
+            const { url } = await handleFileChange(imageFile);
+            newImageUrl = url;
+        } catch {
+            return;
+        }
     }
+    
+    setAboutMeContent({
+        text: formData.get('text') as string,
+        imageUrl: newImageUrl,
+    });
+    toast({ title: 'Éxito', description: "La sección 'Sobre Mí' ha sido actualizada." });
+    setAboutMeImagePreview(null);
+    (e.target as HTMLFormElement).reset();
   };
 
   const handleAddOrUpdateUser = (e: React.FormEvent<HTMLFormElement>) => {
@@ -380,16 +341,14 @@ export function AdminDashboard({
     const formData = new FormData(e.currentTarget);
 
     if (isEditingUser && currentUserToEdit) {
-        // Update user logic
         const updatedUser: User = {
             ...currentUserToEdit,
             name: formData.get('name') as string,
             email: formData.get('email') as string,
         };
         setUsers(users.map(u => u.id === updatedUser.id ? updatedUser : u));
-        toast({ title: "Éxito", description: `Usuario ${updatedUser.name} actualizado.` });
+        toast({ title: 'Éxito', description: `Usuario ${updatedUser.name} actualizado.` });
     } else {
-        // Add new user logic
         const newUser: User = {
             id: crypto.randomUUID(),
             name: formData.get('name') as string,
@@ -398,7 +357,7 @@ export function AdminDashboard({
         };
         setUsers([...users, newUser]);
         toast({
-            title: "Éxito",
+            title: 'Éxito',
             description: `Usuario ${newUser.name} añadido con contraseña temporal 'temporal123'.`
         });
     }
@@ -416,21 +375,21 @@ export function AdminDashboard({
       setUsers(users.map(u => u.id === currentUserForPasswordChange.id ? { ...u, password: newPassword } : u));
       setOpenPasswordDialog(false);
       setCurrentUserForPasswordChange(null);
-      toast({ title: "Éxito", description: "Contraseña actualizada." });
+      toast({ title: 'Éxito', description: 'Contraseña actualizada.' });
     }
   };
 
   const handleDeleteUser = (id: string) => {
     if (id === loggedInUser.id) {
         toast({
-            variant: "destructive",
-            title: "Error",
-            description: "No puedes eliminar tu propia cuenta.",
+            variant: 'destructive',
+            title: 'Error',
+            description: 'No puedes eliminar tu propia cuenta.',
         });
         return;
     }
     setUsers(users.filter(u => u.id !== id));
-    toast({ title: "Éxito", description: "Usuario eliminado." });
+    toast({ title: 'Éxito', description: 'Usuario eliminado.' });
   };
   
   const handleAddOrUpdateCategory = (e: React.FormEvent<HTMLFormElement>) => {
@@ -440,11 +399,11 @@ export function AdminDashboard({
 
     if (isEditingCategory && currentCategoryToEdit) {
         setCategories(categories.map(c => c.id === currentCategoryToEdit.id ? { ...c, name } : c));
-        toast({ title: "Éxito", description: "Categoría actualizada." });
+        toast({ title: 'Éxito', description: 'Categoría actualizada.' });
     } else {
         const newCategory: Category = { id: crypto.randomUUID(), name };
         setCategories([...categories, newCategory]);
-        toast({ title: "Éxito", description: "Categoría añadida." });
+        toast({ title: 'Éxito', description: 'Categoría añadida.' });
     }
 
     setOpenCategoryDialog(false);
@@ -454,9 +413,8 @@ export function AdminDashboard({
 
   const handleDeleteCategory = (id: string) => {
       setCategories(categories.filter(c => c.id !== id));
-      toast({ title: "Éxito", description: "Categoría eliminada." });
+      toast({ title: 'Éxito', description: 'Categoría eliminada.' });
   };
-
 
   const testimonialsByStatus = (status: Testimonial['status']) => testimonials.filter(t => t.status === status);
 
@@ -820,14 +778,6 @@ export function AdminDashboard({
             <Card>
               <CardHeader><CardTitle className="font-headline">Gestionar Mis Trabajos</CardTitle></CardHeader>
               <CardContent className="space-y-6">
-                <Alert variant="default" className="bg-yellow-50 border-yellow-200 text-yellow-800 dark:bg-yellow-950 dark:border-yellow-800 dark:text-yellow-300">
-                  <AlertTriangle className="h-4 w-4 !text-yellow-600 dark:!text-yellow-400" />
-                  <AlertTitle>Aviso Importante</AlertTitle>
-                  <AlertDescription>
-                    Los videos subidos son temporales y solo serán visibles durante tu sesión actual. Para un almacenamiento permanente, considera integrar un servicio externo. Las imágenes sí se guardarán de forma permanente.
-                  </AlertDescription>
-                </Alert>
-
                 <form onSubmit={handleAddGalleryItem} className="bg-muted p-4 rounded-lg space-y-4">
                   <h3 className="font-semibold">Añadir Nuevo Elemento (Imagen o Video)</h3>
                    <div className="space-y-2">
