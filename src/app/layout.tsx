@@ -6,7 +6,7 @@ import './globals.css';
 import { Toaster } from "@/components/ui/toaster";
 import type { AboutMeContent, Category, GalleryItem, HeroContent, Product, Service, Testimonial, User } from '@/lib/types';
 import { initialAboutMeContent, initialCategories, initialGalleryItems, initialHeroContent, initialProducts, initialServices, initialTestimonials, initialUsers } from '@/lib/data';
-import { getAllItemsFromDB } from '@/lib/db';
+import { getAllItemsFromDB, saveItemToDB } from '@/lib/db';
 
 // 1. Define the shape of our global state
 interface AppState {
@@ -72,7 +72,7 @@ export default function RootLayout({
   const [heroContent, setHeroContent] = useState<HeroContent>(() => getInitialState('heroContent', initialHeroContent));
   const [services, setServices] = useState<Service[]>(() => getInitialState('services', initialServices));
   const [products, setProducts] = useState<Product[]>(() => getInitialState('products', initialProducts));
-  const [galleryItems, setGalleryItems] = useState<GalleryItem[]>(initialGalleryItems); // Remove localStorage for gallery
+  const [galleryItems, setGalleryItems] = useState<GalleryItem[]>([]); // Start with empty gallery
   const [testimonials, setTestimonials] = useState<Testimonial[]>(() => getInitialState('testimonials', initialTestimonials));
   const [aboutMeContent, setAboutMeContent] = useState<AboutMeContent>(() => getInitialState('aboutMeContent', initialAboutMeContent));
   const [users, setUsers] = useState<User[]>(() => getInitialState('users', initialUsers));
@@ -103,7 +103,8 @@ export default function RootLayout({
         localStorage.setItem('users', JSON.stringify(users));
         localStorage.setItem('categories', JSON.stringify(categories));
       }
-    } catch (error) {
+    } catch (error)
+      {
       console.error('Failed to save state to localStorage:', error);
     }
   }, [appState, isStateLoaded, heroContent, services, products, testimonials, aboutMeContent, users, categories]);
@@ -122,13 +123,17 @@ export default function RootLayout({
 
       // Load gallery items from IndexedDB
       try {
-        const dbItems = await getAllItemsFromDB();
-        // If DB is empty, populate it with initial data
+        let dbItems = await getAllItemsFromDB();
+        // If DB is empty, populate it with initial data and then reload
         if (dbItems.length === 0) {
-            setGalleryItems(initialGalleryItems);
-        } else {
-            setGalleryItems(dbItems);
+            for (const item of initialGalleryItems) {
+                // For initial data, we don't have a 'File' object, so we store it without one.
+                // The URL is already a web URL.
+                await saveItemToDB(item);
+            }
+            dbItems = await getAllItemsFromDB(); // Re-fetch after populating
         }
+        setGalleryItems(dbItems);
       } catch (error) {
         console.error('Failed to load gallery from IndexedDB, using initial data.', error);
         setGalleryItems(initialGalleryItems);
