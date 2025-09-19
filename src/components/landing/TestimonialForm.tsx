@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -9,21 +10,45 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Star } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { useAppContext } from '@/app/layout';
+import type { Testimonial } from '@/lib/types';
 
 export function TestimonialForm() {
   const [status, setStatus] = useState<'idle' | 'submitting' | 'success' | 'error'>('idle');
   const [rating, setRating] = useState(0);
   const [hover, setHover] = useState(0);
   const router = useRouter();
+  const { appState, setTestimonials } = useAppContext();
+
 
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     setStatus('submitting');
-    // Simulate API call
+    
+    const formData = new FormData(event.currentTarget);
+    const author = formData.get('author') as string;
+    const text = formData.get('text') as string;
+
+    if (!author || !text || rating === 0) {
+        setStatus('error');
+        // You might want to add a toast message here for better UX
+        return;
+    }
+
+    const newTestimonial: Testimonial = {
+        id: crypto.randomUUID(),
+        author,
+        text,
+        status: 'pending' // New testimonials are always pending
+        // rating is not part of the model, but you could add it to `lib/types.ts` if needed
+    };
+
+    setTestimonials(prevTestimonials => [...prevTestimonials, newTestimonial]);
+
+    // Simulate API call delay for UX
     setTimeout(() => {
-      // In a real app, you would add the new testimonial to your data source.
       setStatus('success');
-    }, 1000);
+    }, 500);
   };
 
   useEffect(() => {
@@ -89,7 +114,7 @@ export function TestimonialForm() {
               {status === 'submitting' ? 'Enviando...' : 'Enviar Opinión'}
             </Button>
             {status === 'error' && (
-              <p className="text-center text-red-500">Hubo un error al enviar la opinión. Por favor, inténtalo de nuevo.</p>
+              <p className="text-center text-red-500">Hubo un error al enviar la opinión. Por favor, completa todos los campos e inténtalo de nuevo.</p>
             )}
           </form>
         )}
