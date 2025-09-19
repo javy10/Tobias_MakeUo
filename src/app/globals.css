@@ -86,7 +86,7 @@ body {
   body {
     @apply bg-background text-foreground;
   }
-  .dark body {
+  .dark {
     background-color: hsl(210, 10%, 10%);
     background-image: radial-gradient(
       ellipse 80% 80% at 10% 10%,
