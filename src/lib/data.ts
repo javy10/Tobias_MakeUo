@@ -2,6 +2,14 @@ import type { HeroContent, Service, GalleryItem, Testimonial, Product, AboutMeCo
 import { PlaceHolderImages } from './placeholder-images';
 
 const heroImage = PlaceHolderImages.find(img => img.id === 'hero-background');
+const serviceImage1 = PlaceHolderImages.find(img => img.id === 'gallery-1');
+const serviceImage2 = PlaceHolderImages.find(img => img.id === 'gallery-2');
+const serviceImage3 = PlaceHolderImages.find(img => img.id === 'gallery-3');
+const productImage1 = PlaceHolderImages.find(img => img.id === 'gallery-4');
+const productImage2 = PlaceHolderImages.find(img => img.id === 'gallery-5');
+const productImage3 = PlaceHolderImages.find(img => img.id === 'gallery-6');
+const aboutMeImage = PlaceHolderImages.find(img => img.id === 'about-me');
+
 
 export const initialHeroContent: HeroContent = {
   title: "Belleza que Transforma",
@@ -14,19 +22,19 @@ export const initialServices: Service[] = [
     id: '1',
     title: "Maquillaje Social",
     description: "Ideal para eventos, fiestas y ocasiones especiales. Resaltamos tu belleza natural para que luzcas radiante.",
-    imageUrl: "https://picsum.photos/seed/service1/600/400"
+    imageUrl: serviceImage1?.imageUrl || "https://picsum.photos/seed/service1/600/400"
   },
   {
     id: '2',
     title: "Maquillaje de Novia",
     description: "Un servicio completo y personalizado para que en tu día más importante te sientas única y espectacular.",
-    imageUrl: "https://picsum.photos/seed/service2/600/400"
+    imageUrl: serviceImage2?.imageUrl || "https://picsum.photos/seed/service2/600/400"
   },
   {
     id: '3',
     title: "Clases de Automaquillaje",
     description: "Aprende a maquillarte como una profesional. Clases personalizadas para sacar el máximo partido a tus rasgos.",
-    imageUrl: "https://picsum.photos/seed/service3/600/400"
+    imageUrl: serviceImage3?.imageUrl || "https://picsum.photos/seed/service3/600/400"
   }
 ];
 
@@ -42,7 +50,7 @@ export const initialProducts: Product[] = [
     name: "Paleta de Sombras 'Ocaso'",
     description: "12 tonos cálidos y vibrantes para un look perfecto del día a la noche.",
     stock: 15,
-    imageUrl: "https://picsum.photos/seed/product1/400/400",
+    imageUrl: productImage1?.imageUrl || "https://picsum.photos/seed/product1/400/400",
     categoryId: '1',
   },
   {
@@ -50,7 +58,7 @@ export const initialProducts: Product[] = [
     name: "Base de Maquillaje 'Piel de Seda'",
     description: "Cobertura media y acabado natural para una piel impecable todo el día.",
     stock: 25,
-    imageUrl: "https://picsum.photos/seed/product2/400/400",
+    imageUrl: productImage2?.imageUrl || "https://picsum.photos/seed/product2/400/400",
     categoryId: '2',
   },
   {
@@ -58,7 +66,7 @@ export const initialProducts: Product[] = [
     name: "Labial Líquido Mate 'Rojo Pasión'",
     description: "Color intenso de larga duración que no reseca tus labios.",
     stock: 0,
-    imageUrl: "https://picsum.photos/seed/product3/400/400",
+    imageUrl: productImage3?.imageUrl || "https://picsum.photos/seed/product3/400/400",
     categoryId: '3',
   },
 ];
@@ -105,7 +113,7 @@ export const initialTestimonials: Testimonial[] = [
 
 export const initialAboutMeContent: AboutMeContent = {
   text: "¡Hola! Soy Tobias, un apasionado maquillador profesional con más de 5 años de experiencia en realzar la belleza única de cada persona. Mi objetivo es que te sientas segura y radiante en cualquier ocasión. Me especializo en maquillaje para novias, eventos sociales y clases personalizadas. ¡Espero conocerte pronto!",
-  imageUrl: "https://picsum.photos/seed/aboutme/600/600",
+  imageUrl: aboutMeImage?.imageUrl || "https://picsum.photos/seed/aboutme/600/600",
   happyClients: "500+",
   yearsOfExperience: "5+",
   events: "100+",
