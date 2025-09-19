@@ -148,6 +148,50 @@ export default function RootLayout({
 
     loadData();
   }, []);
+  
+  // Effect to listen for storage changes and update state in real-time
+  useEffect(() => {
+    const handleStorageChange = (event: StorageEvent) => {
+      if (!event.key || !event.newValue) return;
+      try {
+        const newValue = JSON.parse(event.newValue);
+        switch (event.key) {
+          case 'heroContent':
+            setHeroContent(newValue);
+            break;
+          case 'services':
+            setServices(newValue);
+            break;
+          case 'products':
+            setProducts(newValue);
+            break;
+          case 'testimonials':
+            setTestimonials(newValue);
+            break;
+          case 'aboutMeContent':
+            setAboutMeContent(newValue);
+            break;
+          case 'users':
+            setUsers(newValue);
+            break;
+          case 'categories':
+            setCategories(newValue);
+            break;
+          default:
+            break;
+        }
+      } catch (error) {
+        console.warn(`Error parsing storage change for key "${event.key}":`, error);
+      }
+    };
+    
+    window.addEventListener('storage', handleStorageChange);
+    
+    return () => {
+      window.removeEventListener('storage', handleStorageChange);
+    };
+  }, []);
+
 
   // 6. Assemble the state and setters into the context value
   const contextValue: AppContextType = {
