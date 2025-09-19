@@ -13,11 +13,10 @@ export function Contact() {
   const [message, setMessage] = useState('');
   const { toast } = useToast();
 
-
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     
-    if (!name || !message) {
+    if (!name.trim() || !message.trim()) {
       toast({
         variant: 'destructive',
         title: "Error",
@@ -25,11 +24,16 @@ export function Contact() {
       });
       return;
     }
+
+    const phoneNumber = "50379467621"; // Reemplaza con tu número de WhatsApp
+    const text = `Hola, soy ${name.trim()}. Mi mensaje es: ${message.trim()}`;
     
-    const whatsappMessage = encodeURIComponent(`Hola, soy ${name}. Mi mensaje es: ${message}`);
-    const whatsappUrl = `https://api.whatsapp.com/send?phone=50379467621&text=${whatsappMessage}`;
+    // Codificación robusta para compatibilidad
+    const encodedText = encodeURIComponent(text);
     
-    window.open(whatsappUrl, '_blank');
+    const whatsappUrl = `https://api.whatsapp.com/send?phone=${phoneNumber}&text=${encodedText}`;
+    
+    window.open(whatsappUrl, '_blank', 'noopener,noreferrer');
   };
 
   return (
@@ -43,11 +47,27 @@ export function Contact() {
           <form onSubmit={handleSubmit} className="space-y-6">
             <div className="space-y-2">
               <Label htmlFor="name">Nombre</Label>
-              <Input id="name" name="name" type="text" placeholder="Tu nombre completo" required value={name} onChange={(e) => setName(e.target.value)} />
+              <Input 
+                id="name" 
+                name="name" 
+                type="text" 
+                placeholder="Tu nombre completo" 
+                required 
+                value={name} 
+                onChange={(e) => setName(e.target.value)} 
+              />
             </div>
             <div className="space-y-2">
               <Label htmlFor="message">Mensaje</Label>
-              <Textarea id="message" name="message" placeholder="¿En qué podemos ayudarte?" required rows={5} value={message} onChange={(e) => setMessage(e.target.value)} />
+              <Textarea 
+                id="message" 
+                name="message" 
+                placeholder="¿En qué podemos ayudarte?" 
+                required 
+                rows={5} 
+                value={message} 
+                onChange={(e) => setMessage(e.target.value)} 
+              />
             </div>
             <Button type="submit" className="w-full rounded-full bg-primary text-primary-foreground hover:bg-primary/90 text-lg py-6">
               Enviar Mensaje por WhatsApp
