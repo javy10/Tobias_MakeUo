@@ -1,3 +1,4 @@
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -43,24 +44,24 @@ body {
     --sidebar-ring: 217.2 91.2% 59.8%;
   }
   .dark {
-    --background: 220 15% 15%;
+    --background: 210 10% 10%;
     --foreground: 0 0% 98%;
-    --card: 220 15% 18%;
+    --card: 210 10% 13%;
     --card-foreground: 0 0% 98%;
-    --popover: 220 15% 15%;
+    --popover: 210 10% 10%;
     --popover-foreground: 0 0% 98%;
     --primary: 165 75% 50%;
     --primary-foreground: 165 90% 10%;
-    --secondary: 220 15% 20%;
+    --secondary: 210 10% 15%;
     --secondary-foreground: 0 0% 98%;
-    --muted: 220 15% 20%;
+    --muted: 210 10% 15%;
     --muted-foreground: 0 0% 63.9%;
     --accent: 165 75% 50%;
     --accent-foreground: 165 90% 10%;
     --destructive: 0 62.8% 30.6%;
     --destructive-foreground: 0 0% 98%;
-    --border: 220 15% 25%;
-    --input: 220 15% 25%;
+    --border: 210 10% 20%;
+    --input: 210 10% 20%;
     --ring: 165 75% 55%;
     --chart-1: 220 70% 50%;
     --chart-2: 160 60% 45%;
@@ -86,11 +87,12 @@ body {
     @apply bg-background text-foreground;
   }
   .dark body {
-    background-color: hsl(220, 15%, 15%);
-    background-image: 
-      radial-gradient(circle at 100% 100%, transparent 20%, hsla(210, 10%, 30%, 0.5) 21%, hsla(210, 10%, 30%, 0.5) 34%, transparent 35%, transparent 69%, transparent 70%, hsla(210, 10%, 30%, 0.5) 71%, hsla(210, 10%, 30%, 0.5) 84%, transparent 85%), 
-      radial-gradient(circle at 0% 0%, transparent 20%, hsla(210, 10%, 30%, 0.5) 21%, hsla(210, 10%, 30%, 0.5) 34%, transparent 35%, transparent 69%, transparent 70%, hsla(210, 10%, 30%, 0.5) 71%, hsla(210, 10%, 30%, 0.5) 84%, transparent 85%);
-    background-size: 5rem 5rem;
+    background-color: hsl(210, 10%, 10%);
+    background-image: radial-gradient(
+      ellipse 80% 80% at 10% 10%,
+      hsla(165, 60%, 20%, 0.3),
+      transparent
+    );
     background-attachment: fixed;
     min-height: 100vh;
   }
