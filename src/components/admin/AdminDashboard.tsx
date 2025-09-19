@@ -83,11 +83,9 @@ export function AdminDashboard({
     if (file) {
       const fileType = file.type.startsWith('image/') ? 'image' : file.type.startsWith('video/') ? 'video' : null;
       if (fileType) {
-        const reader = new FileReader();
-        reader.onloadend = () => {
-          callback(reader.result as string, fileType);
-        };
-        reader.readAsDataURL(file);
+        // Use Object URL for efficiency, especially for large files like videos
+        const url = URL.createObjectURL(file);
+        callback(url, fileType);
       } else {
         toast({
           variant: "destructive",
@@ -103,11 +101,8 @@ export function AdminDashboard({
     if (file) {
       const fileType = file.type.startsWith('image/') ? 'image' : file.type.startsWith('video/') ? 'video' : null;
       if (fileType) {
-        const reader = new FileReader();
-        reader.onloadend = () => {
-          setter({ url: reader.result as string, type: fileType });
-        };
-        reader.readAsDataURL(file);
+         const url = URL.createObjectURL(file);
+        setter({ url: url, type: fileType });
       } else {
         setter(null);
         toast({
@@ -124,11 +119,8 @@ export function AdminDashboard({
 
   const handleImageChange = (file: File | null, callback: (url: string) => void) => {
     if (file && file.type.startsWith('image/')) {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        callback(reader.result as string);
-      };
-      reader.readAsDataURL(file);
+       const url = URL.createObjectURL(file);
+       callback(url);
     } else if (file) {
       toast({
         variant: "destructive",
@@ -141,11 +133,8 @@ export function AdminDashboard({
   const handleFilePreview = (e: React.ChangeEvent<HTMLInputElement>, setter: React.Dispatch<React.SetStateAction<string | null>>) => {
     const file = e.target.files?.[0];
     if (file && file.type.startsWith('image/')) {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setter(reader.result as string);
-      };
-      reader.readAsDataURL(file);
+      const url = URL.createObjectURL(file);
+      setter(url);
     } else {
       setter(null);
       if (file) {
@@ -983,11 +972,3 @@ export function AdminDashboard({
     </div>
   );
 }
-
-    
-
-    
-
-    
-
-    
