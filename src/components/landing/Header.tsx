@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState } from 'react';
@@ -9,13 +10,13 @@ import { Logo } from '@/components/shared/Logo';
 import { cn } from '@/lib/utils';
 
 const navLinks = [
-  { href: '#inicio', label: 'Inicio' },
-  { href: '#sobre-mi', label: 'Sobre Mí' },
-  { href: '#servicios', label: 'Servicios' },
-  { href: '#productos', label: 'Productos' },
-  { href: '#mis-trabajos', label: 'Mis Trabajos' },
-  { href: '#testimonios', label: 'Testimonios' },
-  { href: '#contacto', label: 'Contacto' },
+  { href: '/#inicio', label: 'Inicio' },
+  { href: '/#sobre-mi', label: 'Sobre Mí' },
+  { href: '/#servicios', label: 'Servicios' },
+  { href: '/#productos', label: 'Productos' },
+  { href: '/#mis-trabajos', label: 'Mis Trabajos' },
+  { href: '/#testimonios', label: 'Testimonios' },
+  { href: '/#contacto', label: 'Contacto' },
 ];
 
 export function Header() {
