@@ -123,20 +123,24 @@ export default function RootLayout({
 
       // Load gallery items from IndexedDB
       try {
-        let dbItems = await getAllItemsFromDB();
-        // If DB is empty, populate it with initial data and then reload
-        if (dbItems.length === 0) {
-            for (const item of initialGalleryItems) {
-                // For initial data, we don't have a 'File' object, so we store it without one.
-                // The URL is already a web URL.
-                await saveItemToDB(item);
-            }
-            dbItems = await getAllItemsFromDB(); // Re-fetch after populating
-        }
-        setGalleryItems(dbItems);
+          let dbItems = await getAllItemsFromDB();
+
+          // If DB has fewer items than initial data, it might be a fresh start
+          // or a partial user-driven state. We'll populate missing initial items.
+          if (dbItems.length < initialGalleryItems.length) {
+              const dbItemIds = new Set(dbItems.map(item => item.id));
+              const missingInitialItems = initialGalleryItems.filter(item => !dbItemIds.has(item.id));
+
+              for (const item of missingInitialItems) {
+                  await saveItemToDB(item);
+              }
+              // Re-fetch after potentially adding missing items
+              dbItems = await getAllItemsFromDB();
+          }
+          setGalleryItems(dbItems);
       } catch (error) {
-        console.error('Failed to load gallery from IndexedDB, using initial data.', error);
-        setGalleryItems(initialGalleryItems);
+          console.error('Failed to load gallery from IndexedDB, using initial data.', error);
+          setGalleryItems(initialGalleryItems);
       }
       
       setIsStateLoaded(true);
