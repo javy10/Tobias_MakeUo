@@ -10,7 +10,6 @@ import { useToast } from '@/hooks/use-toast';
 
 export function Contact() {
   const [name, setName] = useState('');
-  const [email, setEmail] = useState('');
   const [message, setMessage] = useState('');
   const { toast } = useToast();
 
@@ -18,7 +17,7 @@ export function Contact() {
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     
-    if (!name || !email || !message) {
+    if (!name || !message) {
       toast({
         variant: 'destructive',
         title: "Error",
@@ -45,10 +44,6 @@ export function Contact() {
             <div className="space-y-2">
               <Label htmlFor="name">Nombre</Label>
               <Input id="name" name="name" type="text" placeholder="Tu nombre completo" required value={name} onChange={(e) => setName(e.target.value)} />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="email">Email</Label>
-              <Input id="email" name="email" type="email" placeholder="tu@email.com" required value={email} onChange={(e) => setEmail(e.target.value)} />
             </div>
             <div className="space-y-2">
               <Label htmlFor="message">Mensaje</Label>
