@@ -87,12 +87,8 @@ body {
     @apply bg-background text-foreground;
   }
   .dark {
-    background-color: hsl(210, 10%, 10%);
-    background-image: radial-gradient(
-      ellipse 80% 80% at 10% 10%,
-      hsla(165, 60%, 20%, 0.3),
-      transparent
-    );
+    background-color: #0f1116;
+    background-image: linear-gradient(to bottom right, #0f1116 50%, #1c2c35 100%);
     background-attachment: fixed;
     min-height: 100vh;
   }
