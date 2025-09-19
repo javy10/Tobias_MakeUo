@@ -105,7 +105,10 @@ export const initialTestimonials: Testimonial[] = [
 
 export const initialAboutMeContent: AboutMeContent = {
   text: "¡Hola! Soy Tobias, un apasionado maquillador profesional con más de 5 años de experiencia en realzar la belleza única de cada persona. Mi objetivo es que te sientas segura y radiante en cualquier ocasión. Me especializo en maquillaje para novias, eventos sociales y clases personalizadas. ¡Espero conocerte pronto!",
-  imageUrl: "https://picsum.photos/seed/aboutme/600/600"
+  imageUrl: "https://picsum.photos/seed/aboutme/600/600",
+  happyClients: "500+",
+  yearsOfExperience: "5+",
+  events: "100+",
 };
 
 export const initialUsers: User[] = [

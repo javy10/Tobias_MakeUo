@@ -44,6 +44,9 @@ export interface Product {
 export interface AboutMeContent {
   text: string;
   imageUrl: string;
+  happyClients: string;
+  yearsOfExperience: string;
+  events: string;
 }
 
 export interface User {

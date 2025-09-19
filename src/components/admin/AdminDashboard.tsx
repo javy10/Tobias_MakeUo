@@ -340,6 +340,9 @@ export function AdminDashboard({
     setAboutMeContent({
         text: formData.get('text') as string,
         imageUrl: newImageUrl,
+        happyClients: formData.get('happyClients') as string,
+        yearsOfExperience: formData.get('yearsOfExperience') as string,
+        events: formData.get('events') as string,
     });
     toast({ title: 'Éxito', description: "La sección 'Sobre Mí' ha sido actualizada." });
     setAboutMeImagePreview(null);
@@ -650,6 +653,22 @@ export function AdminDashboard({
                     <Label htmlFor="about-text">Texto de Presentación</Label>
                     <Textarea id="about-text" name="text" defaultValue={aboutMeContent.text} rows={6} />
                   </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div>
+                        <Label htmlFor="happyClients">Clientes Felices</Label>
+                        <Input id="happyClients" name="happyClients" defaultValue={aboutMeContent.happyClients} />
+                    </div>
+                    <div>
+                        <Label htmlFor="yearsOfExperience">Años de Experiencia</Label>
+                        <Input id="yearsOfExperience" name="yearsOfExperience" defaultValue={aboutMeContent.yearsOfExperience} />
+                    </div>
+                    <div>
+                        <Label htmlFor="events">Eventos</Label>
+                        <Input id="events" name="events" defaultValue={aboutMeContent.events} />
+                    </div>
+                  </div>
+
                   <div>
                     <Label htmlFor="about-imageFile">Foto</Label>
                     <Input id="about-imageFile" name="imageFile" type="file" accept="image/*" onChange={(e) => handleFilePreview(e, setAboutMeImagePreview)} />
