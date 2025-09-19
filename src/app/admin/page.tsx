@@ -1,6 +1,6 @@
 
 'use client';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { AdminDashboard as AdminDashboardComponent } from '@/components/admin/AdminDashboard';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -26,17 +26,34 @@ export default function AdminPage() {
   } = useAppContext();
   
   const [authenticatedUser, setAuthenticatedUser] = useState<User | null>(null);
+  const [isLoadingSession, setIsLoadingSession] = useState(true);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const router = useRouter();
+
+  // Effect to check for a logged-in user in localStorage on component mount
+  useEffect(() => {
+    try {
+      const storedUser = localStorage.getItem('authenticatedUser');
+      if (storedUser) {
+        setAuthenticatedUser(JSON.parse(storedUser));
+      }
+    } catch (error) {
+      console.error("Failed to parse user from localStorage", error);
+      localStorage.removeItem('authenticatedUser');
+    }
+    setIsLoadingSession(false);
+  }, []);
 
   const handleLogin = (e: React.FormEvent) => {
     e.preventDefault();
     const user = appState.users.find(u => u.email === email && u.password === password);
 
     if (user) {
-      setAuthenticatedUser(user);
+      const userToStore = { id: user.id, name: user.name, email: user.email }; // Don't store password
+      localStorage.setItem('authenticatedUser', JSON.stringify(userToStore));
+      setAuthenticatedUser(userToStore);
       setError('');
     } else {
       setError('Correo electrónico o contraseña incorrectos.');
@@ -44,12 +61,13 @@ export default function AdminPage() {
   };
 
   const handleLogout = () => {
+    localStorage.removeItem('authenticatedUser');
     setAuthenticatedUser(null);
     router.push('/');
   };
   
-  if (!isStateLoaded) {
-    // You can return a loader here
+  if (isLoadingSession || !isStateLoaded) {
+    // Show a loader while checking session and loading app state
     return <div>Cargando...</div>;
   }
 

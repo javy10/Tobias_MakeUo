@@ -22,6 +22,9 @@ import { deleteItemFromDB, fileToStorable, saveItemToDB } from '@/lib/db';
 // Function to read a file as a Data URL (Base64) - ONLY FOR IMAGES
 const readImageAsDataURL = (file: File): Promise<string> => {
   return new Promise((resolve, reject) => {
+    if (!file.type.startsWith('image/')) {
+        return reject(new Error('File is not an image.'));
+    }
     const reader = new FileReader();
     reader.onload = () => resolve(reader.result as string);
     reader.onerror = reject;
@@ -593,7 +596,7 @@ export function AdminDashboard({
             <h1 className="text-4xl font-bold font-headline text-primary">Panel Administrativo</h1>
             <p className="text-muted-foreground">Bienvenido, {loggedInUser.name}</p>
           </div>
-          <Button onClick={onLogout} variant="outline" className="rounded-full">Salir</Button>
+          <Button onClick={onLogout} variant="outline" className="rounded-full">Cerrar Sesión</Button>
         </header>
 
         <Tabs defaultValue="hero">
@@ -962,5 +965,3 @@ export function AdminDashboard({
     </div>
   );
 }
-
-    
