@@ -833,7 +833,7 @@ export function AdminDashboard({
                           {item.type === 'image' ? <ImageIcon className="w-4 h-4" /> : <Video className="w-4 h-4" />}
                         </div>
                       {item.type === 'image' ? (
-                         <Image src={item.url} alt={item.alt} width={200} height={200} className="rounded-md object-cover w-full h-full" />
+                         <Image src={item.url} alt={item.alt} fill className="rounded-md object-cover w-full h-full" />
                       ) : (
                         <video src={item.url} className="rounded-md object-cover w-full h-full" loop muted playsInline />
                       )}
@@ -983,3 +983,11 @@ export function AdminDashboard({
     </div>
   );
 }
+
+    
+
+    
+
+    
+
+    
