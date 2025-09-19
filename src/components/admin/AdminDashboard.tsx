@@ -11,12 +11,13 @@ import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { useToast } from '@/hooks/use-toast';
 import { AIContentGenerator } from './AIContentGenerator';
-import { Trash2, Check, X, ThumbsUp, ThumbsDown, UserPlus, KeyRound, Pencil, Video, Image as ImageIcon } from 'lucide-react';
+import { Trash2, Check, X, ThumbsUp, ThumbsDown, UserPlus, KeyRound, Pencil, Video, Image as ImageIcon, AlertTriangle } from 'lucide-react';
 import Image from 'next/image';
 import { Badge } from '../ui/badge';
 import { cn } from '@/lib/utils';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '../ui/dialog';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select';
+import { Alert, AlertDescription, AlertTitle } from '../ui/alert';
 
 interface AdminDashboardProps {
   loggedInUser: User;
@@ -38,6 +39,17 @@ interface AdminDashboardProps {
   categories: Category[];
   setCategories: React.Dispatch<React.SetStateAction<Category[]>>;
 }
+
+// Function to read a file as a Data URL (Base64)
+const readFileAsDataURL = (file: File): Promise<string> => {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(reader.result as string);
+    reader.onerror = reject;
+    reader.readAsDataURL(file);
+  });
+};
+
 
 export function AdminDashboard({
   loggedInUser,
@@ -78,20 +90,29 @@ export function AdminDashboard({
   const [productImagePreview, setProductImagePreview] = useState<string | null>(null);
   const [galleryMediaPreview, setGalleryMediaPreview] = useState<{ url: string; type: 'image' | 'video' } | null>(null);
   const [aboutMeImagePreview, setAboutMeImagePreview] = useState<string | null>(null);
-
-  const handleFileChange = (file: File | null, callback: (url: string, type: 'image' | 'video') => void) => {
+  
+  const handleFileChange = async (file: File | null, callback: (url: string, type: 'image' | 'video') => void) => {
     if (file) {
       const fileType = file.type.startsWith('image/') ? 'image' : file.type.startsWith('video/') ? 'video' : null;
-      if (fileType) {
-        // Use Object URL for efficiency, especially for large files like videos
-        const url = URL.createObjectURL(file);
-        callback(url, fileType);
-      } else {
+      if (!fileType) {
         toast({
           variant: "destructive",
           title: "Archivo inválido",
           description: "Por favor, selecciona un archivo de imagen o video.",
         });
+        return;
+      }
+
+      if (fileType === 'image') {
+        try {
+          const dataUrl = await readFileAsDataURL(file);
+          callback(dataUrl, 'image');
+        } catch (error) {
+          toast({ variant: "destructive", title: "Error", description: "No se pudo cargar la imagen." });
+        }
+      } else { // It's a video
+        const objectUrl = URL.createObjectURL(file);
+        callback(objectUrl, 'video');
       }
     }
   };
@@ -117,10 +138,14 @@ export function AdminDashboard({
   };
 
 
-  const handleImageChange = (file: File | null, callback: (url: string) => void) => {
+  const handleImageChange = async (file: File | null, callback: (url: string) => void) => {
     if (file && file.type.startsWith('image/')) {
-       const url = URL.createObjectURL(file);
-       callback(url);
+       try {
+        const dataUrl = await readFileAsDataURL(file);
+        callback(dataUrl);
+      } catch (error) {
+        toast({ variant: "destructive", title: "Error", description: "No se pudo cargar la imagen." });
+      }
     } else if (file) {
       toast({
         variant: "destructive",
@@ -795,6 +820,14 @@ export function AdminDashboard({
             <Card>
               <CardHeader><CardTitle className="font-headline">Gestionar Mis Trabajos</CardTitle></CardHeader>
               <CardContent className="space-y-6">
+                <Alert variant="default" className="bg-yellow-50 border-yellow-200 text-yellow-800 dark:bg-yellow-950 dark:border-yellow-800 dark:text-yellow-300">
+                  <AlertTriangle className="h-4 w-4 !text-yellow-600 dark:!text-yellow-400" />
+                  <AlertTitle>Aviso Importante</AlertTitle>
+                  <AlertDescription>
+                    Los videos subidos son temporales y solo serán visibles durante tu sesión actual. Para un almacenamiento permanente, considera integrar un servicio externo. Las imágenes sí se guardarán de forma permanente.
+                  </AlertDescription>
+                </Alert>
+
                 <form onSubmit={handleAddGalleryItem} className="bg-muted p-4 rounded-lg space-y-4">
                   <h3 className="font-semibold">Añadir Nuevo Elemento (Imagen o Video)</h3>
                    <div className="space-y-2">
@@ -972,3 +1005,5 @@ export function AdminDashboard({
     </div>
   );
 }
+
+    
