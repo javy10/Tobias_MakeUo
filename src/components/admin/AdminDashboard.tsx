@@ -363,6 +363,14 @@ export function AdminDashboard({
   };
 
   const handleDeleteUser = (id: string) => {
+    if (id === loggedInUser.id) {
+        toast({
+            variant: "destructive",
+            title: "Error",
+            description: "No puedes eliminar tu propia cuenta.",
+        });
+        return;
+    }
     setUsers(users.filter(u => u.id !== id));
     toast({ title: "Éxito", description: "Usuario eliminado." });
   };
@@ -851,7 +859,13 @@ export function AdminDashboard({
                         <p className="text-sm text-muted-foreground">{user.email}</p>
                       </div>
                       <div className="flex items-center gap-2">
-                         <Button variant="outline" size="icon" onClick={() => { setIsEditingUser(true); setCurrentUserToEdit(user); setOpenUserDialog(true); }}>
+                         <Button 
+                           variant="outline" 
+                           size="icon" 
+                           onClick={() => { setIsEditingUser(true); setCurrentUserToEdit(user); setOpenUserDialog(true); }}
+                           disabled={user.id !== loggedInUser.id}
+                           title={user.id !== loggedInUser.id ? 'Solo puedes editar tu propio usuario' : 'Editar usuario'}
+                         >
                              <Pencil className="w-4 h-4" />
                          </Button>
                          <Dialog open={openPasswordDialog && currentUserForPasswordChange?.id === user.id} onOpenChange={(isOpen) => { if (!isOpen) setCurrentUserForPasswordChange(null); setOpenPasswordDialog(isOpen); }}>
@@ -878,7 +892,15 @@ export function AdminDashboard({
                             </form>
                           </DialogContent>
                         </Dialog>
-                        <Button variant="ghost" size="icon" onClick={() => handleDeleteUser(user.id)}><Trash2 className="w-4 h-4 text-destructive-foreground/50" /></Button>
+                        <Button 
+                          variant="ghost" 
+                          size="icon" 
+                          onClick={() => handleDeleteUser(user.id)}
+                          disabled={user.id === loggedInUser.id}
+                          title={user.id === loggedInUser.id ? 'No puedes eliminar tu propia cuenta' : 'Eliminar usuario'}
+                        >
+                          <Trash2 className="w-4 h-4 text-destructive-foreground/50" />
+                        </Button>
                       </div>
                     </div>
                   ))}
