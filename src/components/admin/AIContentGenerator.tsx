@@ -1,7 +1,8 @@
+
 'use client';
 
-import { useState } from 'react';
-import { useFormState, useFormStatus } from 'react-dom';
+import { useState, useActionState } from 'react';
+import { useFormStatus } from 'react-dom';
 import { generateIdeasAction } from '@/app/actions';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -28,7 +29,7 @@ function SubmitButton() {
 }
 
 export function AIContentGenerator() {
-  const [state, formAction] = useFormState(generateIdeasAction, initialState);
+  const [state, formAction] = useActionState(generateIdeasAction, initialState);
   const [key, setKey] = useState(0); // Add key to reset form state if needed
 
   const handleReset = () => {
