@@ -6,6 +6,7 @@ import './globals.css';
 import { Toaster } from "@/components/ui/toaster";
 import type { AboutMeContent, Category, GalleryItem, HeroContent, Product, Service, Testimonial, User } from '@/lib/types';
 import { initialAboutMeContent, initialCategories, initialGalleryItems, initialHeroContent, initialProducts, initialServices, initialTestimonials, initialUsers } from '@/lib/data';
+import { getAllItemsFromDB } from '@/lib/db';
 
 // 1. Define the shape of our global state
 interface AppState {
@@ -71,7 +72,7 @@ export default function RootLayout({
   const [heroContent, setHeroContent] = useState<HeroContent>(() => getInitialState('heroContent', initialHeroContent));
   const [services, setServices] = useState<Service[]>(() => getInitialState('services', initialServices));
   const [products, setProducts] = useState<Product[]>(() => getInitialState('products', initialProducts));
-  const [galleryItems, setGalleryItems] = useState<GalleryItem[]>(() => getInitialState('galleryItems', initialGalleryItems));
+  const [galleryItems, setGalleryItems] = useState<GalleryItem[]>(initialGalleryItems); // Remove localStorage for gallery
   const [testimonials, setTestimonials] = useState<Testimonial[]>(() => getInitialState('testimonials', initialTestimonials));
   const [aboutMeContent, setAboutMeContent] = useState<AboutMeContent>(() => getInitialState('aboutMeContent', initialAboutMeContent));
   const [users, setUsers] = useState<User[]>(() => getInitialState('users', initialUsers));
@@ -89,14 +90,14 @@ export default function RootLayout({
     categories,
   };
 
-  // Effect to save state to localStorage whenever it changes
+  // Effect to save state to localStorage whenever it changes (excluding gallery)
   useEffect(() => {
     try {
       if (isStateLoaded) {
         localStorage.setItem('heroContent', JSON.stringify(heroContent));
         localStorage.setItem('services', JSON.stringify(services));
         localStorage.setItem('products', JSON.stringify(products));
-        localStorage.setItem('galleryItems', JSON.stringify(galleryItems));
+        // Do not save galleryItems to localStorage
         localStorage.setItem('testimonials', JSON.stringify(testimonials));
         localStorage.setItem('aboutMeContent', JSON.stringify(aboutMeContent));
         localStorage.setItem('users', JSON.stringify(users));
@@ -105,11 +106,38 @@ export default function RootLayout({
     } catch (error) {
       console.error('Failed to save state to localStorage:', error);
     }
-  }, [appState, isStateLoaded, heroContent, services, products, galleryItems, testimonials, aboutMeContent, users, categories]);
+  }, [appState, isStateLoaded, heroContent, services, products, testimonials, aboutMeContent, users, categories]);
   
-  // Set state as loaded after initial render
+  // Effect to load data from localStorage and IndexedDB
   useEffect(() => {
-    setIsStateLoaded(true);
+    const loadData = async () => {
+      // Load non-gallery items from localStorage
+      setHeroContent(getInitialState('heroContent', initialHeroContent));
+      setServices(getInitialState('services', initialServices));
+      setProducts(getInitialState('products', initialProducts));
+      setTestimonials(getInitialState('testimonials', initialTestimonials));
+      setAboutMeContent(getInitialState('aboutMeContent', initialAboutMeContent));
+      setUsers(getInitialState('users', initialUsers));
+      setCategories(getInitialState('categories', initialCategories));
+
+      // Load gallery items from IndexedDB
+      try {
+        const dbItems = await getAllItemsFromDB();
+        // If DB is empty, populate it with initial data
+        if (dbItems.length === 0) {
+            setGalleryItems(initialGalleryItems);
+        } else {
+            setGalleryItems(dbItems);
+        }
+      } catch (error) {
+        console.error('Failed to load gallery from IndexedDB, using initial data.', error);
+        setGalleryItems(initialGalleryItems);
+      }
+      
+      setIsStateLoaded(true);
+    };
+
+    loadData();
   }, []);
 
   // 6. Assemble the state and setters into the context value

@@ -1,3 +1,4 @@
+
 export interface Category {
   id: string;
   name: string;
@@ -12,9 +13,10 @@ export interface Service {
 
 export interface GalleryItem {
   id: string;
-  url: string;
+  url: string; // This will be an Object URL for files from IndexedDB
   alt: string;
   type: 'image' | 'video';
+  file?: File; // The actual file, to be stored in IndexedDB
 }
 
 export interface Testimonial {

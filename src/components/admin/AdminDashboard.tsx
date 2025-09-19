@@ -17,9 +17,10 @@ import { Badge } from '../ui/badge';
 import { cn } from '@/lib/utils';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '../ui/dialog';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select';
+import { deleteItemFromDB, fileToStorable, saveItemToDB } from '@/lib/db';
 
-// Function to read a file as a Data URL (Base64)
-const readFileAsDataURL = (file: File): Promise<string> => {
+// Function to read a file as a Data URL (Base64) - ONLY FOR IMAGES
+const readImageAsDataURL = (file: File): Promise<string> => {
   return new Promise((resolve, reject) => {
     const reader = new FileReader();
     reader.onload = () => resolve(reader.result as string);
@@ -69,23 +70,6 @@ export function AdminDashboard({
   const [galleryMediaPreview, setGalleryMediaPreview] = useState<{ url: string; type: 'image' | 'video' } | null>(null);
   const [aboutMeImagePreview, setAboutMeImagePreview] = useState<string | null>(null);
 
-  const handleFileChange = async (file: File): Promise<{ url: string; type: 'image' | 'video' }> => {
-    const fileType = file.type.startsWith('image/') ? 'image' : 'video';
-    if (fileType === 'image') {
-      try {
-        const dataUrl = await readFileAsDataURL(file);
-        return { url: dataUrl, type: 'image' };
-      } catch (error) {
-        toast({ variant: 'destructive', title: 'Error', description: 'No se pudo cargar la imagen.' });
-        throw error;
-      }
-    } else {
-      // For videos, create an Object URL to avoid browser freezing
-      const objectUrl = URL.createObjectURL(file);
-      return { url: objectUrl, type: 'video' };
-    }
-  };
-
   const handleFilePreview = (e: React.ChangeEvent<HTMLInputElement>, setter: React.Dispatch<React.SetStateAction<string | null>>) => {
     const file = e.target.files?.[0];
     if (file && file.type.startsWith('image/')) {
@@ -131,10 +115,10 @@ export function AdminDashboard({
     let newImageUrl = heroContent.imageUrl;
     if (imageFile && imageFile.size > 0) {
       try {
-        const { url } = await handleFileChange(imageFile);
-        newImageUrl = url;
+        newImageUrl = await readImageAsDataURL(imageFile);
       } catch {
-        return; // Stop if image processing fails
+        toast({ variant: 'destructive', title: 'Error', description: 'No se pudo cargar la imagen.' });
+        return;
       }
     }
     
@@ -160,19 +144,19 @@ export function AdminDashboard({
     }
     
     try {
-      const { url } = await handleFileChange(imageFile);
+      const imageUrl = await readImageAsDataURL(imageFile);
       const newService: Service = {
         id: crypto.randomUUID(),
         title: formData.get('title') as string,
         description: formData.get('description') as string,
-        imageUrl: url,
+        imageUrl,
       };
       setServices([...services, newService]);
       form.reset();
       setServiceImagePreview(null);
       toast({ title: 'Éxito', description: 'Nuevo servicio añadido.' });
     } catch {
-      // Error is handled in handleFileChange
+      toast({ variant: 'destructive', title: 'Error', description: 'No se pudo cargar la imagen.' });
     }
   };
   
@@ -187,9 +171,9 @@ export function AdminDashboard({
 
     if (newImageFile) {
       try {
-        const { url } = await handleFileChange(newImageFile);
-        imageUrl = url;
+        imageUrl = await readImageAsDataURL(newImageFile);
       } catch {
+        toast({ variant: 'destructive', title: 'Error', description: 'No se pudo cargar la imagen.' });
         return;
       }
     }
@@ -210,13 +194,13 @@ export function AdminDashboard({
     }
 
     try {
-      const { url } = await handleFileChange(imageFile);
+      const imageUrl = await readImageAsDataURL(imageFile);
       const newProduct: Product = {
         id: crypto.randomUUID(),
         name: formData.get('name') as string,
         description: formData.get('description') as string,
         stock: parseInt(formData.get('stock') as string, 10),
-        imageUrl: url,
+        imageUrl: imageUrl,
         categoryId: formData.get('categoryId') as string,
       };
       setProducts([...products, newProduct]);
@@ -224,7 +208,7 @@ export function AdminDashboard({
       setProductImagePreview(null);
       toast({ title: 'Éxito', description: 'Nuevo producto añadido.' });
     } catch {
-      // Error is handled
+      toast({ variant: 'destructive', title: 'Error', description: 'No se pudo cargar la imagen.' });
     }
   };
 
@@ -239,9 +223,9 @@ export function AdminDashboard({
 
     if (newImageFile) {
       try {
-        const { url } = await handleFileChange(newImageFile);
-        imageUrl = url;
+        imageUrl = await readImageAsDataURL(newImageFile);
       } catch {
+        toast({ variant: 'destructive', title: 'Error', description: 'No se pudo cargar la imagen.' });
         return;
       }
     }
@@ -261,45 +245,68 @@ export function AdminDashboard({
     }
     
     try {
-      const { url, type } = await handleFileChange(mediaFile);
-      const newGalleryItem: GalleryItem = {
-        id: crypto.randomUUID(),
-        url: url,
-        alt: formData.get('alt') as string,
-        type: type,
-      };
-      setGalleryItems([...galleryItems, newGalleryItem]);
-      form.reset();
-      setGalleryMediaPreview(null);
-      toast({ title: 'Éxito', description: 'Nuevo elemento añadido a la galería.' });
-    } catch {
-      // Error handled
+        const { file, type } = await fileToStorable(mediaFile);
+        const newGalleryItem: GalleryItem = {
+            id: crypto.randomUUID(),
+            url: URL.createObjectURL(file), // Create a temporary URL for immediate display
+            alt: formData.get('alt') as string,
+            type: type,
+            file: file, // Include the file object for DB storage
+        };
+
+        await saveItemToDB(newGalleryItem); // Save to IndexedDB
+        setGalleryItems([...galleryItems, newGalleryItem]); // Update state
+
+        form.reset();
+        setGalleryMediaPreview(null);
+        toast({ title: 'Éxito', description: 'Nuevo elemento añadido a la galería.' });
+    } catch (error) {
+        console.error('Failed to add gallery item:', error);
+        toast({ variant: 'destructive', title: 'Error', description: 'No se pudo guardar el elemento en la galería.' });
     }
   };
 
-  const handleDeleteGalleryItem = (id: string) => {
-    setGalleryItems(galleryItems.filter(g => g.id !== id));
-    toast({ title: 'Éxito', description: 'Elemento eliminado de la galería.' });
+  const handleDeleteGalleryItem = async (id: string) => {
+    try {
+        await deleteItemFromDB(id);
+        setGalleryItems(galleryItems.filter(g => g.id !== id));
+        toast({ title: 'Éxito', description: 'Elemento eliminado de la galería.' });
+    } catch (error) {
+        console.error('Failed to delete gallery item:', error);
+        toast({ variant: 'destructive', title: 'Error', description: 'No se pudo eliminar el elemento de la galería.' });
+    }
   };
   
   const handleUpdateGalleryItem = async (id: string, updatedItem: Omit<GalleryItem, 'id' | 'url' | 'type'>, newMediaFile?: File) => {
     const currentItem = galleryItems.find(item => item.id === id);
     if (!currentItem) return;
 
-    let { url, type } = currentItem;
+    let updatedGalleryItem: GalleryItem = { ...currentItem, ...updatedItem };
 
     if (newMediaFile) {
         try {
-            const result = await handleFileChange(newMediaFile);
-            url = result.url;
-            type = result.type;
-        } catch {
+            const { file, type } = await fileToStorable(newMediaFile);
+            updatedGalleryItem = {
+                ...updatedGalleryItem,
+                url: URL.createObjectURL(file),
+                type,
+                file,
+            };
+        } catch (error) {
+            console.error('Failed to process new media file:', error);
+            toast({ variant: 'destructive', title: 'Error', description: 'No se pudo procesar el nuevo archivo.' });
             return;
         }
     }
-
-    setGalleryItems(galleryItems.map(item => item.id === id ? { ...item, ...updatedItem, url, type } : item));
-    toast({ title: 'Éxito', description: 'Elemento de la galería actualizado.' });
+    
+    try {
+        await saveItemToDB(updatedGalleryItem);
+        setGalleryItems(galleryItems.map(item => item.id === id ? updatedGalleryItem : item));
+        toast({ title: 'Éxito', description: 'Elemento de la galería actualizado.' });
+    } catch (error) {
+        console.error('Failed to update gallery item:', error);
+        toast({ variant: 'destructive', title: 'Error', description: 'No se pudo actualizar el elemento en la galería.' });
+    }
   };
 
   const handleUpdateTestimonialStatus = (id: string, status: 'approved' | 'rejected') => {
@@ -320,9 +327,9 @@ export function AdminDashboard({
     let newImageUrl = aboutMeContent.imageUrl;
     if (imageFile && imageFile.size > 0) {
         try {
-            const { url } = await handleFileChange(imageFile);
-            newImageUrl = url;
+            newImageUrl = await readImageAsDataURL(imageFile);
         } catch {
+            toast({ variant: 'destructive', title: 'Error', description: 'No se pudo cargar la imagen.' });
             return;
         }
     }
