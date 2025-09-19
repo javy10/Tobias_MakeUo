@@ -1,3 +1,8 @@
+export interface Category {
+  id: string;
+  name: string;
+}
+
 export interface Service {
   id: string;
   title: string;
@@ -30,6 +35,7 @@ export interface Product {
   description: string;
   stock: number;
   imageUrl: string;
+  categoryId: string;
 }
 
 export interface AboutMeContent {

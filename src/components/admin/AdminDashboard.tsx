@@ -2,7 +2,7 @@
 'use client';
 
 import { useState } from 'react';
-import type { HeroContent, Service, GalleryItem, Testimonial, Product, AboutMeContent, User } from '@/lib/types';
+import type { HeroContent, Service, GalleryItem, Testimonial, Product, AboutMeContent, User, Category } from '@/lib/types';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -11,11 +11,12 @@ import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { useToast } from '@/hooks/use-toast';
 import { AIContentGenerator } from './AIContentGenerator';
-import { Trash2, Check, X, ThumbsUp, ThumbsDown, UserPlus, KeyRound } from 'lucide-react';
+import { Trash2, Check, X, ThumbsUp, ThumbsDown, UserPlus, KeyRound, Pencil } from 'lucide-react';
 import Image from 'next/image';
 import { Badge } from '../ui/badge';
 import { cn } from '@/lib/utils';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '../ui/dialog';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select';
 
 interface AdminDashboardProps {
   loggedInUser: User;
@@ -34,6 +35,8 @@ interface AdminDashboardProps {
   setTestimonials: React.Dispatch<React.SetStateAction<Testimonial[]>>;
   aboutMeContent: AboutMeContent;
   setAboutMeContent: React.Dispatch<React.SetStateAction<AboutMeContent>>;
+  categories: Category[];
+  setCategories: React.Dispatch<React.SetStateAction<Category[]>>;
 }
 
 export function AdminDashboard({
@@ -52,11 +55,20 @@ export function AdminDashboard({
   testimonials,
   setTestimonials,
   aboutMeContent,
-  setAboutMeContent
+  setAboutMeContent,
+  categories,
+  setCategories
 }: AdminDashboardProps) {
   const [openUserDialog, setOpenUserDialog] = useState(false);
+  const [isEditingUser, setIsEditingUser] = useState(false);
+  const [currentUserToEdit, setCurrentUserToEdit] = useState<User | null>(null);
+
   const [openPasswordDialog, setOpenPasswordDialog] = useState(false);
   const [currentUserForPasswordChange, setCurrentUserForPasswordChange] = useState<User | null>(null);
+
+  const [isEditingCategory, setIsEditingCategory] = useState(false);
+  const [currentCategoryToEdit, setCurrentCategoryToEdit] = useState<Category | null>(null);
+  const [openCategoryDialog, setOpenCategoryDialog] = useState(false);
 
   const { toast } = useToast();
   
@@ -158,6 +170,23 @@ export function AdminDashboard({
     setServices(services.filter(s => s.id !== id));
     toast({ title: "Éxito", description: "Servicio eliminado." });
   };
+  
+  const handleUpdateService = (id: string, updatedService: Omit<Service, 'id' | 'imageUrl'>, newImageFile?: File) => {
+    const update = (imageUrl: string) => {
+      setServices(services.map(s => s.id === id ? { ...s, ...updatedService, imageUrl } : s));
+      toast({ title: "Éxito", description: "Servicio actualizado." });
+    };
+
+    if (newImageFile) {
+      handleImageChange(newImageFile, update);
+    } else {
+      const currentService = services.find(s => s.id === id);
+      if (currentService) {
+        update(currentService.imageUrl);
+      }
+    }
+  };
+
 
   const handleAddProduct = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -177,6 +206,7 @@ export function AdminDashboard({
         description: formData.get('description') as string,
         stock: parseInt(formData.get('stock') as string, 10),
         imageUrl: newUrl,
+        categoryId: formData.get('categoryId') as string,
       };
       setProducts([...products, newProduct]);
       form.reset();
@@ -189,6 +219,23 @@ export function AdminDashboard({
     setProducts(products.filter(p => p.id !== id));
     toast({ title: "Éxito", description: "Producto eliminado." });
   };
+
+  const handleUpdateProduct = (id: string, updatedProduct: Omit<Product, 'id' | 'imageUrl'>, newImageFile?: File) => {
+    const update = (imageUrl: string) => {
+        setProducts(products.map(p => p.id === id ? { ...p, ...updatedProduct, imageUrl } : p));
+        toast({ title: "Éxito", description: "Producto actualizado." });
+    };
+
+    if (newImageFile) {
+        handleImageChange(newImageFile, update);
+    } else {
+        const currentProduct = products.find(p => p.id === id);
+        if (currentProduct) {
+            update(currentProduct.imageUrl);
+        }
+    }
+  };
+
 
   const handleAddGalleryItem = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -218,6 +265,23 @@ export function AdminDashboard({
     setGalleryItems(galleryItems.filter(g => g.id !== id));
     toast({ title: "Éxito", description: "Imagen eliminada." });
   };
+
+  const handleUpdateGalleryItem = (id: string, updatedItem: Omit<GalleryItem, 'id' | 'url'>, newImageFile?: File) => {
+      const update = (url: string) => {
+          setGalleryItems(galleryItems.map(item => item.id === id ? { ...item, ...updatedItem, url } : item));
+          toast({ title: "Éxito", description: "Imagen de la galería actualizada." });
+      };
+
+      if (newImageFile) {
+          handleImageChange(newImageFile, update);
+      } else {
+          const currentItem = galleryItems.find(item => item.id === id);
+          if (currentItem) {
+              update(currentItem.url);
+          }
+      }
+  };
+
   
   const handleUpdateTestimonialStatus = (id: string, status: 'approved' | 'rejected') => {
     setTestimonials(testimonials.map(t => t.id === id ? { ...t, status } : t));
@@ -253,21 +317,37 @@ export function AdminDashboard({
     }
   };
 
-  const handleAddUser = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleAddOrUpdateUser = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const formData = new FormData(e.currentTarget);
-    const newUser: User = {
-      id: crypto.randomUUID(),
-      name: formData.get('name') as string,
-      email: formData.get('email') as string,
-      password: 'temporal123',
-    };
-    setUsers([...users, newUser]);
+
+    if (isEditingUser && currentUserToEdit) {
+        // Update user logic
+        const updatedUser: User = {
+            ...currentUserToEdit,
+            name: formData.get('name') as string,
+            email: formData.get('email') as string,
+        };
+        setUsers(users.map(u => u.id === updatedUser.id ? updatedUser : u));
+        toast({ title: "Éxito", description: `Usuario ${updatedUser.name} actualizado.` });
+    } else {
+        // Add new user logic
+        const newUser: User = {
+            id: crypto.randomUUID(),
+            name: formData.get('name') as string,
+            email: formData.get('email') as string,
+            password: 'temporal123',
+        };
+        setUsers([...users, newUser]);
+        toast({
+            title: "Éxito",
+            description: `Usuario ${newUser.name} añadido con contraseña temporal 'temporal123'.`
+        });
+    }
+
     setOpenUserDialog(false);
-    toast({ 
-      title: "Éxito", 
-      description: `Usuario ${newUser.name} añadido con contraseña temporal 'temporal123'.` 
-    });
+    setIsEditingUser(false);
+    setCurrentUserToEdit(null);
   };
 
   const handleChangePassword = (e: React.FormEvent<HTMLFormElement>) => {
@@ -286,6 +366,31 @@ export function AdminDashboard({
     setUsers(users.filter(u => u.id !== id));
     toast({ title: "Éxito", description: "Usuario eliminado." });
   };
+  
+  const handleAddOrUpdateCategory = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    const formData = new FormData(e.currentTarget);
+    const name = formData.get('name') as string;
+
+    if (isEditingCategory && currentCategoryToEdit) {
+        setCategories(categories.map(c => c.id === currentCategoryToEdit.id ? { ...c, name } : c));
+        toast({ title: "Éxito", description: "Categoría actualizada." });
+    } else {
+        const newCategory: Category = { id: crypto.randomUUID(), name };
+        setCategories([...categories, newCategory]);
+        toast({ title: "Éxito", description: "Categoría añadida." });
+    }
+
+    setOpenCategoryDialog(false);
+    setIsEditingCategory(false);
+    setCurrentCategoryToEdit(null);
+  };
+
+  const handleDeleteCategory = (id: string) => {
+      setCategories(categories.filter(c => c.id !== id));
+      toast({ title: "Éxito", description: "Categoría eliminada." });
+  };
+
 
   const testimonialsByStatus = (status: Testimonial['status']) => testimonials.filter(t => t.status === status);
 
@@ -323,6 +428,125 @@ export function AdminDashboard({
       </div>
     </div>
   );
+  
+  const EditServiceDialog = ({ service, onSave }: { service: Service; onSave: (id: string, data: Omit<Service, 'id' | 'imageUrl'>, file?: File) => void }) => {
+    const [open, setOpen] = useState(false);
+    const [preview, setPreview] = useState<string | null>(null);
+
+    const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+        e.preventDefault();
+        const formData = new FormData(e.currentTarget);
+        const updatedData = {
+            title: formData.get('title') as string,
+            description: formData.get('description') as string,
+        };
+        const imageFile = formData.get('imageFile') as File;
+        onSave(service.id, updatedData, imageFile && imageFile.size > 0 ? imageFile : undefined);
+        setOpen(false);
+    };
+
+    return (
+        <Dialog open={open} onOpenChange={setOpen}>
+            <DialogTrigger asChild>
+                <Button variant="outline" size="icon"><Pencil className="w-4 h-4" /></Button>
+            </DialogTrigger>
+            <DialogContent>
+                <DialogHeader><DialogTitle>Editar Servicio</DialogTitle></DialogHeader>
+                <form onSubmit={handleSubmit} className="space-y-4">
+                    <Input name="title" defaultValue={service.title} />
+                    <Textarea name="description" defaultValue={service.description} />
+                    <Input name="imageFile" type="file" accept="image/*" onChange={(e) => handleFilePreview(e, setPreview)} />
+                    {preview && <Image src={preview} alt="Preview" width={100} height={100} />}
+                    <DialogFooter>
+                        <Button type="submit">Guardar Cambios</Button>
+                    </DialogFooter>
+                </form>
+            </DialogContent>
+        </Dialog>
+    );
+  };
+
+  const EditProductDialog = ({ product, onSave }: { product: Product; onSave: (id: string, data: Omit<Product, 'id' | 'imageUrl'>, file?: File) => void }) => {
+    const [open, setOpen] = useState(false);
+    const [preview, setPreview] = useState<string | null>(null);
+
+    const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+        e.preventDefault();
+        const formData = new FormData(e.currentTarget);
+        const updatedData = {
+            name: formData.get('name') as string,
+            description: formData.get('description') as string,
+            stock: parseInt(formData.get('stock') as string, 10),
+            categoryId: formData.get('categoryId') as string,
+        };
+        const imageFile = formData.get('imageFile') as File;
+        onSave(product.id, updatedData, imageFile && imageFile.size > 0 ? imageFile : undefined);
+        setOpen(false);
+    };
+
+    return (
+        <Dialog open={open} onOpenChange={setOpen}>
+            <DialogTrigger asChild>
+                <Button variant="outline" size="icon"><Pencil className="w-4 h-4" /></Button>
+            </DialogTrigger>
+            <DialogContent>
+                <DialogHeader><DialogTitle>Editar Producto</DialogTitle></DialogHeader>
+                <form onSubmit={handleSubmit} className="space-y-4">
+                    <Input name="name" defaultValue={product.name} />
+                    <Textarea name="description" defaultValue={product.description} />
+                    <Input name="stock" type="number" defaultValue={product.stock} />
+                     <Select name="categoryId" defaultValue={product.categoryId}>
+                        <SelectTrigger><SelectValue placeholder="Selecciona una categoría" /></SelectTrigger>
+                        <SelectContent>
+                            {categories.map(cat => <SelectItem key={cat.id} value={cat.id}>{cat.name}</SelectItem>)}
+                        </SelectContent>
+                    </Select>
+                    <Input name="imageFile" type="file" accept="image/*" onChange={(e) => handleFilePreview(e, setPreview)} />
+                    {preview && <Image src={preview} alt="Preview" width={100} height={100} />}
+                    <DialogFooter>
+                        <Button type="submit">Guardar Cambios</Button>
+                    </DialogFooter>
+                </form>
+            </DialogContent>
+        </Dialog>
+    );
+  };
+
+  const EditGalleryItemDialog = ({ item, onSave }: { item: GalleryItem; onSave: (id: string, data: Omit<GalleryItem, 'id' | 'url'>, file?: File) => void }) => {
+    const [open, setOpen] = useState(false);
+    const [preview, setPreview] = useState<string | null>(null);
+
+    const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+        e.preventDefault();
+        const formData = new FormData(e.currentTarget);
+        const updatedData = {
+            alt: formData.get('alt') as string,
+        };
+        const imageFile = formData.get('imageFile') as File;
+        onSave(item.id, updatedData, imageFile && imageFile.size > 0 ? imageFile : undefined);
+        setOpen(false);
+    };
+
+    return (
+        <Dialog open={open} onOpenChange={setOpen}>
+            <DialogTrigger asChild>
+                 <Button variant="secondary" size="icon" className="absolute top-2 right-12 h-7 w-7 opacity-0 group-hover:opacity-100 transition-opacity"><Pencil className="w-4 h-4" /></Button>
+            </DialogTrigger>
+            <DialogContent>
+                <DialogHeader><DialogTitle>Editar Imagen de Galería</DialogTitle></DialogHeader>
+                <form onSubmit={handleSubmit} className="space-y-4">
+                    <Input name="alt" defaultValue={item.alt} />
+                    <Input name="imageFile" type="file" accept="image/*" onChange={(e) => handleFilePreview(e, setPreview)} />
+                    {preview && <Image src={preview} alt="Preview" width={100} height={100} />}
+                    <DialogFooter>
+                        <Button type="submit">Guardar Cambios</Button>
+                    </DialogFooter>
+                </form>
+            </DialogContent>
+        </Dialog>
+    );
+  };
+
 
   return (
     <div className="min-h-dvh bg-secondary p-4 md:p-8">
@@ -336,10 +560,11 @@ export function AdminDashboard({
         </header>
 
         <Tabs defaultValue="hero">
-          <TabsList className="grid w-full grid-cols-2 md:grid-cols-8 mb-6">
+          <TabsList className="grid w-full grid-cols-2 md:grid-cols-9 mb-6">
             <TabsTrigger value="hero">Sección Inicial</TabsTrigger>
             <TabsTrigger value="about">Sobre Mí</TabsTrigger>
             <TabsTrigger value="services">Servicios</TabsTrigger>
+            <TabsTrigger value="categories">Categorías</TabsTrigger>
             <TabsTrigger value="products">Productos</TabsTrigger>
             <TabsTrigger value="gallery">Mis Trabajos</TabsTrigger>
             <TabsTrigger value="testimonials">Testimonios</TabsTrigger>
@@ -430,13 +655,46 @@ export function AdminDashboard({
                           <p className="text-sm text-muted-foreground">{service.description}</p>
                         </div>
                       </div>
-                      <Button variant="ghost" size="icon" onClick={() => handleDeleteService(service.id)}><Trash2 className="w-4 h-4 text-destructive-foreground/50" /></Button>
+                       <div className="flex items-center gap-2">
+                          <EditServiceDialog service={service} onSave={handleUpdateService} />
+                          <Button variant="ghost" size="icon" onClick={() => handleDeleteService(service.id)}><Trash2 className="w-4 h-4 text-destructive-foreground/50" /></Button>
+                      </div>
                     </div>
                   ))}
                 </div>
               </CardContent>
             </Card>
           </TabsContent>
+          
+          <TabsContent value="categories">
+              <Card>
+                  <CardHeader>
+                      <CardTitle className="font-headline">Gestionar Categorías de Productos</CardTitle>
+                      <Button onClick={() => { setIsEditingCategory(false); setCurrentCategoryToEdit(null); setOpenCategoryDialog(true); }}>Añadir Categoría</Button>
+                  </CardHeader>
+                  <CardContent className="space-y-2">
+                      {categories.map(category => (
+                          <div key={category.id} className="flex justify-between items-center p-2 bg-background rounded">
+                              <p className="font-bold">{category.name}</p>
+                              <div className="flex items-center gap-2">
+                                  <Button variant="outline" size="icon" onClick={() => { setIsEditingCategory(true); setCurrentCategoryToEdit(category); setOpenCategoryDialog(true); }}><Pencil className="w-4 h-4" /></Button>
+                                  <Button variant="ghost" size="icon" onClick={() => handleDeleteCategory(category.id)}><Trash2 className="w-4 h-4 text-destructive-foreground/50" /></Button>
+                              </div>
+                          </div>
+                      ))}
+                  </CardContent>
+                  <Dialog open={openCategoryDialog} onOpenChange={setOpenCategoryDialog}>
+                      <DialogContent>
+                          <DialogHeader><DialogTitle>{isEditingCategory ? 'Editar' : 'Añadir'} Categoría</DialogTitle></DialogHeader>
+                          <form onSubmit={handleAddOrUpdateCategory} className="space-y-4">
+                              <Input name="name" placeholder="Nombre de la categoría" defaultValue={currentCategoryToEdit?.name || ''} required />
+                              <DialogFooter><Button type="submit">Guardar</Button></DialogFooter>
+                          </form>
+                      </DialogContent>
+                  </Dialog>
+              </Card>
+          </TabsContent>
+
 
            <TabsContent value="products">
             <Card>
@@ -447,6 +705,12 @@ export function AdminDashboard({
                   <Input name="name" placeholder="Nombre del producto" required />
                   <Textarea name="description" placeholder="Descripción del producto" required />
                   <Input name="stock" type="number" placeholder="Stock disponible (ej: 25)" required />
+                  <Select name="categoryId" required>
+                    <SelectTrigger><SelectValue placeholder="Selecciona una categoría" /></SelectTrigger>
+                    <SelectContent>
+                      {categories.map(cat => <SelectItem key={cat.id} value={cat.id}>{cat.name}</SelectItem>)}
+                    </SelectContent>
+                  </Select>
                   <div className="space-y-2">
                     <Label htmlFor="product-imageFile">Imagen del producto</Label>
                     <Input id="product-imageFile" name="imageFile" type="file" accept="image/*" required onChange={(e) => handleFilePreview(e, setProductImagePreview)} />
@@ -465,10 +729,14 @@ export function AdminDashboard({
                         <Image src={product.imageUrl} alt={product.name} width={64} height={64} className="rounded object-cover aspect-square"/>
                         <div>
                           <p className="font-bold">{product.name} - Stock: {product.stock}</p>
+                           <p className="text-sm text-muted-foreground">Categoría: {categories.find(c => c.id === product.categoryId)?.name || 'Sin categoría'}</p>
                           <p className="text-sm text-muted-foreground">{product.description}</p>
                         </div>
                       </div>
-                      <Button variant="ghost" size="icon" onClick={() => handleDeleteProduct(product.id)}><Trash2 className="w-4 h-4 text-destructive-foreground/50" /></Button>
+                      <div className="flex items-center gap-2">
+                        <EditProductDialog product={product} onSave={handleUpdateProduct} />
+                        <Button variant="ghost" size="icon" onClick={() => handleDeleteProduct(product.id)}><Trash2 className="w-4 h-4 text-destructive-foreground/50" /></Button>
+                      </div>
                     </div>
                   ))}
                 </div>
@@ -498,7 +766,8 @@ export function AdminDashboard({
                   {galleryItems.map(item => (
                     <div key={item.id} className="relative group">
                       <Image src={item.url} alt={item.alt} width={200} height={200} className="rounded-md object-cover aspect-square" />
-                       <Button variant="destructive" size="icon" className="absolute top-2 right-2 h-7 w-7 opacity-0 group-hover:opacity-100 transition-opacity" onClick={() => handleDeleteGalleryItem(item.id)}><Trash2 className="w-4 h-4" /></Button>
+                      <EditGalleryItemDialog item={item} onSave={handleUpdateGalleryItem} />
+                      <Button variant="destructive" size="icon" className="absolute top-2 right-2 h-7 w-7 opacity-0 group-hover:opacity-100 transition-opacity" onClick={() => handleDeleteGalleryItem(item.id)}><Trash2 className="w-4 h-4" /></Button>
                     </div>
                   ))}
                 </div>
@@ -546,30 +815,30 @@ export function AdminDashboard({
                   <CardTitle className="font-headline">Gestionar Usuarios</CardTitle>
                   <CardDescription>Añade, elimina y gestiona los usuarios del panel.</CardDescription>
                 </div>
-                <Dialog open={openUserDialog} onOpenChange={setOpenUserDialog}>
+                 <Dialog open={openUserDialog} onOpenChange={setOpenUserDialog}>
                   <DialogTrigger asChild>
-                    <Button className="rounded-full"><UserPlus className="mr-2 h-4 w-4" />Añadir Usuario</Button>
+                    <Button className="rounded-full" onClick={() => { setIsEditingUser(false); setCurrentUserToEdit(null); }}><UserPlus className="mr-2 h-4 w-4" />Añadir Usuario</Button>
                   </DialogTrigger>
                   <DialogContent>
-                    <DialogHeader>
-                      <DialogTitle>Añadir Nuevo Usuario</DialogTitle>
-                      <DialogDescription>
-                        Se creará un nuevo usuario con una contraseña temporal.
-                      </DialogDescription>
-                    </DialogHeader>
-                    <form onSubmit={handleAddUser} className="space-y-4">
-                      <div className="space-y-2">
-                        <Label htmlFor="new-user-name">Nombre</Label>
-                        <Input id="new-user-name" name="name" required />
-                      </div>
-                      <div className="space-y-2">
-                        <Label htmlFor="new-user-email">Email</Label>
-                        <Input id="new-user-email" name="email" type="email" required />
-                      </div>
-                      <DialogFooter>
-                        <Button type="submit">Crear Usuario</Button>
-                      </DialogFooter>
-                    </form>
+                      <DialogHeader>
+                          <DialogTitle>{isEditingUser ? 'Editar Usuario' : 'Añadir Nuevo Usuario'}</DialogTitle>
+                          <DialogDescription>
+                              {isEditingUser ? 'Modifica los datos del usuario.' : 'Se creará un nuevo usuario con una contraseña temporal.'}
+                          </DialogDescription>
+                      </DialogHeader>
+                      <form onSubmit={handleAddOrUpdateUser} className="space-y-4">
+                          <div className="space-y-2">
+                              <Label htmlFor="user-name">Nombre</Label>
+                              <Input id="user-name" name="name" required defaultValue={currentUserToEdit?.name || ''} />
+                          </div>
+                          <div className="space-y-2">
+                              <Label htmlFor="user-email">Email</Label>
+                              <Input id="user-email" name="email" type="email" required defaultValue={currentUserToEdit?.email || ''} />
+                          </div>
+                          <DialogFooter>
+                              <Button type="submit">{isEditingUser ? 'Guardar Cambios' : 'Crear Usuario'}</Button>
+                          </DialogFooter>
+                      </form>
                   </DialogContent>
                 </Dialog>
               </CardHeader>
@@ -582,12 +851,14 @@ export function AdminDashboard({
                         <p className="text-sm text-muted-foreground">{user.email}</p>
                       </div>
                       <div className="flex items-center gap-2">
+                         <Button variant="outline" size="icon" onClick={() => { setIsEditingUser(true); setCurrentUserToEdit(user); setOpenUserDialog(true); }}>
+                             <Pencil className="w-4 h-4" />
+                         </Button>
                          <Dialog open={openPasswordDialog && currentUserForPasswordChange?.id === user.id} onOpenChange={(isOpen) => { if (!isOpen) setCurrentUserForPasswordChange(null); setOpenPasswordDialog(isOpen); }}>
                           <DialogTrigger asChild>
                             <Button 
                               variant="outline" 
                               size="icon"
-                              disabled={loggedInUser.id !== user.id}
                               onClick={() => { setCurrentUserForPasswordChange(user); setOpenPasswordDialog(true); }}>
                               <KeyRound className="w-4 h-4" />
                             </Button>
@@ -624,5 +895,3 @@ export function AdminDashboard({
     </div>
   );
 }
-
-    

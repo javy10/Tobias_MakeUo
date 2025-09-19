@@ -27,7 +27,7 @@ export default function Home() {
         <Hero content={appState.heroContent} />
         <Services services={appState.services} />
         <AboutMe content={appState.aboutMeContent} />
-        <Products products={appState.products} />
+        <Products products={appState.products} categories={appState.categories} />
         <Gallery galleryItems={appState.galleryItems} />
         <Testimonials testimonials={appState.testimonials} />
         <Contact />

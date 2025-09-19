@@ -4,8 +4,8 @@
 import { useState, createContext, useContext, useEffect } from 'react';
 import './globals.css';
 import { Toaster } from "@/components/ui/toaster";
-import type { AboutMeContent, GalleryItem, HeroContent, Product, Service, Testimonial, User } from '@/lib/types';
-import { initialAboutMeContent, initialGalleryItems, initialHeroContent, initialProducts, initialServices, initialTestimonials, initialUsers } from '@/lib/data';
+import type { AboutMeContent, Category, GalleryItem, HeroContent, Product, Service, Testimonial, User } from '@/lib/types';
+import { initialAboutMeContent, initialCategories, initialGalleryItems, initialHeroContent, initialProducts, initialServices, initialTestimonials, initialUsers } from '@/lib/data';
 
 // 1. Define the shape of our global state
 interface AppState {
@@ -16,6 +16,7 @@ interface AppState {
   testimonials: Testimonial[];
   aboutMeContent: AboutMeContent;
   users: User[];
+  categories: Category[];
 }
 
 // 2. Define the shape of our context, including setters
@@ -28,6 +29,7 @@ interface AppContextType {
   setTestimonials: React.Dispatch<React.SetStateAction<Testimonial[]>>;
   setAboutMeContent: React.Dispatch<React.SetStateAction<AboutMeContent>>;
   setUsers: React.Dispatch<React.SetStateAction<User[]>>;
+  setCategories: React.Dispatch<React.SetStateAction<Category[]>>;
   isStateLoaded: boolean;
 }
 
@@ -73,6 +75,8 @@ export default function RootLayout({
   const [testimonials, setTestimonials] = useState<Testimonial[]>(() => getInitialState('testimonials', initialTestimonials));
   const [aboutMeContent, setAboutMeContent] = useState<AboutMeContent>(() => getInitialState('aboutMeContent', initialAboutMeContent));
   const [users, setUsers] = useState<User[]>(() => getInitialState('users', initialUsers));
+  const [categories, setCategories] = useState<Category[]>(() => getInitialState('categories', initialCategories));
+
 
   const appState: AppState = {
     heroContent,
@@ -82,6 +86,7 @@ export default function RootLayout({
     testimonials,
     aboutMeContent,
     users,
+    categories,
   };
 
   // Effect to save state to localStorage whenever it changes
@@ -95,11 +100,12 @@ export default function RootLayout({
         localStorage.setItem('testimonials', JSON.stringify(testimonials));
         localStorage.setItem('aboutMeContent', JSON.stringify(aboutMeContent));
         localStorage.setItem('users', JSON.stringify(users));
+        localStorage.setItem('categories', JSON.stringify(categories));
       }
     } catch (error) {
       console.error('Failed to save state to localStorage:', error);
     }
-  }, [appState, isStateLoaded, heroContent, services, products, galleryItems, testimonials, aboutMeContent, users]);
+  }, [appState, isStateLoaded, heroContent, services, products, galleryItems, testimonials, aboutMeContent, users, categories]);
   
   // Set state as loaded after initial render
   useEffect(() => {
@@ -116,6 +122,7 @@ export default function RootLayout({
     setTestimonials,
     setAboutMeContent,
     setUsers,
+    setCategories,
     isStateLoaded,
   };
 

@@ -21,6 +21,7 @@ export default function AdminPage() {
     setTestimonials,
     setAboutMeContent,
     setUsers,
+    setCategories,
     isStateLoaded
   } = useAppContext();
   
@@ -113,6 +114,8 @@ export default function AdminPage() {
       setTestimonials={setTestimonials}
       aboutMeContent={appState.aboutMeContent}
       setAboutMeContent={setAboutMeContent}
+      categories={appState.categories}
+      setCategories={setCategories}
     />
   );
 }

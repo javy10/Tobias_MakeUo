@@ -1,4 +1,4 @@
-import type { HeroContent, Service, GalleryItem, Testimonial, Product, AboutMeContent, User } from './types';
+import type { HeroContent, Service, GalleryItem, Testimonial, Product, AboutMeContent, User, Category } from './types';
 import { PlaceHolderImages } from './placeholder-images';
 
 const heroImage = PlaceHolderImages.find(img => img.id === 'hero-background');
@@ -30,27 +30,36 @@ export const initialServices: Service[] = [
   }
 ];
 
+export const initialCategories: Category[] = [
+  { id: '1', name: 'Paletas de Sombras' },
+  { id: '2', name: 'Bases' },
+  { id: '3', name: 'Labiales' },
+];
+
 export const initialProducts: Product[] = [
   {
     id: '1',
     name: "Paleta de Sombras 'Ocaso'",
     description: "12 tonos cálidos y vibrantes para un look perfecto del día a la noche.",
     stock: 15,
-    imageUrl: "https://picsum.photos/seed/product1/400/400"
+    imageUrl: "https://picsum.photos/seed/product1/400/400",
+    categoryId: '1',
   },
   {
     id: '2',
     name: "Base de Maquillaje 'Piel de Seda'",
     description: "Cobertura media y acabado natural para una piel impecable todo el día.",
     stock: 25,
-    imageUrl: "https://picsum.photos/seed/product2/400/400"
+    imageUrl: "https://picsum.photos/seed/product2/400/400",
+    categoryId: '2',
   },
   {
     id: '3',
     name: "Labial Líquido Mate 'Rojo Pasión'",
     description: "Color intenso de larga duración que no reseca tus labios.",
     stock: 0,
-    imageUrl: "https://picsum.photos/seed/product3/400/400"
+    imageUrl: "https://picsum.photos/seed/product3/400/400",
+    categoryId: '3',
   },
 ];
 
