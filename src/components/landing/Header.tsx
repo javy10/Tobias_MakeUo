@@ -10,8 +10,8 @@ import { cn } from '@/lib/utils';
 
 const navLinks = [
   { href: '#inicio', label: 'Inicio' },
-  { href: '#servicios', label: 'Servicios' },
   { href: '#sobre-mi', label: 'Sobre Mí' },
+  { href: '#servicios', label: 'Servicios' },
   { href: '#productos', label: 'Productos' },
   { href: '#mis-trabajos', label: 'Mis Trabajos' },
   { href: '#testimonios', label: 'Testimonios' },
@@ -31,9 +31,6 @@ export function Header() {
               {link.label}
             </a>
           ))}
-          <Button asChild variant="outline" size="sm" className="rounded-full border-primary text-primary hover:bg-primary hover:text-primary-foreground">
-            <Link href="/admin">Administración</Link>
-          </Button>
         </div>
         <div className="md:hidden">
           <Sheet open={isMenuOpen} onOpenChange={setIsMenuOpen}>
@@ -56,9 +53,6 @@ export function Header() {
                     {link.label}
                   </a>
                 ))}
-                <Button asChild variant="outline" className="rounded-full border-primary text-primary hover:bg-primary hover:text-primary-foreground text-lg px-8 py-6 mt-4">
-                  <Link href="/admin" onClick={() => setIsMenuOpen(false)}>Administración</Link>
-                </Button>
               </div>
             </SheetContent>
           </Sheet>

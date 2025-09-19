@@ -11,7 +11,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { useToast } from '@/hooks/use-toast';
 import { AIContentGenerator } from './AIContentGenerator';
-import { Trash2, Check, X, ThumbsUp, ThumbsDown, UserPlus, KeyRound, Pencil } from 'lucide-react';
+import { Trash2, Check, X, ThumbsUp, ThumbsDown, UserPlus, KeyRound, Pencil, Video, Image as ImageIcon } from 'lucide-react';
 import Image from 'next/image';
 import { Badge } from '../ui/badge';
 import { cn } from '@/lib/utils';
@@ -76,8 +76,51 @@ export function AdminDashboard({
   const [heroImagePreview, setHeroImagePreview] = useState<string | null>(null);
   const [serviceImagePreview, setServiceImagePreview] = useState<string | null>(null);
   const [productImagePreview, setProductImagePreview] = useState<string | null>(null);
-  const [galleryImagePreview, setGalleryImagePreview] = useState<string | null>(null);
+  const [galleryMediaPreview, setGalleryMediaPreview] = useState<{ url: string; type: 'image' | 'video' } | null>(null);
   const [aboutMeImagePreview, setAboutMeImagePreview] = useState<string | null>(null);
+
+  const handleFileChange = (file: File | null, callback: (url: string, type: 'image' | 'video') => void) => {
+    if (file) {
+      const fileType = file.type.startsWith('image/') ? 'image' : file.type.startsWith('video/') ? 'video' : null;
+      if (fileType) {
+        const reader = new FileReader();
+        reader.onloadend = () => {
+          callback(reader.result as string, fileType);
+        };
+        reader.readAsDataURL(file);
+      } else {
+        toast({
+          variant: "destructive",
+          title: "Archivo inválido",
+          description: "Por favor, selecciona un archivo de imagen o video.",
+        });
+      }
+    }
+  };
+  
+  const handleMediaFilePreview = (e: React.ChangeEvent<HTMLInputElement>, setter: React.Dispatch<React.SetStateAction<{ url: string; type: 'image' | 'video' } | null>>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      const fileType = file.type.startsWith('image/') ? 'image' : file.type.startsWith('video/') ? 'video' : null;
+      if (fileType) {
+        const reader = new FileReader();
+        reader.onloadend = () => {
+          setter({ url: reader.result as string, type: fileType });
+        };
+        reader.readAsDataURL(file);
+      } else {
+        setter(null);
+        toast({
+          variant: "destructive",
+          title: "Archivo inválido",
+          description: "Por favor, selecciona un archivo de imagen o video.",
+        });
+      }
+    } else {
+      setter(null);
+    }
+  };
+
 
   const handleImageChange = (file: File | null, callback: (url: string) => void) => {
     if (file && file.type.startsWith('image/')) {
@@ -241,43 +284,44 @@ export function AdminDashboard({
     e.preventDefault();
     const form = e.currentTarget;
     const formData = new FormData(form);
-    const imageFile = formData.get('imageFile') as File;
+    const mediaFile = formData.get('mediaFile') as File;
     
-    if (!imageFile || imageFile.size === 0) {
-      toast({ variant: "destructive", title: "Error", description: "Debes seleccionar una imagen para la galería." });
+    if (!mediaFile || mediaFile.size === 0) {
+      toast({ variant: "destructive", title: "Error", description: "Debes seleccionar una imagen o video para la galería." });
       return;
     }
     
-    handleImageChange(imageFile, (newUrl) => {
+    handleFileChange(mediaFile, (newUrl, type) => {
       const newGalleryItem: GalleryItem = {
         id: crypto.randomUUID(),
         url: newUrl,
         alt: formData.get('alt') as string,
+        type: type,
       };
       setGalleryItems([...galleryItems, newGalleryItem]);
       form.reset();
-      setGalleryImagePreview(null);
-      toast({ title: "Éxito", description: "Nueva imagen añadida." });
+      setGalleryMediaPreview(null);
+      toast({ title: "Éxito", description: "Nuevo elemento añadido a la galería." });
     });
   };
 
   const handleDeleteGalleryItem = (id: string) => {
     setGalleryItems(galleryItems.filter(g => g.id !== id));
-    toast({ title: "Éxito", description: "Imagen eliminada." });
+    toast({ title: "Éxito", description: "Elemento eliminado de la galería." });
   };
 
-  const handleUpdateGalleryItem = (id: string, updatedItem: Omit<GalleryItem, 'id' | 'url'>, newImageFile?: File) => {
-      const update = (url: string) => {
-          setGalleryItems(galleryItems.map(item => item.id === id ? { ...item, ...updatedItem, url } : item));
-          toast({ title: "Éxito", description: "Imagen de la galería actualizada." });
+  const handleUpdateGalleryItem = (id: string, updatedItem: Omit<GalleryItem, 'id' | 'url' | 'type'>, newMediaFile?: File) => {
+      const update = (url: string, type: 'image' | 'video') => {
+          setGalleryItems(galleryItems.map(item => item.id === id ? { ...item, ...updatedItem, url, type } : item));
+          toast({ title: "Éxito", description: "Elemento de la galería actualizado." });
       };
 
-      if (newImageFile) {
-          handleImageChange(newImageFile, update);
+      if (newMediaFile) {
+          handleFileChange(newMediaFile, update);
       } else {
           const currentItem = galleryItems.find(item => item.id === id);
           if (currentItem) {
-              update(currentItem.url);
+              update(currentItem.url, currentItem.type);
           }
       }
   };
@@ -520,9 +564,9 @@ export function AdminDashboard({
     );
   };
 
-  const EditGalleryItemDialog = ({ item, onSave }: { item: GalleryItem; onSave: (id: string, data: Omit<GalleryItem, 'id' | 'url'>, file?: File) => void }) => {
+  const EditGalleryItemDialog = ({ item, onSave }: { item: GalleryItem; onSave: (id: string, data: Omit<GalleryItem, 'id' | 'url' | 'type'>, file?: File) => void }) => {
     const [open, setOpen] = useState(false);
-    const [preview, setPreview] = useState<string | null>(null);
+    const [preview, setPreview] = useState<{ url: string; type: 'image' | 'video' } | null>(null);
 
     const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
@@ -530,8 +574,8 @@ export function AdminDashboard({
         const updatedData = {
             alt: formData.get('alt') as string,
         };
-        const imageFile = formData.get('imageFile') as File;
-        onSave(item.id, updatedData, imageFile && imageFile.size > 0 ? imageFile : undefined);
+        const mediaFile = formData.get('mediaFile') as File;
+        onSave(item.id, updatedData, mediaFile && mediaFile.size > 0 ? mediaFile : undefined);
         setOpen(false);
     };
 
@@ -541,11 +585,17 @@ export function AdminDashboard({
                  <Button variant="secondary" size="icon" className="absolute top-2 right-12 h-7 w-7 opacity-0 group-hover:opacity-100 transition-opacity"><Pencil className="w-4 h-4" /></Button>
             </DialogTrigger>
             <DialogContent>
-                <DialogHeader><DialogTitle>Editar Imagen de Galería</DialogTitle></DialogHeader>
+                <DialogHeader><DialogTitle>Editar Elemento de Galería</DialogTitle></DialogHeader>
                 <form onSubmit={handleSubmit} className="space-y-4">
                     <Input name="alt" defaultValue={item.alt} />
-                    <Input name="imageFile" type="file" accept="image/*" onChange={(e) => handleFilePreview(e, setPreview)} />
-                    {preview && <Image src={preview} alt="Preview" width={100} height={100} />}
+                    <Input name="mediaFile" type="file" accept="image/*,video/*" onChange={(e) => handleMediaFilePreview(e, setPreview)} />
+                    {preview && (
+                        preview.type === 'image' ? (
+                          <Image src={preview.url} alt="Preview" width={100} height={100} />
+                        ) : (
+                          <video src={preview.url} width={200} controls />
+                        )
+                    )}
                     <DialogFooter>
                         <Button type="submit">Guardar Cambios</Button>
                     </DialogFooter>
@@ -757,23 +807,36 @@ export function AdminDashboard({
               <CardHeader><CardTitle className="font-headline">Gestionar Mis Trabajos</CardTitle></CardHeader>
               <CardContent className="space-y-6">
                 <form onSubmit={handleAddGalleryItem} className="bg-muted p-4 rounded-lg space-y-4">
-                  <h3 className="font-semibold">Añadir Nueva Imagen</h3>
+                  <h3 className="font-semibold">Añadir Nuevo Elemento (Imagen o Video)</h3>
                    <div className="space-y-2">
-                    <Label htmlFor="gallery-imageFile">Imagen</Label>
-                    <Input id="gallery-imageFile" name="imageFile" type="file" accept="image/*" required onChange={(e) => handleFilePreview(e, setGalleryImagePreview)} />
-                     {galleryImagePreview && (
-                        <div className="mt-4 relative aspect-square w-40 h-40 rounded-md overflow-hidden">
-                          <Image src={galleryImagePreview} alt="Vista previa de la galería" fill className="object-cover" />
-                        </div>
-                      )}
+                    <Label htmlFor="gallery-mediaFile">Archivo (Imagen o Video)</Label>
+                    <Input id="gallery-mediaFile" name="mediaFile" type="file" accept="image/*,video/*" required onChange={(e) => handleMediaFilePreview(e, setGalleryMediaPreview)} />
+                     {galleryMediaPreview && (
+                      <div className="mt-4">
+                        {galleryMediaPreview.type === 'image' ? (
+                          <div className="relative aspect-square w-40 h-40 rounded-md overflow-hidden">
+                            <Image src={galleryMediaPreview.url} alt="Vista previa" fill className="object-cover" />
+                          </div>
+                        ) : (
+                          <video src={galleryMediaPreview.url} className="rounded-md w-full max-w-sm" controls />
+                        )}
+                      </div>
+                    )}
                   </div>
-                  <Input name="alt" placeholder="Descripción (texto alt)" required />
-                  <Button type="submit" className="rounded-full">Añadir Imagen</Button>
+                  <Input name="alt" placeholder="Descripción (texto alternativo)" required />
+                  <Button type="submit" className="rounded-full">Añadir a la Galería</Button>
                 </form>
                 <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
                   {galleryItems.map(item => (
-                    <div key={item.id} className="relative group">
-                      <Image src={item.url} alt={item.alt} width={200} height={200} className="rounded-md object-cover aspect-square" />
+                    <div key={item.id} className="relative group aspect-square">
+                       <div className="absolute top-1 left-1 z-10 bg-black/50 text-white rounded-full p-1">
+                          {item.type === 'image' ? <ImageIcon className="w-4 h-4" /> : <Video className="w-4 h-4" />}
+                        </div>
+                      {item.type === 'image' ? (
+                         <Image src={item.url} alt={item.alt} width={200} height={200} className="rounded-md object-cover w-full h-full" />
+                      ) : (
+                        <video src={item.url} className="rounded-md object-cover w-full h-full" loop muted playsInline />
+                      )}
                       <EditGalleryItemDialog item={item} onSave={handleUpdateGalleryItem} />
                       <Button variant="destructive" size="icon" className="absolute top-2 right-2 h-7 w-7 opacity-0 group-hover:opacity-100 transition-opacity" onClick={() => handleDeleteGalleryItem(item.id)}><Trash2 className="w-4 h-4" /></Button>
                     </div>

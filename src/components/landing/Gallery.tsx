@@ -3,6 +3,7 @@
 
 import Image from 'next/image';
 import type { GalleryItem } from '@/lib/types';
+import { PlayCircle } from 'lucide-react';
 
 interface GalleryProps {
   galleryItems: GalleryItem[];
@@ -16,14 +17,30 @@ export function Gallery({ galleryItems }: GalleryProps) {
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6">
           {galleryItems.map((item) => (
             <div key={item.id} className="relative group overflow-hidden rounded-xl shadow-lg aspect-square">
-              <Image
-                src={item.url}
-                alt={item.alt}
-                fill
-                className="object-cover transition-transform duration-300 group-hover:scale-110"
-                sizes="(max-width: 768px) 50vw, (max-width: 1200px) 33vw, 25vw"
-                data-ai-hint={item.alt.split(' ').slice(0, 2).join(' ')}
-              />
+              {item.type === 'image' ? (
+                <Image
+                  src={item.url}
+                  alt={item.alt}
+                  fill
+                  className="object-cover transition-transform duration-300 group-hover:scale-110"
+                  sizes="(max-width: 768px) 50vw, (max-width: 1200px) 33vw, 25vw"
+                  data-ai-hint={item.alt.split(' ').slice(0, 2).join(' ')}
+                />
+              ) : (
+                <>
+                  <video
+                    src={item.url}
+                    title={item.alt}
+                    className="object-cover w-full h-full transition-transform duration-300 group-hover:scale-110"
+                    playsInline
+                    loop
+                    muted
+                  />
+                  <div className="absolute inset-0 bg-black/20 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                    <PlayCircle className="w-16 h-16 text-white/80" />
+                  </div>
+                </>
+              )}
             </div>
           ))}
         </div>

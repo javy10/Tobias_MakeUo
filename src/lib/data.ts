@@ -67,6 +67,7 @@ export const initialGalleryItems: GalleryItem[] = PlaceHolderImages.filter(img =
   id: img.id,
   url: img.imageUrl,
   alt: img.description,
+  type: 'image',
 }));
 
 export const initialTestimonials: Testimonial[] = [
