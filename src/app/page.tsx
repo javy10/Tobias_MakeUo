@@ -25,8 +25,8 @@ export default function Home() {
       <Header />
       <main className="flex-1">
         <Hero content={appState.heroContent} />
-        <Services services={appState.services} />
         <AboutMe content={appState.aboutMeContent} />
+        <Services services={appState.services} />
         <Products products={appState.products} categories={appState.categories} />
         <Gallery galleryItems={appState.galleryItems} />
         <Testimonials testimonials={appState.testimonials} />
