@@ -86,7 +86,7 @@ body {
   body {
     @apply bg-background text-foreground;
   }
-  .dark {
+  .dark body {
     background-color: #0f1116;
     background-image: linear-gradient(to bottom right, #0f1116 50%, #1c2c35 100%);
     background-attachment: fixed;
