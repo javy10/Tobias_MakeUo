@@ -30,7 +30,7 @@ export function Products({ products, categories }: ProductsProps) {
     );
 
   return (
-    <section id="productos" className="py-16 md:py-24 bg-secondary">
+    <section id="productos" className="py-16 md:py-24">
       <div className="container mx-auto px-4">
         <div className="text-center mb-12">
             <h2 className="text-4xl font-bold font-headline">Nuestro Catálogo</h2>

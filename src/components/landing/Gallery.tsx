@@ -10,7 +10,7 @@ interface GalleryProps {
 
 export function Gallery({ galleryItems }: GalleryProps) {
   return (
-    <section id="mis-trabajos" className="py-16 md:py-24 bg-secondary">
+    <section id="mis-trabajos" className="py-16 md:py-24">
       <div className="container mx-auto px-4">
         <h2 className="text-4xl font-bold font-headline text-center mb-12">Mis Trabajos</h2>
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6">
