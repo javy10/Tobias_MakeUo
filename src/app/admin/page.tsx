@@ -20,7 +20,8 @@ export default function AdminPage() {
     setGalleryItems,
     setTestimonials,
     setAboutMeContent,
-    setUsers
+    setUsers,
+    isStateLoaded
   } = useAppContext();
   
   const [authenticatedUser, setAuthenticatedUser] = useState<User | null>(null);
@@ -45,6 +46,11 @@ export default function AdminPage() {
     setAuthenticatedUser(null);
     router.push('/');
   };
+  
+  if (!isStateLoaded) {
+    // You can return a loader here
+    return <div>Cargando...</div>;
+  }
 
   if (!authenticatedUser) {
     return (

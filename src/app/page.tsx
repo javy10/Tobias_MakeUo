@@ -13,7 +13,12 @@ import { Footer } from "@/components/landing/Footer";
 import { useAppContext } from './layout';
 
 export default function Home() {
-  const { appState } = useAppContext();
+  const { appState, isStateLoaded } = useAppContext();
+  
+  if (!isStateLoaded) {
+    // You can return a loading skeleton here
+    return <div>Cargando...</div>;
+  }
 
   return (
     <div className="flex flex-col min-h-dvh bg-background">

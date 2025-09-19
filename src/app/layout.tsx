@@ -1,7 +1,7 @@
 
 'use client';
 
-import { useState, createContext, useContext } from 'react';
+import { useState, createContext, useContext, useEffect } from 'react';
 import './globals.css';
 import { Toaster } from "@/components/ui/toaster";
 import type { AboutMeContent, GalleryItem, HeroContent, Product, Service, Testimonial, User } from '@/lib/types';
@@ -28,6 +28,7 @@ interface AppContextType {
   setTestimonials: React.Dispatch<React.SetStateAction<Testimonial[]>>;
   setAboutMeContent: React.Dispatch<React.SetStateAction<AboutMeContent>>;
   setUsers: React.Dispatch<React.SetStateAction<User[]>>;
+  isStateLoaded: boolean;
 }
 
 // 3. Create the context with a default value
@@ -42,31 +43,72 @@ export function useAppContext() {
   return context;
 }
 
+// Helper function to get initial state from localStorage or defaults
+const getInitialState = <T>(key: string, defaultValue: T): T => {
+  if (typeof window === 'undefined') {
+    return defaultValue;
+  }
+  try {
+    const item = window.localStorage.getItem(key);
+    return item ? JSON.parse(item) : defaultValue;
+  } catch (error) {
+    console.warn(`Error reading localStorage key "${key}":`, error);
+    return defaultValue;
+  }
+};
+
+
 export default function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  // 5. Initialize the state here in the root layout
-  const [heroContent, setHeroContent] = useState<HeroContent>(initialHeroContent);
-  const [services, setServices] = useState<Service[]>(initialServices);
-  const [products, setProducts] = useState<Product[]>(initialProducts);
-  const [galleryItems, setGalleryItems] = useState<GalleryItem[]>(initialGalleryItems);
-  const [testimonials, setTestimonials] = useState<Testimonial[]>(initialTestimonials);
-  const [aboutMeContent, setAboutMeContent] = useState<AboutMeContent>(initialAboutMeContent);
-  const [users, setUsers] = useState<User[]>(initialUsers);
+  const [isStateLoaded, setIsStateLoaded] = useState(false);
+
+  // 5. Initialize the state here in the root layout, lazily from localStorage
+  const [heroContent, setHeroContent] = useState<HeroContent>(() => getInitialState('heroContent', initialHeroContent));
+  const [services, setServices] = useState<Service[]>(() => getInitialState('services', initialServices));
+  const [products, setProducts] = useState<Product[]>(() => getInitialState('products', initialProducts));
+  const [galleryItems, setGalleryItems] = useState<GalleryItem[]>(() => getInitialState('galleryItems', initialGalleryItems));
+  const [testimonials, setTestimonials] = useState<Testimonial[]>(() => getInitialState('testimonials', initialTestimonials));
+  const [aboutMeContent, setAboutMeContent] = useState<AboutMeContent>(() => getInitialState('aboutMeContent', initialAboutMeContent));
+  const [users, setUsers] = useState<User[]>(() => getInitialState('users', initialUsers));
+
+  const appState: AppState = {
+    heroContent,
+    services,
+    products,
+    galleryItems,
+    testimonials,
+    aboutMeContent,
+    users,
+  };
+
+  // Effect to save state to localStorage whenever it changes
+  useEffect(() => {
+    try {
+      if (isStateLoaded) {
+        localStorage.setItem('heroContent', JSON.stringify(heroContent));
+        localStorage.setItem('services', JSON.stringify(services));
+        localStorage.setItem('products', JSON.stringify(products));
+        localStorage.setItem('galleryItems', JSON.stringify(galleryItems));
+        localStorage.setItem('testimonials', JSON.stringify(testimonials));
+        localStorage.setItem('aboutMeContent', JSON.stringify(aboutMeContent));
+        localStorage.setItem('users', JSON.stringify(users));
+      }
+    } catch (error) {
+      console.error('Failed to save state to localStorage:', error);
+    }
+  }, [appState, isStateLoaded, heroContent, services, products, galleryItems, testimonials, aboutMeContent, users]);
+  
+  // Set state as loaded after initial render
+  useEffect(() => {
+    setIsStateLoaded(true);
+  }, []);
 
   // 6. Assemble the state and setters into the context value
   const contextValue: AppContextType = {
-    appState: {
-      heroContent,
-      services,
-      products,
-      galleryItems,
-      testimonials,
-      aboutMeContent,
-      users,
-    },
+    appState,
     setHeroContent,
     setServices,
     setProducts,
@@ -74,6 +116,7 @@ export default function RootLayout({
     setTestimonials,
     setAboutMeContent,
     setUsers,
+    isStateLoaded,
   };
 
   return (
@@ -88,7 +131,7 @@ export default function RootLayout({
       <body className="font-body antialiased">
         {/* 7. Provide the context to all children */}
         <AppContext.Provider value={contextValue}>
-          {children}
+          {isStateLoaded ? children : null /* Or a loading spinner */}
         </AppContext.Provider>
         <Toaster />
       </body>
