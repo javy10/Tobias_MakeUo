@@ -28,7 +28,7 @@ export function Contact() {
     }
     
     const whatsappMessage = encodeURIComponent(`Hola, soy ${name}. Mi mensaje es: ${message}`);
-    const whatsappUrl = `https://wa.me/50379467621?text=${whatsappMessage}`;
+    const whatsappUrl = `https://api.whatsapp.com/send?phone=50379467621&text=${whatsappMessage}`;
     
     window.open(whatsappUrl, '_blank');
   };
