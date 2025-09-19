@@ -34,19 +34,19 @@ export function Footer() {
           <div className="flex flex-col items-center">
             <h3 className="font-headline text-lg font-semibold mb-4 text-background">Navegación</h3>
             <ul className="space-y-2 text-sm">
-              <li><Link href="#inicio" className="hover:text-primary transition-colors">Inicio</Link></li>
-              <li><Link href="#servicios" className="hover:text-primary transition-colors">Servicios</Link></li>
-              <li><Link href="#sobre-mi" className="hover:text-primary transition-colors">Sobre Mí</Link></li>
-              <li><Link href="#productos" className="hover:text-primary transition-colors">Productos</Link></li>
-              <li><Link href="#mis-trabajos" className="hover:text-primary transition-colors">Mis Trabajos</Link></li>
+              <li><Link href="/#inicio" className="hover:text-primary transition-colors">Inicio</Link></li>
+              <li><Link href="/#servicios" className="hover:text-primary transition-colors">Servicios</Link></li>
+              <li><Link href="/#sobre-mi" className="hover:text-primary transition-colors">Sobre Mí</Link></li>
+              <li><Link href="/#productos" className="hover:text-primary transition-colors">Productos</Link></li>
+              <li><Link href="/#mis-trabajos" className="hover:text-primary transition-colors">Mis Trabajos</Link></li>
             </ul>
           </div>
            <div className="flex flex-col items-center">
             <h3 className="font-headline text-lg font-semibold mb-4 text-background">Legal</h3>
             <ul className="space-y-2 text-sm">
-              <li><a href="#" className="hover:text-primary transition-colors">Términos y Condiciones</a></li>
-              <li><a href="#" className="hover:text-primary transition-colors">Política de Privacidad</a></li>
-              <li><a href="#" className="hover:text-primary transition-colors">Política de Cookies</a></li>
+              <li><Link href="/terminos-y-condiciones" className="hover:text-primary transition-colors">Términos y Condiciones</Link></li>
+              <li><Link href="/politica-de-privacidad" className="hover:text-primary transition-colors">Política de Privacidad</Link></li>
+              <li><Link href="/politica-de-cookies" className="hover:text-primary transition-colors">Política de Cookies</Link></li>
             </ul>
           </div>
           <div className="flex flex-col items-center">
