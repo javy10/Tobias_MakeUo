@@ -873,7 +873,10 @@ export function AdminDashboard({
                             <Button 
                               variant="outline" 
                               size="icon"
-                              onClick={() => { setCurrentUserForPasswordChange(user); setOpenPasswordDialog(true); }}>
+                              onClick={() => { setCurrentUserForPasswordChange(user); setOpenPasswordDialog(true); }}
+                              disabled={user.id !== loggedInUser.id}
+                              title={user.id !== loggedInUser.id ? 'Solo puedes cambiar tu propia contraseña' : 'Cambiar contraseña'}
+                              >
                               <KeyRound className="w-4 h-4" />
                             </Button>
                           </DialogTrigger>
