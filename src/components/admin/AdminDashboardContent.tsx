@@ -2,7 +2,7 @@
 'use client';
 import type { AppState, HeroContent, Service, GalleryItem, Testimonial, Product, AboutMeContent, User, Category } from '@/lib/types';
 import { StatCard } from './StatCard';
-import { Palette, ShoppingBag, Star, ImageIcon, Users, BarChart2, PieChart } from 'lucide-react';
+import { Palette, ShoppingBag, Star, ImageIcon, Users, BarChart2, PieChart as PieChartIcon } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '../ui/table';
 import { Progress } from '../ui/progress';
@@ -58,8 +58,8 @@ export function AdminDashboardContent({ appState }: AdminDashboardContentProps) 
 
   const productsByCategoryData = categories.map(category => ({
     name: category.name,
-    total: products.filter(p => p.categoryId === category.id).length
-  })).filter(c => c.total > 0);
+    value: products.filter(p => p.categoryId === category.id).length
+  })).filter(c => c.value > 0);
 
   const testimonialStatusData = [
     { name: 'Aprobados', value: testimonials.filter(t => t.status === 'approved').length },
@@ -74,7 +74,7 @@ export function AdminDashboardContent({ appState }: AdminDashboardContentProps) 
       .reduce((acc, p) => acc + p.stock, 0),
   })).filter(c => c.stock > 0);
 
-  const PIE_COLORS = ['hsl(var(--chart-2))', 'hsl(var(--chart-4))', 'hsl(var(--chart-1))'];
+  const PIE_COLORS = ['hsl(var(--chart-1))', 'hsl(var(--chart-2))', 'hsl(var(--chart-3))', 'hsl(var(--chart-4))', 'hsl(var(--chart-5))'];
 
   return (
     <div className="space-y-6">
@@ -115,22 +115,46 @@ export function AdminDashboardContent({ appState }: AdminDashboardContentProps) 
         <ChartCard
           title="Productos por Categoría"
           description="Distribución de productos en el catálogo."
-          icon={BarChart2}
+          icon={PieChartIcon}
         >
           <ResponsiveContainer width="100%" height={300}>
-            <BarChart data={productsByCategoryData} layout="vertical" margin={{ left: 10 }}>
-              <XAxis type="number" hide />
-              <YAxis dataKey="name" type="category" tickLine={false} axisLine={false} stroke="hsl(var(--muted-foreground))" fontSize={12} width={100} />
-              <Tooltip cursor={{ fill: 'hsl(var(--muted))' }} contentStyle={{ backgroundColor: 'hsl(var(--background))', border: '1px solid hsl(var(--border))' }}/>
-              <Bar dataKey="total" fill="hsl(var(--primary))" radius={[0, 4, 4, 0]} />
-            </BarChart>
+            <RechartsPieChart>
+              <Tooltip
+                cursor={{ fill: 'hsl(var(--muted))' }}
+                contentStyle={{ backgroundColor: 'hsl(var(--background))', border: '1px solid hsl(var(--border))' }}
+              />
+              <Pie
+                data={productsByCategoryData}
+                dataKey="value"
+                nameKey="name"
+                cx="50%"
+                cy="50%"
+                outerRadius={100}
+                labelLine={false}
+                label={({ cx, cy, midAngle, innerRadius, outerRadius, percent }) => {
+                  const radius = innerRadius + (outerRadius - innerRadius) * 0.5;
+                  const x = cx + radius * Math.cos(-midAngle * (Math.PI / 180));
+                  const y = cy + radius * Math.sin(-midAngle * (Math.PI / 180));
+                  return (
+                    <text x={x} y={y} fill="white" textAnchor={x > cx ? 'start' : 'end'} dominantBaseline="central">
+                      {`${(percent * 100).toFixed(0)}%`}
+                    </text>
+                  );
+                }}
+              >
+                {productsByCategoryData.map((entry, index) => (
+                  <Cell key={`cell-${index}`} fill={PIE_COLORS[index % PIE_COLORS.length]} />
+                ))}
+              </Pie>
+              <Legend iconSize={10} />
+            </RechartsPieChart>
           </ResponsiveContainer>
         </ChartCard>
 
         <ChartCard
           title="Estado de Testimonios"
           description="Resumen de las opiniones de los clientes."
-          icon={PieChart}
+          icon={PieChartIcon}
         >
           <ResponsiveContainer width="100%" height={300}>
              <RechartsPieChart>
