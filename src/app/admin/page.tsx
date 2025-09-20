@@ -115,7 +115,7 @@ export default function AdminPage() {
   }
 
   return (
-    <AdminLayout loggedInUser={authenticatedUser} onLogout={handleLogout}>
+    <AdminLayout loggedInUser={authenticatedUser} onLogout={handleLogout} appState={appState}>
        <AdminDashboardContent
         appState={appState}
         setHeroContent={setHeroContent}

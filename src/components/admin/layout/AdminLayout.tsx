@@ -4,7 +4,7 @@
 import { useState, createContext, useContext, type ReactNode } from 'react';
 import { Sidebar } from './Sidebar';
 import { AdminHeader } from './AdminHeader';
-import type { User } from '@/lib/types';
+import type { User, AppState } from '@/lib/types';
 import { pageConfig } from './pageConfig';
 
 interface SidebarContextType {
@@ -26,9 +26,10 @@ interface AdminLayoutProps {
   children: ReactNode;
   loggedInUser: User;
   onLogout: () => void;
+  appState: AppState;
 }
 
-export function AdminLayout({ children, loggedInUser, onLogout }: AdminLayoutProps) {
+export function AdminLayout({ children, loggedInUser, onLogout, appState }: AdminLayoutProps) {
     const [activeSection, setActiveSection] = useState('dashboard');
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
@@ -48,6 +49,8 @@ export function AdminLayout({ children, loggedInUser, onLogout }: AdminLayoutPro
                     pageName={currentPage.title}
                     onLogout={onLogout}
                     loggedInUser={loggedInUser}
+                    testimonials={appState.testimonials}
+                    setActiveSection={setActiveSection}
                 />
                 <main className="flex-1 p-6">
                     {children}

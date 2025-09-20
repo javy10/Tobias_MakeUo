@@ -4,7 +4,6 @@ import { Brush, FileText, Home, ImageIcon, MessageSquare, Palette, ShoppingBag, 
 export const pageConfig = [
   { id: 'dashboard', title: 'Dashboard', icon: Home },
   { id: 'hero', title: 'Sección Inicial', icon: Sparkles },
-  { id: 'about', title: 'Sobre Mí', icon: FileText },
   { id: 'services', title: 'Servicios', icon: Palette },
   { id: 'categories', title: 'Categorías', icon: Brush },
   { id: 'products', title: 'Productos', icon: ShoppingBag },
