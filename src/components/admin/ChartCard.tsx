@@ -1,67 +1,122 @@
-
 'use client';
-import { Bar, BarChart, CartesianGrid, Legend, Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
+import type { AppState, HeroContent, Service, GalleryItem, Testimonial, Product, AboutMeContent, User, Category } from '@/lib/types';
+import { StatCard } from './StatCard';
+import { Brush, FileText, ImageIcon, MessageSquare, Palette, ShoppingBag, Sparkles, Star, Users } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../ui/card';
+import Image from 'next/image';
+import Link from 'next/link';
+import { Badge } from '../ui/badge';
 
-interface ChartCardProps {
-  title: string;
-  chartData: { name: string; [key: string]: any }[];
-  dataKey: string;
-  type?: 'bar' | 'line';
-  layout?: 'horizontal' | 'vertical';
+interface AdminDashboardContentProps {
+  appState: AppState;
+  setHeroContent: React.Dispatch<React.SetStateAction<HeroContent>>;
+  setServices: React.Dispatch<React.SetStateAction<Service[]>>;
+  setProducts: React.Dispatch<React.SetStateAction<Product[]>>;
+  setGalleryItems: React.Dispatch<React.SetStateAction<GalleryItem[]>>;
+  setTestimonials: React.Dispatch<React.SetStateAction<Testimonial[]>>;
+  setAboutMeContent: React.Dispatch<React.SetStateAction<AboutMeContent>>;
+  setUsers: React.Dispatch<React.SetStateAction<User[]>>;
+  setCategories: React.Dispatch<React.SetStateAction<Category[]>>;
+  loggedInUser: User;
 }
 
-export function ChartCard({ title, chartData, dataKey, type = 'bar', layout = 'horizontal' }: ChartCardProps) {
-  const ChartComponent = type === 'bar' ? BarChart : LineChart;
-  const ChartElement = type === 'bar' ? Bar : Line;
+const UsersSummaryCard = ({ users }: { users: User[] }) => (
+    <Card className="h-full">
+        <CardHeader>
+            <CardTitle>Resumen de Usuarios</CardTitle>
+            <CardDescription>
+                Actualmente hay {users.length} usuarios registrados en el sistema.
+            </CardDescription>
+        </CardHeader>
+        <CardContent>
+            <div className="space-y-4">
+                {users.slice(0, 4).map((user) => (
+                    <div key={user.id} className="flex items-center gap-4">
+                        <div className="w-10 h-10 rounded-full bg-gradient-to-tr from-primary to-accent text-primary-foreground flex items-center justify-center font-bold">
+                            {user.name.charAt(0)}
+                        </div>
+                        <div>
+                            <p className="font-semibold">{user.name}</p>
+                            <p className="text-sm text-muted-foreground">{user.email}</p>
+                        </div>
+                    </div>
+                ))}
+            </div>
+        </CardContent>
+    </Card>
+);
+
+const CategoriesSummaryCard = ({ categories }: { categories: Category[] }) => (
+    <Card className="h-full">
+        <CardHeader>
+            <CardTitle>Categorías de Productos</CardTitle>
+            <CardDescription>
+                Gestiona y organiza tus productos.
+            </CardDescription>
+        </CardHeader>
+        <CardContent>
+            <div className="flex flex-wrap gap-2">
+                {categories.map((category) => (
+                    <Badge key={category.id} variant="secondary" className="text-sm">
+                       {category.name}
+                    </Badge>
+                ))}
+            </div>
+        </CardContent>
+    </Card>
+);
+
+
+export function AdminDashboardContent({ appState }: AdminDashboardContentProps) {
+  const { products, services, testimonials, galleryItems, categories, users } = appState;
+  
+  const totalStock = products.reduce((acc, p) => acc + p.stock, 0);
+  
+  const testimonialsPending = testimonials.filter(t => t.status === 'pending').length;
 
   return (
-    <Card className="h-full">
-      <CardHeader>
-        <CardTitle>{title}</CardTitle>
-      </CardHeader>
-      <CardContent>
-        <div className="h-[300px]">
-          <ResponsiveContainer width="100%" height="100%">
-            <ChartComponent 
-              data={chartData} 
-              layout={layout}
-              margin={{ top: 5, right: 20, left: 10, bottom: 5 }}
-            >
-              <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
-              {layout === 'horizontal' ? (
-                <>
-                  <XAxis dataKey="name" stroke="hsl(var(--muted-foreground))" fontSize={12} tickLine={false} axisLine={false} />
-                  <YAxis stroke="hsl(var(--muted-foreground))" fontSize={12} tickLine={false} axisLine={false} />
-                </>
-              ) : (
-                <>
-                  <XAxis type="number" stroke="hsl(var(--muted-foreground))" fontSize={12} tickLine={false} axisLine={false} />
-                  <YAxis dataKey="name" type="category" stroke="hsl(var(--muted-foreground))" fontSize={12} tickLine={false} axisLine={false} />
-                </>
-              )}
-              <Tooltip
-                cursor={{ fill: 'hsl(var(--muted))' }}
-                contentStyle={{
-                  backgroundColor: 'hsl(var(--background))',
-                  borderColor: 'hsl(var(--border))',
-                  borderRadius: 'var(--radius)',
-                  boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1)',
-                }}
-              />
-              <ChartElement 
-                dataKey={dataKey} 
-                fill={type === 'bar' ? "hsl(var(--primary))" : undefined} 
-                stroke="hsl(var(--primary))" 
-                radius={type === 'bar' ? [4, 4, 0, 0] : undefined}
-                strokeWidth={2}
-                dot={{ r: 5, strokeWidth: 2, fill: 'hsl(var(--background))' }}
-                activeDot={{ r: 7, fill: 'hsl(var(--primary))' }}
-              />
-            </ChartComponent>
-          </ResponsiveContainer>
+    <div className="space-y-6">
+      {/* Stat Cards */}
+      <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
+        <StatCard 
+          title="Total de Productos" 
+          value={products.length.toString()}
+          icon={ShoppingBag} 
+          change={`${totalStock} en stock`}
+          changeColor="text-gray-500"
+        />
+        <StatCard 
+          title="Servicios Ofrecidos" 
+          value={services.length.toString()}
+          icon={Palette} 
+          change="activos"
+          changeColor="text-gray-500"
+        />
+        <StatCard 
+          title="Testimonios" 
+          value={testimonials.length.toString()}
+          icon={Star} 
+          change={`${testimonialsPending} pendientes`}
+          changeColor={testimonialsPending > 0 ? "text-orange-500" : "text-gray-500"}
+        />
+        <StatCard 
+          title="Galería" 
+          value={galleryItems.length.toString()}
+          icon={ImageIcon} 
+          change="imágenes y videos"
+          changeColor="text-gray-500"
+        />
+      </div>
+
+      {/* Mid-level Summary Cards */}
+      <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
+        <div className="lg:col-span-2">
+           <UsersSummaryCard users={users} />
         </div>
-      </CardContent>
-    </Card>
+        <div>
+           <CategoriesSummaryCard categories={categories} />
+        </div>
+      </div>
+    </div>
   );
 }

@@ -2,13 +2,11 @@
 'use client';
 import type { AppState, HeroContent, Service, GalleryItem, Testimonial, Product, AboutMeContent, User, Category } from '@/lib/types';
 import { StatCard } from './StatCard';
-import { BarChart, Brush, FileText, ImageIcon, MessageSquare, Palette, ShoppingBag, Sparkles, Star, Users } from 'lucide-react';
+import { Brush, FileText, ImageIcon, MessageSquare, Palette, ShoppingBag, Sparkles, Star, Users } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../ui/card';
 import Image from 'next/image';
 import Link from 'next/link';
 import { Badge } from '../ui/badge';
-import { cn } from '@/lib/utils';
-import { ChartCard } from './ChartCard';
 
 interface AdminDashboardContentProps {
   appState: AppState;
@@ -77,19 +75,6 @@ export function AdminDashboardContent({ appState }: AdminDashboardContentProps) 
   
   const testimonialsPending = testimonials.filter(t => t.status === 'pending').length;
 
-  const productStockData = categories.map(category => ({
-    name: category.name,
-    total: products
-      .filter(p => p.categoryId === category.id)
-      .reduce((acc, p) => acc + 1, 0)
-  }));
-
-  const productInventoryData = products.slice(0, 5).map(product => ({
-    name: product.name.split(' ')[0], // Shorten name for chart
-    stock: product.stock
-  }));
-
-
   return (
     <div className="space-y-6">
       {/* Stat Cards */}
@@ -132,27 +117,6 @@ export function AdminDashboardContent({ appState }: AdminDashboardContentProps) 
         <div>
            <CategoriesSummaryCard categories={categories} />
         </div>
-      </div>
-
-      {/* Main Charts */}
-      <div className="grid grid-cols-1 gap-6 lg:grid-cols-5">
-         <div className="lg:col-span-3">
-          <ChartCard 
-            title="Inventario de Productos" 
-            chartData={productInventoryData} 
-            dataKey="stock" 
-            type="line" 
-          />
-         </div>
-         <div className="lg:col-span-2">
-           <ChartCard 
-            title="Productos por Categoría" 
-            chartData={productStockData} 
-            dataKey="total" 
-            type="bar"
-            layout='vertical'
-          />
-         </div>
       </div>
     </div>
   );
