@@ -4,12 +4,6 @@ import type { AppState, HeroContent, Service, GalleryItem, Testimonial, Product,
 import { StatCard } from './StatCard';
 import { BarChart, Brush, FileText, ImageIcon, MessageSquare, Palette, ShoppingBag, Sparkles, Star, Users } from 'lucide-react';
 import { ChartCard } from './ChartCard';
-import { Card, CardContent, CardHeader, CardTitle } from '../ui/card';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '../ui/table';
-import { Badge } from '../ui/badge';
-import Image from 'next/image';
-import { Progress } from '../ui/progress';
-import { cn } from '@/lib/utils';
 
 interface AdminDashboardContentProps {
   appState: AppState;
@@ -28,25 +22,27 @@ export function AdminDashboardContent({ appState }: AdminDashboardContentProps) 
   const { products, services, testimonials, galleryItems, categories, users } = appState;
   
   const totalStock = products.reduce((acc, p) => acc + p.stock, 0);
-  const productsInStock = products.filter(p => p.stock > 0).length;
-  const stockPercentage = products.length > 0 ? (productsInStock / products.length) * 100 : 0;
   
   const testimonialsPending = testimonials.filter(t => t.status === 'pending').length;
-  const testimonialsApproved = testimonials.filter(t => t.status === 'approved').length;
-  const approvalRate = testimonials.length > 0 ? (testimonialsApproved / (testimonialsApproved + testimonials.filter(t => t.status === 'rejected').length)) * 100 : 0;
 
   const productStockData = categories.map(category => ({
     name: category.name,
     total: products
       .filter(p => p.categoryId === category.id)
-      .reduce((acc, p) => acc + p.stock, 0)
+      .reduce((acc, p) => acc + 1, 0)
   }));
   
   const testimonialStatusData = [
-    { name: 'Aprobados', value: testimonialsApproved },
+    { name: 'Aprobados', value: testimonials.filter(t => t.status === 'approved').length },
     { name: 'Pendientes', value: testimonialsPending },
     { name: 'Rechazados', value: testimonials.filter(t => t.status === 'rejected').length }
   ];
+  
+  const productInventoryData = products.slice(0, 5).map(product => ({
+    name: product.name.split(' ')[0], // Shorten name for chart
+    stock: product.stock
+  }));
+
 
   return (
     <div className="space-y-6">
@@ -82,72 +78,25 @@ export function AdminDashboardContent({ appState }: AdminDashboardContentProps) 
         />
       </div>
 
-      {/* Charts */}
-      <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
-        <ChartCard title="Stock de Productos por Categoría" chartData={productStockData} dataKey="total" />
-        <ChartCard title="Estado de Testimonios" chartData={testimonialStatusData} dataKey="value" type="line" />
-      </div>
-
-       {/* Projects and Orders Overview */}
-      <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
-        <Card className="lg:col-span-2">
-            <CardHeader>
-                <CardTitle>Productos</CardTitle>
-            </CardHeader>
-            <CardContent>
-                <Table>
-                    <TableHeader>
-                        <TableRow>
-                            <TableHead>Nombre</TableHead>
-                            <TableHead>Categoría</TableHead>
-                            <TableHead>Stock</TableHead>
-                            <TableHead>Progreso de Stock</TableHead>
-                        </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                        {products.slice(0, 5).map(product => (
-                            <TableRow key={product.id}>
-                                <TableCell>
-                                    <div className="flex items-center gap-3">
-                                        <Image src={product.imageUrl} alt={product.name} width={36} height={36} className="rounded-md object-cover" />
-                                        <span className="font-medium">{product.name}</span>
-                                    </div>
-                                </TableCell>
-                                <TableCell>{categories.find(c => c.id === product.categoryId)?.name || 'N/A'}</TableCell>
-                                <TableCell>{product.stock}</TableCell>
-                                <TableCell>
-                                    <div className="w-3/4">
-                                        <Progress value={(product.stock / 50) * 100} className="h-2" />
-                                    </div>
-                                </TableCell>
-                            </TableRow>
-                        ))}
-                    </TableBody>
-                </Table>
-            </CardContent>
-        </Card>
-        <Card>
-          <CardHeader>
-            <CardTitle>Resumen de Servicios</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <ul className="space-y-4">
-              {services.slice(0, 5).map(service => (
-                <li key={service.id} className="flex items-start gap-3">
-                  <div className="flex-shrink-0">
-                    <Badge className="w-6 h-6 p-0 flex items-center justify-center bg-blue-500">
-                      <Palette className="h-4 w-4 text-white"/>
-                    </Badge>
-                  </div>
-                  <div className="min-w-0 flex-1">
-                    <p className="font-medium truncate">{service.title}</p>
-                    <p className="text-sm text-muted-foreground break-words">{service.description}</p>
-                  </div>
-                </li>
-              ))}
-            </ul>
-          </CardContent>
-        </Card>
+      {/* Main Charts */}
+      <div className="grid grid-cols-1 gap-6 lg:grid-cols-5">
+         <div className="lg:col-span-3">
+          <ChartCard 
+            title="Inventario de Productos" 
+            chartData={productInventoryData} 
+            dataKey="stock" 
+            type="line" 
+          />
+         </div>
+         <div className="lg:col-span-2">
+           <ChartCard 
+            title="Productos por Categoría" 
+            chartData={productStockData} 
+            dataKey="total" 
+            type="bar"
+            layout='vertical'
+          />
+         </div>
       </div>
     </div>
   );
