@@ -21,15 +21,34 @@ interface AdminHeaderProps {
   loggedInUser: { name: string; email: string };
   testimonials: Testimonial[];
   setActiveSection: (section: string) => void;
+  hasUnseenNotifications: boolean;
+  setHasUnseenNotifications: (value: boolean) => void;
 }
 
-export function AdminHeader({ pageName, onLogout, loggedInUser, testimonials, setActiveSection }: AdminHeaderProps) {
+export function AdminHeader({ 
+  pageName, 
+  onLogout, 
+  loggedInUser, 
+  testimonials, 
+  setActiveSection,
+  hasUnseenNotifications,
+  setHasUnseenNotifications,
+}: AdminHeaderProps) {
     const { toggleSidebar } = useSidebarContext();
     const pendingTestimonials = testimonials.filter(t => t.status === 'pending');
 
-    const handleNotificationClick = () => {
+    const handleNotificationClick = (e: React.MouseEvent) => {
+        e.preventDefault(); // Evita que el menú se cierre si ya está abierto
         setActiveSection('testimonials');
     };
+
+    const handleBellClick = () => {
+        // Al hacer clic en la campana, marcamos las notificaciones como vistas
+        if (hasUnseenNotifications) {
+            setHasUnseenNotifications(false);
+        }
+    };
+
 
   return (
     <header className="sticky top-0 z-30 flex h-16 items-center gap-4 border-b bg-background/80 backdrop-blur-sm px-6">
@@ -55,11 +74,11 @@ export function AdminHeader({ pageName, onLogout, loggedInUser, testimonials, se
             </DropdownMenuContent>
         </DropdownMenu>
 
-        <DropdownMenu>
+        <DropdownMenu onOpenChange={(isOpen) => { if (isOpen) handleBellClick(); }}>
             <DropdownMenuTrigger asChild>
                 <Button variant="ghost" size="icon" className="relative">
                     <Bell className="h-5 w-5" />
-                    {pendingTestimonials.length > 0 && (
+                    {pendingTestimonials.length > 0 && hasUnseenNotifications && (
                        <span className="absolute top-0 right-0 inline-flex items-center justify-center px-2 py-1 text-xs font-bold leading-none text-red-100 transform translate-x-1/2 -translate-y-1/2 bg-red-600 rounded-full">
                          {pendingTestimonials.length}
                        </span>

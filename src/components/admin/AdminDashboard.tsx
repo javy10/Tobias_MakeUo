@@ -517,6 +517,58 @@ export function AdminDashboard({
         </Dialog>
     );
   };
+  
+    const statusTranslations: { [key in Testimonial['status']]: string } = {
+        pending: 'Pendiente',
+        approved: 'Aprobado',
+        rejected: 'Rechazado',
+    };
+    
+    const TestimonialsTable = ({ list, title }: { list: Testimonial[], title: string }) => {
+        if (list.length === 0) return null;
+        return (
+            <div className="space-y-4">
+                <h3 className="text-xl font-semibold">{title}</h3>
+                <Table>
+                    <TableHeader>
+                        <TableRow>
+                            <TableHead>Autor</TableHead>
+                            <TableHead>Testimonio</TableHead>
+                            <TableHead>Estado</TableHead>
+                            <TableHead className="text-right">Acciones</TableHead>
+                        </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                        {list.map(t => (
+                            <TableRow key={t.id}>
+                                <TableCell className="font-bold">{t.author}</TableCell>
+                                <TableCell className="max-w-xs truncate">{t.text}</TableCell>
+                                <TableCell>
+                                    <Badge variant={t.status === 'approved' ? 'default' : t.status === 'pending' ? 'secondary' : 'destructive'} className={cn(
+                                        {'bg-green-100 text-green-800': t.status === 'approved'},
+                                        {'bg-yellow-100 text-yellow-800': t.status === 'pending'},
+                                        {'bg-red-100 text-red-800': t.status === 'rejected'}
+                                    )}>{statusTranslations[t.status]}</Badge>
+                                </TableCell>
+                                <TableCell className="text-right">
+                                    {t.status !== 'approved' && <Button variant="ghost" size="icon" onClick={() => handleUpdateTestimonialStatus(t.id, 'approved')}><ThumbsUp className="w-4 h-4 text-green-600"/></Button>}
+                                    {t.status !== 'rejected' && <Button variant="ghost" size="icon" onClick={() => handleUpdateTestimonialStatus(t.id, 'rejected')}><ThumbsDown className="w-4 h-4 text-orange-600"/></Button>}
+                                    <AlertDialog>
+                                        <AlertDialogTrigger asChild><Button variant="ghost" size="icon"><Trash2 className="w-4 h-4 text-destructive" /></Button></AlertDialogTrigger>
+                                        <AlertDialogContent>
+                                            <AlertDialogHeader><AlertDialogTitle>¿Estás completamente seguro?</AlertDialogTitle><AlertDialogDescription>Esta acción no se puede deshacer. Esto eliminará permanentemente el testimonio.</AlertDialogDescription></AlertDialogHeader>
+                                            <AlertDialogFooter><AlertDialogCancel>Cancelar</AlertDialogCancel><AlertDialogAction onClick={() => handleDeleteTestimonial(t.id)}>Eliminar</AlertDialogAction></AlertDialogFooter>
+                                        </AlertDialogContent>
+                                    </AlertDialog>
+                                </TableCell>
+                            </TableRow>
+                        ))}
+                    </TableBody>
+                </Table>
+            </div>
+        );
+    };
+
 
   const renderContent = () => {
     switch (section) {
@@ -808,56 +860,20 @@ export function AdminDashboard({
               </CardContent>
             </Card>
         );
-      case 'testimonials':
-        return (
-          <Card>
-            <CardHeader><CardTitle className="font-headline">Gestionar Testimonios</CardTitle></CardHeader>
-            <CardContent>
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Autor</TableHead>
-                    <TableHead>Testimonio</TableHead>
-                    <TableHead>Estado</TableHead>
-                    <TableHead className="text-right">Acciones</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {testimonials.map(t => (
-                    <TableRow key={t.id}>
-                      <TableCell className="font-bold">{t.author}</TableCell>
-                      <TableCell className="max-w-xs truncate">{t.text}</TableCell>
-                      <TableCell>
-                        <Badge variant={t.status === 'approved' ? 'default' : t.status === 'pending' ? 'secondary' : 'destructive'} className={cn(t.status === 'approved' && 'bg-green-100 text-green-800')}>{t.status}</Badge>
-                      </TableCell>
-                      <TableCell className="text-right">
-                        {t.status !== 'approved' && <Button variant="ghost" size="icon" onClick={() => handleUpdateTestimonialStatus(t.id, 'approved')}><ThumbsUp className="w-4 h-4 text-green-600"/></Button>}
-                        {t.status !== 'rejected' && <Button variant="ghost" size="icon" onClick={() => handleUpdateTestimonialStatus(t.id, 'rejected')}><ThumbsDown className="w-4 h-4 text-orange-600"/></Button>}
-                        <AlertDialog>
-                          <AlertDialogTrigger asChild>
-                            <Button variant="ghost" size="icon"><Trash2 className="w-4 h-4 text-destructive" /></Button>
-                          </AlertDialogTrigger>
-                          <AlertDialogContent>
-                            <AlertDialogHeader>
-                              <AlertDialogTitle>¿Estás completamente seguro?</AlertDialogTitle>
-                              <AlertDialogDescription>
-                                Esta acción no se puede deshacer. Esto eliminará permanentemente el testimonio.
-                              </AlertDialogDescription>
-                            </AlertDialogHeader>
-                            <AlertDialogFooter>
-                              <AlertDialogCancel>Cancelar</AlertDialogCancel>
-                              <AlertDialogAction onClick={() => handleDeleteTestimonial(t.id)}>Eliminar</AlertDialogAction>
-                            </AlertDialogFooter>
-                          </AlertDialogContent>
-                        </AlertDialog>
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </CardContent>
-          </Card>
-        );
+        case 'testimonials':
+            const pendingTestimonials = testimonials.filter(t => t.status === 'pending');
+            const approvedTestimonials = testimonials.filter(t => t.status === 'approved');
+            const rejectedTestimonials = testimonials.filter(t => t.status === 'rejected');
+            return (
+                <Card>
+                    <CardHeader><CardTitle className="font-headline">Gestionar Testimonios</CardTitle></CardHeader>
+                    <CardContent className="space-y-8">
+                        <TestimonialsTable list={pendingTestimonials} title="Pendientes" />
+                        <TestimonialsTable list={approvedTestimonials} title="Aprobados" />
+                        <TestimonialsTable list={rejectedTestimonials} title="Rechazados" />
+                    </CardContent>
+                </Card>
+            );
       case 'users':
         return (
           <Card>

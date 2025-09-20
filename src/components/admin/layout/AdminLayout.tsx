@@ -1,7 +1,7 @@
 
 'use client';
 
-import { useState, createContext, useContext, type ReactNode } from 'react';
+import { useState, createContext, useContext, type ReactNode, useEffect } from 'react';
 import { Sidebar } from './Sidebar';
 import { AdminHeader } from './AdminHeader';
 import type { User, AppState } from '@/lib/types';
@@ -33,6 +33,17 @@ interface AdminLayoutProps {
 
 export function AdminLayout({ children, loggedInUser, onLogout, appState, activeSection, setActiveSection }: AdminLayoutProps) {
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+    const [hasUnseenNotifications, setHasUnseenNotifications] = useState(false);
+
+    useEffect(() => {
+        // Cada vez que el número de testimonios pendientes cambie (y sea mayor que 0),
+        // consideramos que hay notificaciones no vistas.
+        const pendingCount = appState.testimonials.filter(t => t.status === 'pending').length;
+        if (pendingCount > 0) {
+            setHasUnseenNotifications(true);
+        }
+    }, [appState.testimonials]);
+
 
     const toggleSidebar = () => setIsSidebarOpen(!isSidebarOpen);
 
@@ -52,6 +63,8 @@ export function AdminLayout({ children, loggedInUser, onLogout, appState, active
                     loggedInUser={loggedInUser}
                     testimonials={appState.testimonials}
                     setActiveSection={setActiveSection}
+                    hasUnseenNotifications={hasUnseenNotifications}
+                    setHasUnseenNotifications={setHasUnseenNotifications}
                 />
                 <main className="flex-1 p-6">
                     {children}
