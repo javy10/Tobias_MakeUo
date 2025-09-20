@@ -2,41 +2,43 @@
 'use client';
 
 import React, { useState } from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../ui/card';
 
-// Function to darken a color (for the 3D effect)
-const darkenColor = (color: string, amount: number) => {
-    let usePound = false;
-    if (color[0] === "#") {
-        color = color.slice(1);
-        usePound = true;
+// Function to darken a hex color
+const darkenColor = (hex: string, amount: number): string => {
+  let usePound = false;
+  if (hex[0] === "#") {
+    hex = hex.slice(1);
+    usePound = true;
+  }
+  const num = parseInt(hex, 16);
+  let r = (num >> 16) - amount;
+  if (r < 0) r = 0;
+  let b = ((num >> 8) & 0x00FF) - amount;
+  if (b < 0) b = 0;
+  let g = (num & 0x0000FF) - amount;
+  if (g < 0) g = 0;
+  return (usePound ? "#" : "") + (g | (b << 8) | (r << 16)).toString(16).padStart(6, '0');
+};
+
+// Function to convert HSL color string to HEX
+const hslToHex = (hslStr: string): string => {
+    // This function will only work on the client-side
+    if (typeof window === 'undefined') {
+        return '#cccccc'; // Default color for SSR
     }
-    const num = parseInt(color, 16);
-    let r = (num >> 16) - amount;
-    if (r < 0) r = 0;
-    let b = ((num >> 8) & 0x00FF) - amount;
-    if (b < 0) b = 0;
-    let g = (num & 0x0000FF) - amount;
-    if (g < 0) g = 0;
-    return (usePound ? "#" : "") + (g | (b << 8) | (r << 16)).toString(16).padStart(6, '0');
-};
+    // Create a temporary element to resolve the CSS variable
+    const tempDiv = document.createElement('div');
+    tempDiv.style.color = hslStr;
+    document.body.appendChild(tempDiv);
+    const computedColor = window.getComputedStyle(tempDiv).color;
+    document.body.removeChild(tempDiv);
 
+    // computedColor will be in 'rgb(r, g, b)' format
+    const rgb = computedColor.match(/\d+/g);
+    if (!rgb || rgb.length < 3) return '#cccccc';
 
-const hslToHex = (h: number, s: number, l: number): string => {
-    l /= 100;
-    const a = s * Math.min(l, 1 - l) / 100;
-    const f = (n: number) => {
-        const k = (n + h / 30) % 12;
-        const color = l - a * Math.max(Math.min(k - 3, 9 - k, 1), -1);
-        return Math.round(255 * color).toString(16).padStart(2, '0');
-    };
-    return `#${f(0)}${f(8)}${f(4)}`;
-};
-
-const parseHsl = (hslStr: string): [number, number, number] | null => {
-    const match = hslStr.match(/hsl\((\d+)\s(\d+)%\s(\d+)%\)/);
-    if (!match) return null;
-    return [parseInt(match[1]), parseInt(match[2]), parseInt(match[3])];
+    const [r, g, b] = rgb.map(Number);
+    return `#${((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1).padStart(6, '0')}`;
 };
 
 
@@ -52,6 +54,13 @@ interface PieSliceProps {
 }
 
 const PieSlice: React.FC<PieSliceProps> = ({ cx, cy, radius, startAngle, endAngle, color, depth, isHovered }) => {
+  const [hexColor, setHexColor] = useState('#cccccc');
+  
+  // Effect to convert HSL to HEX on the client side
+  React.useEffect(() => {
+    setHexColor(hslToHex(color));
+  }, [color]);
+
   const adjustedRadius = isHovered ? radius * 1.05 : radius;
   const startRad = (startAngle * Math.PI) / 180;
   const endRad = (endAngle * Math.PI) / 180;
@@ -63,8 +72,6 @@ const PieSlice: React.FC<PieSliceProps> = ({ cx, cy, radius, startAngle, endAngl
 
   const largeArcFlag = endAngle - startAngle <= 180 ? '0' : '1';
   
-  const hslValues = parseHsl(color);
-  const hexColor = hslValues ? hslToHex(hslValues[0], hslValues[1], hslValues[2]) : '#cccccc';
   const sideColor = darkenColor(hexColor, 20);
   const bottomColor = darkenColor(hexColor, 40);
 
@@ -153,4 +160,3 @@ export const PieChart3D: React.FC<PieChart3DProps> = ({ data }) => {
     </div>
   );
 };
-
