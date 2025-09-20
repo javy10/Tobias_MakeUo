@@ -23,6 +23,8 @@ export function Sidebar({ activeSection, setActiveSection }: SidebarProps) {
     }
   }
 
+  const visiblePages = pageConfig.filter(p => p.id !== 'about');
+
   return (
     <>
       {/* Mobile Sidebar */}
@@ -47,7 +49,7 @@ export function Sidebar({ activeSection, setActiveSection }: SidebarProps) {
                 </Button>
             </div>
             <nav className="flex-1 space-y-2 p-4">
-            {pageConfig.map((page) => (
+            {visiblePages.map((page) => (
                 <Button
                     key={page.id}
                     variant={activeSection === page.id ? 'default' : 'ghost'}
