@@ -7,7 +7,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../ui
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '../ui/table';
 import { Progress } from '../ui/progress';
 import { ChartCard } from './ChartCard';
-import { Bar, BarChart, ResponsiveContainer, XAxis, YAxis, Tooltip, Pie, PieChart as RechartsPieChart, Cell, Legend } from 'recharts';
+import { Bar, BarChart, ResponsiveContainer, XAxis, YAxis, Tooltip, Pie, PieChart as RechartsPieChart, Cell, Legend, CartesianGrid } from 'recharts';
 
 interface AdminDashboardContentProps {
   appState: AppState;
@@ -21,37 +21,6 @@ interface AdminDashboardContentProps {
   setCategories: React.Dispatch<React.SetStateAction<Category[]>>;
   loggedInUser: User;
 }
-
-const ProductsSummaryCard = ({ products, categories }: { products: Product[], categories: Category[] }) => (
-    <Card className="h-full">
-        <CardHeader>
-            <CardTitle>Resumen de Productos</CardTitle>
-            <CardDescription>
-                Vista rápida del inventario de productos.
-            </CardDescription>
-        </CardHeader>
-        <CardContent>
-            <Table>
-                <TableHeader>
-                    <TableRow>
-                        <TableHead>Categoría</TableHead>
-                        <TableHead>Stock</TableHead>
-                        <TableHead>Progreso de Stock</TableHead>
-                    </TableRow>
-                </TableHeader>
-                <TableBody>
-                    {products.slice(0, 3).map((product) => (
-                        <TableRow key={product.id}>
-                            <TableCell>{categories.find(c => c.id === product.categoryId)?.name || 'N/A'}</TableCell>
-                            <TableCell>{product.stock}</TableCell>
-                            <TableCell><Progress value={product.stock} className="h-2" /></TableCell>
-                        </TableRow>
-                    ))}
-                </TableBody>
-            </Table>
-        </CardContent>
-    </Card>
-);
 
 const ServicesSummaryCard = ({ services }: { services: Service[] }) => (
     <Card className="h-full">
@@ -97,6 +66,13 @@ export function AdminDashboardContent({ appState }: AdminDashboardContentProps) 
     { name: 'Pendientes', value: testimonials.filter(t => t.status === 'pending').length },
     { name: 'Rechazados', value: testimonials.filter(t => t.status === 'rejected').length },
   ];
+
+  const stockByCategoryData = categories.map(category => ({
+    name: category.name,
+    stock: products
+      .filter(p => p.categoryId === category.id)
+      .reduce((acc, p) => acc + p.stock, 0),
+  })).filter(c => c.stock > 0);
 
   const PIE_COLORS = ['hsl(var(--chart-2))', 'hsl(var(--chart-4))', 'hsl(var(--chart-1))'];
 
@@ -174,7 +150,21 @@ export function AdminDashboardContent({ appState }: AdminDashboardContentProps) 
       {/* Mid-level Summary Cards */}
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
         <div className="lg:col-span-2">
-           <ProductsSummaryCard products={products} categories={categories} />
+          <ChartCard
+              title="Resumen de Productos"
+              description="Vista rápida del inventario de productos."
+              icon={BarChart2}
+            >
+              <ResponsiveContainer width="100%" height={250}>
+                <BarChart data={stockByCategoryData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
+                   <CartesianGrid strokeDasharray="3 3" vertical={false} />
+                   <XAxis dataKey="name" stroke="hsl(var(--muted-foreground))" fontSize={12} tickLine={false} axisLine={false} />
+                   <YAxis stroke="hsl(var(--muted-foreground))" fontSize={12} tickLine={false} axisLine={false} />
+                   <Tooltip cursor={{ fill: 'hsl(var(--muted))' }} contentStyle={{ backgroundColor: 'hsl(var(--background))', border: '1px solid hsl(var(--border))' }} />
+                   <Bar dataKey="stock" fill="hsl(var(--chart-2))" radius={[4, 4, 0, 0]} />
+                </BarChart>
+              </ResponsiveContainer>
+            </ChartCard>
         </div>
         <div>
            <ServicesSummaryCard services={services} />
