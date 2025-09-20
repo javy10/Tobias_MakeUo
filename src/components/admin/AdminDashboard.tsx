@@ -18,6 +18,7 @@ import { cn } from '@/lib/utils';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '../ui/dialog';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select';
 import { deleteItemFromDB, fileToStorable, saveItemToDB } from '@/lib/db';
+import Link from 'next/link';
 
 // Function to read a file as a Data URL (Base64) - ONLY FOR IMAGES
 const readImageAsDataURL = (file: File): Promise<string> => {
@@ -599,7 +600,12 @@ export function AdminDashboard({
             <h1 className="text-4xl font-bold font-headline text-primary">Panel Administrativo</h1>
             <p className="text-muted-foreground">Bienvenido, {loggedInUser.name}</p>
           </div>
-          <Button onClick={onLogout} variant="outline" className="rounded-full">Cerrar Sesión</Button>
+          <div className="flex items-center gap-2">
+            <Button asChild variant="outline" className="rounded-full">
+              <Link href="/">Volver al Sitio</Link>
+            </Button>
+            <Button onClick={onLogout} variant="outline" className="rounded-full">Cerrar Sesión</Button>
+          </div>
         </header>
 
         <Tabs defaultValue="hero">
