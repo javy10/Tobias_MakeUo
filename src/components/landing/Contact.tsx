@@ -79,7 +79,7 @@ export function Contact() {
         </Card>
         <div className="rounded-xl overflow-hidden shadow-xl aspect-video md:aspect-auto md:h-full">
            <iframe
-              src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3328.718533355598!2d-89.19121862569527!3d13.62319019623048!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x8f633000d986b685%3A0x63351206f685c7f8!2sTobias%20MakeUp!5e0!3m2!1ses-419!2ssv!4v1722467339712!5m2!1ses-419!2ssv"
+              src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3878.78600124236!2d-88.957203!3d14.092522!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zMTTCsDA1JzMxLjEiTiA4OMKwNTcnMjUuOSJX!5e0!3m2!1ses-419!2ssv!4v1722522851000!5m2!1ses-419!2ssv"
               width="100%"
               height="100%"
               style={{ border: 0 }}
