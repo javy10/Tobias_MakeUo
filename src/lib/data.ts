@@ -65,7 +65,7 @@ export const initialProducts: Product[] = [
     id: '3',
     name: "Labial Líquido Mate 'Rojo Pasión'",
     description: "Color intenso de larga duración que no reseca tus labios.",
-    stock: 0,
+    stock: 20,
     imageUrl: productImage3?.imageUrl || "https://picsum.photos/seed/product3/400/400",
     categoryId: '3',
   },
