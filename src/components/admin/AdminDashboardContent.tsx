@@ -9,6 +9,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '.
 import { Badge } from '../ui/badge';
 import Image from 'next/image';
 import { Progress } from '../ui/progress';
+import { cn } from '@/lib/utils';
 
 interface AdminDashboardContentProps {
   appState: AppState;
