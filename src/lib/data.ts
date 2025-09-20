@@ -76,6 +76,8 @@ export const initialGalleryItems: GalleryItem[] = PlaceHolderImages.filter(img =
   url: img.imageUrl,
   alt: img.description,
   type: 'image',
+  title: img.description,
+  description: "Un ejemplo de nuestro trabajo de alta calidad, enfocado en realzar la belleza natural.",
 }));
 
 export const initialTestimonials: Testimonial[] = [

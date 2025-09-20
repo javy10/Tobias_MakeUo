@@ -1,4 +1,5 @@
 
+
 export interface Category {
   id: string;
   name: string;
@@ -17,6 +18,8 @@ export interface GalleryItem {
   alt: string;
   type: 'image' | 'video';
   file?: File; // The actual file, to be stored in IndexedDB
+  title: string;
+  description: string;
 }
 
 export interface Testimonial {

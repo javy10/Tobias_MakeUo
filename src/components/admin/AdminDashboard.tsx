@@ -253,7 +253,9 @@ export function AdminDashboard({
         const newGalleryItem: GalleryItem = {
             id: crypto.randomUUID(),
             url: URL.createObjectURL(file), // Create a temporary URL for immediate display
-            alt: formData.get('alt') as string,
+            alt: formData.get('title') as string, // Use title as alt text
+            title: formData.get('title') as string,
+            description: formData.get('description') as string,
             type: type,
             file: file, // Include the file object for DB storage
         };
@@ -281,11 +283,11 @@ export function AdminDashboard({
     }
   };
   
-  const handleUpdateGalleryItem = async (id: string, updatedItem: Omit<GalleryItem, 'id' | 'url' | 'type'>, newMediaFile?: File) => {
+  const handleUpdateGalleryItem = async (id: string, updatedItem: Omit<GalleryItem, 'id' | 'url' | 'type' | 'file' | 'alt'>, newMediaFile?: File) => {
     const currentItem = galleryItems.find(item => item.id === id);
     if (!currentItem) return;
 
-    let updatedGalleryItem: GalleryItem = { ...currentItem, ...updatedItem };
+    let updatedGalleryItem: GalleryItem = { ...currentItem, ...updatedItem, alt: updatedItem.title };
 
     if (newMediaFile) {
         try {
@@ -550,7 +552,7 @@ export function AdminDashboard({
     );
   };
 
-  const EditGalleryItemDialog = ({ item, onSave }: { item: GalleryItem; onSave: (id: string, data: Omit<GalleryItem, 'id' | 'url' | 'type'>, file?: File) => void }) => {
+  const EditGalleryItemDialog = ({ item, onSave }: { item: GalleryItem; onSave: (id: string, data: Omit<GalleryItem, 'id' | 'url' | 'type' | 'file' | 'alt'>, file?: File) => void }) => {
     const [open, setOpen] = useState(false);
     const [preview, setPreview] = useState<{ url: string; type: 'image' | 'video' } | null>(null);
 
@@ -558,7 +560,8 @@ export function AdminDashboard({
         e.preventDefault();
         const formData = new FormData(e.currentTarget);
         const updatedData = {
-            alt: formData.get('alt') as string,
+            title: formData.get('title') as string,
+            description: formData.get('description') as string,
         };
         const mediaFile = formData.get('mediaFile') as File;
         onSave(item.id, updatedData, mediaFile && mediaFile.size > 0 ? mediaFile : undefined);
@@ -573,7 +576,8 @@ export function AdminDashboard({
             <DialogContent>
                 <DialogHeader><DialogTitle>Editar Elemento de Galería</DialogTitle></DialogHeader>
                 <form onSubmit={handleSubmit} className="space-y-4">
-                    <Input name="alt" defaultValue={item.alt} />
+                    <Input name="title" placeholder="Título" defaultValue={item.title} required/>
+                    <Textarea name="description" placeholder="Descripción Breve" defaultValue={item.description} required />
                     <Input name="mediaFile" type="file" accept="image/*,video/*" onChange={(e) => handleMediaFilePreview(e, setPreview)} />
                     {preview && (
                         preview.type === 'image' ? (
@@ -830,7 +834,8 @@ export function AdminDashboard({
                       </div>
                     )}
                   </div>
-                  <Input name="alt" placeholder="Descripción (texto alternativo)" required />
+                  <Input name="title" placeholder="Título del trabajo" required />
+                  <Textarea name="description" placeholder="Descripción breve del trabajo" required />
                   <Button type="submit" className="rounded-full">Añadir a la Galería</Button>
                 </form>
                 <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
