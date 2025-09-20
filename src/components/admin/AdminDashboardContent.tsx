@@ -74,7 +74,7 @@ export function AdminDashboardContent({ appState }: AdminDashboardContentProps) 
       .reduce((acc, p) => acc + p.stock, 0),
   })).filter(c => c.stock > 0);
 
-  const PIE_COLORS = ['hsl(217, 91%, 60%)', 'hsl(160, 84%, 39%)', 'hsl(39, 100%, 50%)', 'hsl(var(--chart-4))', 'hsl(var(--chart-5))'];
+  const PIE_COLORS = ['hsl(260, 80%, 60%)', 'hsl(330, 85%, 65%)', 'hsl(180, 70%, 45%)', 'hsl(30, 95%, 60%)', 'hsl(210, 90%, 55%)'];
   
   // Map colors to data for the 3D pie chart
   const productsByCategoryDataWithColors = productsByCategoryData.map((item, index) => ({
