@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState } from 'react';
@@ -39,42 +40,56 @@ export function Contact() {
   return (
     <section id="contacto" className="container mx-auto px-4 py-16 md:py-24">
       <h2 className="text-4xl font-bold font-headline text-center mb-12">Contáctanos</h2>
-      <Card className="max-w-xl mx-auto shadow-xl">
-        <CardHeader>
-          <CardTitle className="font-headline text-2xl text-center">Envíanos un Mensaje</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <form onSubmit={handleSubmit} className="space-y-6">
-            <div className="space-y-2">
-              <Label htmlFor="name">Nombre</Label>
-              <Input 
-                id="name" 
-                name="name" 
-                type="text" 
-                placeholder="Tu nombre completo" 
-                required 
-                value={name} 
-                onChange={(e) => setName(e.target.value)} 
-              />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="message">Mensaje</Label>
-              <Textarea 
-                id="message" 
-                name="message" 
-                placeholder="¿En qué podemos ayudarte?" 
-                required 
-                rows={5} 
-                value={message} 
-                onChange={(e) => setMessage(e.target.value)} 
-              />
-            </div>
-            <Button type="submit" className="w-full rounded-full bg-primary text-primary-foreground hover:bg-primary/90 text-lg py-6">
-              Enviar Mensaje por WhatsApp
-            </Button>
-          </form>
-        </CardContent>
-      </Card>
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-start">
+        <Card className="shadow-xl">
+          <CardHeader>
+            <CardTitle className="font-headline text-2xl text-center">Envíanos un Mensaje</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <form onSubmit={handleSubmit} className="space-y-6">
+              <div className="space-y-2">
+                <Label htmlFor="name">Nombre</Label>
+                <Input 
+                  id="name" 
+                  name="name" 
+                  type="text" 
+                  placeholder="Tu nombre completo" 
+                  required 
+                  value={name} 
+                  onChange={(e) => setName(e.target.value)} 
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="message">Mensaje</Label>
+                <Textarea 
+                  id="message" 
+                  name="message" 
+                  placeholder="¿En qué podemos ayudarte?" 
+                  required 
+                  rows={5} 
+                  value={message} 
+                  onChange={(e) => setMessage(e.target.value)} 
+                />
+              </div>
+              <Button type="submit" className="w-full rounded-full bg-primary text-primary-foreground hover:bg-primary/90 text-lg py-6">
+                Enviar Mensaje por WhatsApp
+              </Button>
+            </form>
+          </CardContent>
+        </Card>
+        <div className="rounded-xl overflow-hidden shadow-xl aspect-video md:aspect-auto md:h-full">
+           <iframe
+              src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3328.718533355598!2d-89.19121862569527!3d13.62319019623048!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x8f633000d986b685%3A0x63351206f685c7f8!2sTobias%20MakeUp!5e0!3m2!1ses-419!2ssv!4v1722467339712!5m2!1ses-419!2ssv"
+              width="100%"
+              height="100%"
+              style={{ border: 0 }}
+              allowFullScreen={false}
+              loading="lazy"
+              referrerPolicy="no-referrer-when-downgrade"
+              title="Ubicación de Tobias MakeUp"
+            ></iframe>
+        </div>
+      </div>
     </section>
   );
 }
