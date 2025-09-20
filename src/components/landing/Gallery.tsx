@@ -15,29 +15,37 @@ export function Gallery({ galleryItems }: GalleryProps) {
   const videoRefs = useRef<(HTMLVideoElement | null)[]>([]);
 
   const handleVideoClick = (index: number) => {
-    const video = videoRefs.current[index];
-    const overlay = video?.nextElementSibling;
+    const clickedVideo = videoRefs.current[index];
+    if (!clickedVideo) return;
 
-    if (video) {
-      if (video.paused) {
-        video.play();
-        video.muted = false; // Unmute on play
-        video.setAttribute('controls', 'true');
-        if (overlay) {
-          overlay.classList.add('opacity-0', 'pointer-events-none');
+    // Pause all other videos before playing the new one
+    videoRefs.current.forEach((video, i) => {
+      if (video && i !== index && !video.paused) {
+        video.pause();
+        const otherOverlay = video.nextElementSibling;
+        if (otherOverlay) {
+          otherOverlay.classList.remove('opacity-0', 'pointer-events-none');
         }
+        video.removeAttribute('controls');
+        video.muted = true; // Re-mute the video
+      }
+    });
+
+    const overlay = clickedVideo.nextElementSibling;
+    if (clickedVideo.paused) {
+      clickedVideo.play();
+      clickedVideo.muted = false; // Unmute on play
+      clickedVideo.setAttribute('controls', 'true');
+      if (overlay) {
+        overlay.classList.add('opacity-0', 'pointer-events-none');
       }
     }
   };
 
   const handlePause = (index: number) => {
      const video = videoRefs.current[index];
-     const overlay = video?.nextElementSibling;
      if (video) {
         video.setAttribute('controls', 'true');
-         if (overlay) {
-          overlay.classList.remove('opacity-0', 'pointer-events-none');
-        }
      }
   }
 
@@ -70,6 +78,7 @@ export function Gallery({ galleryItems }: GalleryProps) {
                       loop
                       muted // Start muted
                       onPause={() => handlePause(index)}
+                      onClick={() => handleVideoClick(index)} // Allow clicking the video itself
                     />
                     {/* Clickable overlay with Play Icon */}
                     <div 
