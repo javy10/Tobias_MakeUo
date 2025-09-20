@@ -1,15 +1,15 @@
 
 'use client';
 import { useState, useEffect } from 'react';
-import { AdminDashboard as AdminDashboardComponent } from '@/components/admin/AdminDashboard';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
 import type { User } from '@/lib/types';
 import { useRouter } from 'next/navigation';
 import { useAppContext } from '../layout';
-
+import { AdminLayout } from '@/components/admin/layout/AdminLayout';
+import { AdminDashboardContent } from '@/components/admin/AdminDashboardContent';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Label } from '@/components/ui/label';
+import { Input } from '@/components/ui/input';
+import { Button } from '@/components/ui/button';
 
 export default function AdminPage() {
   const { 
@@ -68,7 +68,7 @@ export default function AdminPage() {
   
   if (isLoadingSession || !isStateLoaded) {
     // Show a loader while checking session and loading app state
-    return <div>Cargando...</div>;
+    return <div className="flex h-screen items-center justify-center">Cargando...</div>;
   }
 
   if (!authenticatedUser) {
@@ -115,25 +115,19 @@ export default function AdminPage() {
   }
 
   return (
-    <AdminDashboardComponent
-      loggedInUser={authenticatedUser}
-      users={appState.users}
-      setUsers={setUsers}
-      onLogout={handleLogout}
-      heroContent={appState.heroContent}
-      setHeroContent={setHeroContent}
-      services={appState.services}
-      setServices={setServices}
-      products={appState.products}
-      setProducts={setProducts}
-      galleryItems={appState.galleryItems}
-      setGalleryItems={setGalleryItems}
-      testimonials={appState.testimonials}
-      setTestimonials={setTestimonials}
-      aboutMeContent={appState.aboutMeContent}
-      setAboutMeContent={setAboutMeContent}
-      categories={appState.categories}
-      setCategories={setCategories}
-    />
+    <AdminLayout loggedInUser={authenticatedUser} onLogout={handleLogout}>
+       <AdminDashboardContent
+        appState={appState}
+        setHeroContent={setHeroContent}
+        setServices={setServices}
+        setProducts={setProducts}
+        setGalleryItems={setGalleryItems}
+        setTestimonials={setTestimonials}
+        setAboutMeContent={setAboutMeContent}
+        setUsers={setUsers}
+        setCategories={setCategories}
+        loggedInUser={authenticatedUser}
+      />
+    </AdminLayout>
   );
 }

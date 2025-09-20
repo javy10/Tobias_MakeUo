@@ -1,5 +1,4 @@
 
-
 export interface Category {
   id: string;
   name: string;
@@ -57,4 +56,16 @@ export interface User {
   name: string;
   email: string;
   password?: string; // Should be handled securely
+}
+
+// Global App State
+export interface AppState {
+  heroContent: HeroContent;
+  services: Service[];
+  products: Product[];
+  galleryItems: GalleryItem[];
+  testimonials: Testimonial[];
+  aboutMeContent: AboutMeContent;
+  users: User[];
+  categories: Category[];
 }
