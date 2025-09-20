@@ -2,11 +2,10 @@
 'use client';
 import type { AppState, HeroContent, Service, GalleryItem, Testimonial, Product, AboutMeContent, User, Category } from '@/lib/types';
 import { StatCard } from './StatCard';
-import { Brush, FileText, ImageIcon, MessageSquare, Palette, ShoppingBag, Sparkles, Star, Users } from 'lucide-react';
+import { Palette, ShoppingBag, Star, ImageIcon } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../ui/card';
-import Image from 'next/image';
-import Link from 'next/link';
-import { Badge } from '../ui/badge';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '../ui/table';
+import { Progress } from '../ui/progress';
 
 interface AdminDashboardContentProps {
   appState: AppState;
@@ -21,55 +20,66 @@ interface AdminDashboardContentProps {
   loggedInUser: User;
 }
 
-const UsersSummaryCard = ({ users }: { users: User[] }) => (
+const ProductsSummaryCard = ({ products, categories }: { products: Product[], categories: Category[] }) => (
     <Card className="h-full">
         <CardHeader>
-            <CardTitle>Resumen de Usuarios</CardTitle>
+            <CardTitle>Resumen de Productos</CardTitle>
             <CardDescription>
-                Actualmente hay {users.length} usuarios registrados en el sistema.
+                Vista rápida del inventario de productos.
             </CardDescription>
         </CardHeader>
         <CardContent>
-            <div className="space-y-4">
-                {users.slice(0, 4).map((user) => (
-                    <div key={user.id} className="flex items-center gap-4">
-                        <div className="w-10 h-10 rounded-full bg-gradient-to-tr from-primary to-accent text-primary-foreground flex items-center justify-center font-bold">
-                            {user.name.charAt(0)}
-                        </div>
-                        <div>
-                            <p className="font-semibold">{user.name}</p>
-                            <p className="text-sm text-muted-foreground">{user.email}</p>
-                        </div>
-                    </div>
-                ))}
-            </div>
+            <Table>
+                <TableHeader>
+                    <TableRow>
+                        <TableHead>Categoría</TableHead>
+                        <TableHead>Stock</TableHead>
+                        <TableHead>Progreso de Stock</TableHead>
+                    </TableRow>
+                </TableHeader>
+                <TableBody>
+                    {products.slice(0, 3).map((product) => (
+                        <TableRow key={product.id}>
+                            <TableCell>{categories.find(c => c.id === product.categoryId)?.name || 'N/A'}</TableCell>
+                            <TableCell>{product.stock}</TableCell>
+                            <TableCell><Progress value={product.stock} className="h-2" /></TableCell>
+                        </TableRow>
+                    ))}
+                </TableBody>
+            </Table>
         </CardContent>
     </Card>
 );
 
-const CategoriesSummaryCard = ({ categories }: { categories: Category[] }) => (
+const ServicesSummaryCard = ({ services }: { services: Service[] }) => (
     <Card className="h-full">
         <CardHeader>
-            <CardTitle>Categorías de Productos</CardTitle>
-            <CardDescription>
-                Gestiona y organiza tus productos.
+            <CardTitle>Resumen de Servicios</CardTitle>
+             <CardDescription>
+                Servicios ofrecidos actualmente.
             </CardDescription>
         </CardHeader>
         <CardContent>
-            <div className="flex flex-wrap gap-2">
-                {categories.map((category) => (
-                    <Badge key={category.id} variant="secondary" className="text-sm">
-                       {category.name}
-                    </Badge>
+            <ul className="space-y-4">
+                {services.map((service) => (
+                    <li key={service.id} className="flex items-start gap-3">
+                        <div className="p-2 bg-muted rounded-full">
+                           <Palette className="h-4 w-4 text-primary" />
+                        </div>
+                        <div>
+                            <p className="font-semibold">{service.title}</p>
+                            <p className="text-sm text-muted-foreground break-words">{service.description}</p>
+                        </div>
+                    </li>
                 ))}
-            </div>
+            </ul>
         </CardContent>
     </Card>
 );
 
 
 export function AdminDashboardContent({ appState }: AdminDashboardContentProps) {
-  const { products, services, testimonials, galleryItems, categories, users } = appState;
+  const { products, services, testimonials, galleryItems, categories } = appState;
   
   const totalStock = products.reduce((acc, p) => acc + p.stock, 0);
   
@@ -112,10 +122,10 @@ export function AdminDashboardContent({ appState }: AdminDashboardContentProps) 
       {/* Mid-level Summary Cards */}
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
         <div className="lg:col-span-2">
-           <UsersSummaryCard users={users} />
+           <ProductsSummaryCard products={products} categories={categories} />
         </div>
         <div>
-           <CategoriesSummaryCard categories={categories} />
+           <ServicesSummaryCard services={services} />
         </div>
       </div>
     </div>
