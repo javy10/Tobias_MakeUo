@@ -2,10 +2,12 @@
 'use client';
 import type { AppState, HeroContent, Service, GalleryItem, Testimonial, Product, AboutMeContent, User, Category } from '@/lib/types';
 import { StatCard } from './StatCard';
-import { Palette, ShoppingBag, Star, ImageIcon, Users, BarChart2, PieChart as PieChartIcon } from 'lucide-react';
+import { Palette, ShoppingBag, Star, ImageIcon } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../ui/card';
 import { ChartCard } from './ChartCard';
-import { Bar, BarChart, ResponsiveContainer, XAxis, YAxis, Tooltip, Pie, PieChart as RechartsPieChart, Cell, Legend, CartesianGrid } from 'recharts';
+import { Bar, BarChart, ResponsiveContainer, XAxis, Tooltip, Legend } from 'recharts';
+import { PieChart3D } from './PieChart3D';
+
 
 interface AdminDashboardContentProps {
   appState: AppState;
@@ -73,6 +75,18 @@ export function AdminDashboardContent({ appState }: AdminDashboardContentProps) 
   })).filter(c => c.stock > 0);
 
   const PIE_COLORS = ['hsl(var(--chart-1))', 'hsl(var(--chart-2))', 'hsl(var(--chart-3))', 'hsl(var(--chart-4))', 'hsl(var(--chart-5))'];
+  
+  // Map colors to data for the 3D pie chart
+  const productsByCategoryDataWithColors = productsByCategoryData.map((item, index) => ({
+    ...item,
+    color: PIE_COLORS[index % PIE_COLORS.length],
+  }));
+
+  const testimonialStatusDataWithColors = testimonialStatusData.map((item, index) => ({
+    ...item,
+    color: PIE_COLORS[index % PIE_COLORS.length],
+  }));
+
 
   return (
     <div className="space-y-6">
@@ -113,58 +127,15 @@ export function AdminDashboardContent({ appState }: AdminDashboardContentProps) 
         <ChartCard
           title="Productos por Categoría"
           description={`${products.length} productos en total`}
-          icon={PieChartIcon}
         >
-          <ResponsiveContainer width="100%" height={300}>
-            <RechartsPieChart>
-              <Tooltip
-                cursor={{ fill: 'hsl(var(--muted))' }}
-                contentStyle={{ backgroundColor: 'hsl(var(--background))', border: '1px solid hsl(var(--border))' }}
-              />
-              <Pie
-                data={productsByCategoryData}
-                dataKey="value"
-                nameKey="name"
-                cx="50%"
-                cy="50%"
-                outerRadius={100}
-                labelLine={false}
-                label={({ cx, cy, midAngle, innerRadius, outerRadius, percent }) => {
-                  const radius = innerRadius + (outerRadius - innerRadius) * 0.5;
-                  const x = cx + radius * Math.cos(-midAngle * (Math.PI / 180));
-                  const y = cy + radius * Math.sin(-midAngle * (Math.PI / 180));
-                  return (
-                    <text x={x} y={y} fill="white" textAnchor={x > cx ? 'start' : 'end'} dominantBaseline="central">
-                      {`${(percent * 100).toFixed(0)}%`}
-                    </text>
-                  );
-                }}
-              >
-                {productsByCategoryData.map((entry, index) => (
-                  <Cell key={`cell-${index}`} fill={PIE_COLORS[index % PIE_COLORS.length]} />
-                ))}
-              </Pie>
-              <Legend iconSize={10} />
-            </RechartsPieChart>
-          </ResponsiveContainer>
+          <PieChart3D data={productsByCategoryDataWithColors} />
         </ChartCard>
 
         <ChartCard
           title="Estado de Testimonios"
           description={`${testimonialsPending} pendientes de revisión`}
-          icon={Star}
         >
-          <ResponsiveContainer width="100%" height={300}>
-             <RechartsPieChart>
-              <Tooltip contentStyle={{ backgroundColor: 'hsl(var(--background))', border: '1px solid hsl(var(--border))' }}/>
-              <Pie data={testimonialStatusData} dataKey="value" nameKey="name" cx="50%" cy="50%" outerRadius={100} label>
-                 {testimonialStatusData.map((entry, index) => (
-                    <Cell key={`cell-${index}`} fill={PIE_COLORS[index % PIE_COLORS.length]} />
-                  ))}
-              </Pie>
-              <Legend iconSize={10} />
-            </RechartsPieChart>
-          </ResponsiveContainer>
+           <PieChart3D data={testimonialStatusDataWithColors} />
         </ChartCard>
       </div>
 
@@ -181,8 +152,8 @@ export function AdminDashboardContent({ appState }: AdminDashboardContentProps) 
               <ResponsiveContainer width="100%" height={250}>
                 <BarChart data={stockByCategoryData} margin={{ top: 20, right: 10, left: -20, bottom: 0 }}>
                    <XAxis dataKey="name" stroke="hsl(var(--muted-foreground))" fontSize={12} tickLine={false} axisLine={false} />
-                   <YAxis stroke="hsl(var(--muted-foreground))" fontSize={12} tickLine={false} axisLine={false} />
                    <Tooltip cursor={{ fill: 'hsl(var(--muted))' }} contentStyle={{ backgroundColor: 'hsl(var(--background))', border: '1px solid hsl(var(--border))', borderRadius: 'var(--radius)' }} />
+                   <Legend />
                    <Bar dataKey="stock" fill="hsl(var(--chart-2))" radius={[4, 4, 0, 0]} />
                 </BarChart>
               </ResponsiveContainer>
