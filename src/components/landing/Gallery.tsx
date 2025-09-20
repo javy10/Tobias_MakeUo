@@ -54,7 +54,7 @@ export function Gallery({ galleryItems }: GalleryProps) {
     <section id="mis-trabajos" className="py-16 md:py-24">
       <div className="container mx-auto px-4">
         <h2 className="text-4xl font-bold font-headline text-center mb-12">Mis Trabajos</h2>
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-8">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8">
           {galleryItems.map((item, index) => (
             <Card key={item.id} className="group overflow-hidden shadow-lg hover:shadow-xl transition-shadow duration-300">
               <div className="relative aspect-square w-full">
@@ -64,7 +64,7 @@ export function Gallery({ galleryItems }: GalleryProps) {
                     alt={item.alt}
                     fill
                     className="object-cover w-full h-full transition-transform duration-300 group-hover:scale-110"
-                    sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw"
+                    sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
                     data-ai-hint={item.alt.split(' ').slice(0, 2).join(' ')}
                   />
                 ) : (
