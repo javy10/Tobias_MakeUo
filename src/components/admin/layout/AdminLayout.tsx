@@ -27,10 +27,11 @@ interface AdminLayoutProps {
   loggedInUser: User;
   onLogout: () => void;
   appState: AppState;
+  activeSection: string;
+  setActiveSection: (section: string) => void;
 }
 
-export function AdminLayout({ children, loggedInUser, onLogout, appState }: AdminLayoutProps) {
-    const [activeSection, setActiveSection] = useState('dashboard');
+export function AdminLayout({ children, loggedInUser, onLogout, appState, activeSection, setActiveSection }: AdminLayoutProps) {
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
     const toggleSidebar = () => setIsSidebarOpen(!isSidebarOpen);

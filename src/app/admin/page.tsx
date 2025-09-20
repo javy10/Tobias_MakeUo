@@ -10,6 +10,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
+import { AdminDashboard } from '@/components/admin/AdminDashboard';
 
 export default function AdminPage() {
   const { 
@@ -31,6 +32,9 @@ export default function AdminPage() {
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const router = useRouter();
+
+  // State for the active section, managed here
+  const [activeSection, setActiveSection] = useState('dashboard');
 
   // Effect to check for a logged-in user in localStorage on component mount
   useEffect(() => {
@@ -114,9 +118,27 @@ export default function AdminPage() {
     );
   }
 
-  return (
-    <AdminLayout loggedInUser={authenticatedUser} onLogout={handleLogout} appState={appState}>
-       <AdminDashboardContent
+  const renderContent = () => {
+    if (activeSection === 'dashboard') {
+      return (
+        <AdminDashboardContent
+          appState={appState}
+          setHeroContent={setHeroContent}
+          setServices={setServices}
+          setProducts={setProducts}
+          setGalleryItems={setGalleryItems}
+          setTestimonials={setTestimonials}
+          setAboutMeContent={setAboutMeContent}
+          setUsers={setUsers}
+          setCategories={setCategories}
+          loggedInUser={authenticatedUser}
+        />
+      );
+    }
+    // For all other sections, render the management component
+    return (
+      <AdminDashboard
+        section={activeSection}
         appState={appState}
         setHeroContent={setHeroContent}
         setServices={setServices}
@@ -128,6 +150,19 @@ export default function AdminPage() {
         setCategories={setCategories}
         loggedInUser={authenticatedUser}
       />
+    );
+  };
+
+
+  return (
+    <AdminLayout 
+      loggedInUser={authenticatedUser} 
+      onLogout={handleLogout} 
+      appState={appState}
+      activeSection={activeSection}
+      setActiveSection={setActiveSection}
+    >
+       {renderContent()}
     </AdminLayout>
   );
 }
