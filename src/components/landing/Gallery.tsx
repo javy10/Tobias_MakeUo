@@ -11,6 +11,22 @@ interface GalleryProps {
 }
 
 export function Gallery({ galleryItems }: GalleryProps) {
+  const handleVideoClick = (e: React.MouseEvent<HTMLVideoElement>) => {
+    const video = e.currentTarget;
+    if (video.hasAttribute('controls')) {
+      // If controls are visible, let them handle the click
+      return;
+    }
+    // If controls are not visible, toggle play/pause and show controls
+    e.preventDefault();
+    if (video.paused) {
+      video.play();
+    } else {
+      video.pause();
+    }
+    video.setAttribute('controls', 'true');
+  };
+
   return (
     <section id="mis-trabajos" className="py-16 md:py-24">
       <div className="container mx-auto px-4">
@@ -38,9 +54,10 @@ export function Gallery({ galleryItems }: GalleryProps) {
                         playsInline
                         loop
                         muted
-                        controls
+                        onClick={handleVideoClick}
+                        onPause={(e) => e.currentTarget.setAttribute('controls', 'true')}
                       />
-                       <div className="absolute inset-0 bg-black/20 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
+                       <div className="absolute inset-0 bg-black/20 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none group-data-[playing=true]:opacity-0">
                         <PlayCircle className="w-16 h-16 text-white/80" />
                       </div>
                     </>
