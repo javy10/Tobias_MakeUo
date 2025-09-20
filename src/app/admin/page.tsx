@@ -161,6 +161,7 @@ export default function AdminPage() {
       appState={appState}
       activeSection={activeSection}
       setActiveSection={setActiveSection}
+      setTestimonials={setTestimonials}
     >
        {renderContent()}
     </AdminLayout>

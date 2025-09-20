@@ -26,6 +26,7 @@ export interface Testimonial {
   text: string;
   author: string;
   status: 'pending' | 'approved' | 'rejected';
+  seen?: boolean;
 }
 
 export interface HeroContent {

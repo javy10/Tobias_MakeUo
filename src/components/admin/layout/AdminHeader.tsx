@@ -21,8 +21,7 @@ interface AdminHeaderProps {
   loggedInUser: { name: string; email: string };
   testimonials: Testimonial[];
   setActiveSection: (section: string) => void;
-  hasUnseenNotifications: boolean;
-  setHasUnseenNotifications: (value: boolean) => void;
+  setTestimonials: (testimonials: Testimonial[] | ((prev: Testimonial[]) => Testimonial[])) => void;
 }
 
 export function AdminHeader({ 
@@ -31,24 +30,19 @@ export function AdminHeader({
   loggedInUser, 
   testimonials, 
   setActiveSection,
-  hasUnseenNotifications,
-  setHasUnseenNotifications,
+  setTestimonials
 }: AdminHeaderProps) {
     const { toggleSidebar } = useSidebarContext();
-    const pendingTestimonials = testimonials.filter(t => t.status === 'pending');
+    const unseenPendingTestimonials = testimonials.filter(t => t.status === 'pending' && !t.seen);
 
-    const handleNotificationClick = (e: React.MouseEvent) => {
-        e.preventDefault(); // Evita que el menú se cierre si ya está abierto
+    const handleNotificationClick = (testimonialId: string) => {
+        // Mark the specific testimonial as seen
+        setTestimonials(prev => 
+            prev.map(t => t.id === testimonialId ? { ...t, seen: true } : t)
+        );
+        // Navigate to the testimonials section
         setActiveSection('testimonials');
     };
-
-    const handleBellClick = () => {
-        // Al hacer clic en la campana, marcamos las notificaciones como vistas
-        if (hasUnseenNotifications) {
-            setHasUnseenNotifications(false);
-        }
-    };
-
 
   return (
     <header className="sticky top-0 z-30 flex h-16 items-center gap-4 border-b bg-background/80 backdrop-blur-sm px-6">
@@ -74,13 +68,13 @@ export function AdminHeader({
             </DropdownMenuContent>
         </DropdownMenu>
 
-        <DropdownMenu onOpenChange={(isOpen) => { if (isOpen) handleBellClick(); }}>
+        <DropdownMenu>
             <DropdownMenuTrigger asChild>
                 <Button variant="ghost" size="icon" className="relative">
                     <Bell className="h-5 w-5" />
-                    {pendingTestimonials.length > 0 && hasUnseenNotifications && (
+                    {unseenPendingTestimonials.length > 0 && (
                        <span className="absolute top-0 right-0 inline-flex items-center justify-center px-2 py-1 text-xs font-bold leading-none text-red-100 transform translate-x-1/2 -translate-y-1/2 bg-red-600 rounded-full">
-                         {pendingTestimonials.length}
+                         {unseenPendingTestimonials.length}
                        </span>
                     )}
                     <span className="sr-only">Notificaciones</span>
@@ -89,9 +83,9 @@ export function AdminHeader({
             <DropdownMenuContent align="end" className="w-80">
                 <DropdownMenuLabel>Notificaciones</DropdownMenuLabel>
                 <DropdownMenuSeparator />
-                {pendingTestimonials.length > 0 ? (
-                    pendingTestimonials.map(t => (
-                        <DropdownMenuItem key={t.id} onClick={handleNotificationClick} className="flex flex-col items-start gap-1 whitespace-normal">
+                {unseenPendingTestimonials.length > 0 ? (
+                    unseenPendingTestimonials.map(t => (
+                        <DropdownMenuItem key={t.id} onClick={() => handleNotificationClick(t.id)} className="flex flex-col items-start gap-1 whitespace-normal">
                            <p className="font-semibold">{t.author}</p>
                            <p className="text-xs text-muted-foreground truncate w-full">"{t.text}"</p>
                         </DropdownMenuItem>
