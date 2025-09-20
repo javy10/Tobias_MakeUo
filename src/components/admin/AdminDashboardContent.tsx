@@ -72,7 +72,7 @@ export function AdminDashboardContent({ appState }: AdminDashboardContentProps) 
     stock: products
       .filter(p => p.categoryId === category.id)
       .reduce((acc, p) => acc + p.stock, 0),
-  })).filter(c => c.stock > 0);
+  }));
 
   const PIE_COLORS = ['hsl(260, 80%, 60%)', 'hsl(330, 85%, 65%)', 'hsl(180, 70%, 45%)', 'hsl(30, 95%, 60%)', 'hsl(210, 90%, 55%)'];
   
