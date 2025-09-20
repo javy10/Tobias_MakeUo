@@ -4,8 +4,6 @@ import type { AppState, HeroContent, Service, GalleryItem, Testimonial, Product,
 import { StatCard } from './StatCard';
 import { Palette, ShoppingBag, Star, ImageIcon, Users, BarChart2, PieChart as PieChartIcon } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../ui/card';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '../ui/table';
-import { Progress } from '../ui/progress';
 import { ChartCard } from './ChartCard';
 import { Bar, BarChart, ResponsiveContainer, XAxis, YAxis, Tooltip, Pie, PieChart as RechartsPieChart, Cell, Legend, CartesianGrid } from 'recharts';
 
@@ -114,7 +112,7 @@ export function AdminDashboardContent({ appState }: AdminDashboardContentProps) 
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
         <ChartCard
           title="Productos por Categoría"
-          description="Distribución de productos en el catálogo."
+          description={`${products.length} productos en total`}
           icon={PieChartIcon}
         >
           <ResponsiveContainer width="100%" height={300}>
@@ -153,8 +151,8 @@ export function AdminDashboardContent({ appState }: AdminDashboardContentProps) 
 
         <ChartCard
           title="Estado de Testimonios"
-          description="Resumen de las opiniones de los clientes."
-          icon={PieChartIcon}
+          description={`${testimonialsPending} pendientes de revisión`}
+          icon={Star}
         >
           <ResponsiveContainer width="100%" height={300}>
              <RechartsPieChart>
@@ -176,15 +174,15 @@ export function AdminDashboardContent({ appState }: AdminDashboardContentProps) 
         <div className="lg:col-span-2">
           <ChartCard
               title="Resumen de Productos"
-              description="Vista rápida del inventario de productos."
-              icon={BarChart2}
+              description={`${totalStock} unidades en total`}
+              icon={ShoppingBag}
+              mainValue={totalStock.toString()}
             >
               <ResponsiveContainer width="100%" height={250}>
-                <BarChart data={stockByCategoryData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
-                   <CartesianGrid strokeDasharray="3 3" vertical={false} />
+                <BarChart data={stockByCategoryData} margin={{ top: 20, right: 10, left: -20, bottom: 0 }}>
                    <XAxis dataKey="name" stroke="hsl(var(--muted-foreground))" fontSize={12} tickLine={false} axisLine={false} />
                    <YAxis stroke="hsl(var(--muted-foreground))" fontSize={12} tickLine={false} axisLine={false} />
-                   <Tooltip cursor={{ fill: 'hsl(var(--muted))' }} contentStyle={{ backgroundColor: 'hsl(var(--background))', border: '1px solid hsl(var(--border))' }} />
+                   <Tooltip cursor={{ fill: 'hsl(var(--muted))' }} contentStyle={{ backgroundColor: 'hsl(var(--background))', border: '1px solid hsl(var(--border))', borderRadius: 'var(--radius)' }} />
                    <Bar dataKey="stock" fill="hsl(var(--chart-2))" radius={[4, 4, 0, 0]} />
                 </BarChart>
               </ResponsiveContainer>
