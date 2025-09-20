@@ -3,6 +3,11 @@
 import type { AppState, HeroContent, Service, GalleryItem, Testimonial, Product, AboutMeContent, User, Category } from '@/lib/types';
 import { StatCard } from './StatCard';
 import { BarChart, Brush, FileText, ImageIcon, MessageSquare, Palette, ShoppingBag, Sparkles, Star, Users } from 'lucide-react';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../ui/card';
+import Image from 'next/image';
+import Link from 'next/link';
+import { Badge } from '../ui/badge';
+import { cn } from '@/lib/utils';
 import { ChartCard } from './ChartCard';
 
 interface AdminDashboardContentProps {
@@ -18,6 +23,53 @@ interface AdminDashboardContentProps {
   loggedInUser: User;
 }
 
+const UsersSummaryCard = ({ users }: { users: User[] }) => (
+    <Card className="h-full">
+        <CardHeader>
+            <CardTitle>Resumen de Usuarios</CardTitle>
+            <CardDescription>
+                Actualmente hay {users.length} usuarios registrados en el sistema.
+            </CardDescription>
+        </CardHeader>
+        <CardContent>
+            <div className="space-y-4">
+                {users.slice(0, 4).map((user) => (
+                    <div key={user.id} className="flex items-center gap-4">
+                        <div className="w-10 h-10 rounded-full bg-gradient-to-tr from-primary to-accent text-primary-foreground flex items-center justify-center font-bold">
+                            {user.name.charAt(0)}
+                        </div>
+                        <div>
+                            <p className="font-semibold">{user.name}</p>
+                            <p className="text-sm text-muted-foreground">{user.email}</p>
+                        </div>
+                    </div>
+                ))}
+            </div>
+        </CardContent>
+    </Card>
+);
+
+const CategoriesSummaryCard = ({ categories }: { categories: Category[] }) => (
+    <Card className="h-full">
+        <CardHeader>
+            <CardTitle>Categorías de Productos</CardTitle>
+            <CardDescription>
+                Gestiona y organiza tus productos.
+            </CardDescription>
+        </CardHeader>
+        <CardContent>
+            <div className="flex flex-wrap gap-2">
+                {categories.map((category) => (
+                    <Badge key={category.id} variant="secondary" className="text-sm">
+                       {category.name}
+                    </Badge>
+                ))}
+            </div>
+        </CardContent>
+    </Card>
+);
+
+
 export function AdminDashboardContent({ appState }: AdminDashboardContentProps) {
   const { products, services, testimonials, galleryItems, categories, users } = appState;
   
@@ -31,13 +83,7 @@ export function AdminDashboardContent({ appState }: AdminDashboardContentProps) 
       .filter(p => p.categoryId === category.id)
       .reduce((acc, p) => acc + 1, 0)
   }));
-  
-  const testimonialStatusData = [
-    { name: 'Aprobados', value: testimonials.filter(t => t.status === 'approved').length },
-    { name: 'Pendientes', value: testimonialsPending },
-    { name: 'Rechazados', value: testimonials.filter(t => t.status === 'rejected').length }
-  ];
-  
+
   const productInventoryData = products.slice(0, 5).map(product => ({
     name: product.name.split(' ')[0], // Shorten name for chart
     stock: product.stock
@@ -76,6 +122,16 @@ export function AdminDashboardContent({ appState }: AdminDashboardContentProps) 
           change="imágenes y videos"
           changeColor="text-gray-500"
         />
+      </div>
+
+      {/* Mid-level Summary Cards */}
+      <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
+        <div className="lg:col-span-2">
+           <UsersSummaryCard users={users} />
+        </div>
+        <div>
+           <CategoriesSummaryCard categories={categories} />
+        </div>
       </div>
 
       {/* Main Charts */}
