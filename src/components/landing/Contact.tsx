@@ -79,7 +79,7 @@ export function Contact() {
         </Card>
         <div className="rounded-xl overflow-hidden shadow-xl aspect-video md:aspect-auto md:h-full">
            <iframe
-              src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3878.78600124236!2d-88.957203!3d14.092522!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zMTTCsDA1JzMxLjEiTiA4OMKwNTcnMjUuOSJX!5e0!3m2!1ses-419!2ssv!4v1722522851000!5m2!1ses-419!2ssv"
+              src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3876.13682974241!2d-89.56318602585255!3d13.987727386684079!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x8f62e4c414995c63%3A0x633d93963428981!2sSal%C3%B3n%20de%20belleza%20y%20makeup!5e0!3m2!1sen!2sus!4v1722889601366!5m2!1sen!2sus"
               width="100%"
               height="100%"
               style={{ border: 0 }}
