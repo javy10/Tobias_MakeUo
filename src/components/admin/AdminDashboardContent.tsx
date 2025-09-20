@@ -134,14 +134,14 @@ export function AdminDashboardContent({ appState }: AdminDashboardContentProps) 
                 <ul className="space-y-4">
                     {testimonials.slice(0, 5).map(t => (
                          <li key={t.id} className="flex items-start gap-3">
-                            <div>
+                            <div className="flex-shrink-0">
                                <Badge variant={t.status === 'approved' ? 'default' : t.status === 'pending' ? 'secondary' : 'destructive'} className={cn('w-6 h-6 p-0 flex items-center justify-center', t.status === 'approved' && 'bg-green-500')}>{
                                     {'approved': <Star className="h-4 w-4"/>, 'pending': <MessageSquare className="h-4 w-4"/>, 'rejected': <Sparkles className="h-4 w-4"/>}[t.status]
                                }</Badge>
                             </div>
-                            <div>
-                                <p className="font-medium">{t.author}</p>
-                                <p className="text-sm text-muted-foreground truncate">{t.text}</p>
+                            <div className="min-w-0 flex-1">
+                                <p className="font-medium truncate">{t.author}</p>
+                                <p className="text-sm text-muted-foreground break-words">{t.text}</p>
                             </div>
                         </li>
                     ))}
