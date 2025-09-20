@@ -41,7 +41,7 @@ export function Gallery({ galleryItems }: GalleryProps) {
                       src={item.url}
                       alt={item.alt}
                       fill
-                      className="object-cover transition-transform duration-300 group-hover:scale-110"
+                      className="object-cover w-full h-full transition-transform duration-300 group-hover:scale-110"
                       sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
                       data-ai-hint={item.alt.split(' ').slice(0, 2).join(' ')}
                     />
@@ -50,7 +50,7 @@ export function Gallery({ galleryItems }: GalleryProps) {
                       <video
                         src={item.url}
                         title={item.alt}
-                        className="object-cover w-full h-full transition-transform duration-300 group-hover:scale-110"
+                        className="object-cover w-full transition-transform duration-300 group-hover:scale-110"
                         playsInline
                         loop
                         muted
