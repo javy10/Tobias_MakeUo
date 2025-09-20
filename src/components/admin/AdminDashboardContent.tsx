@@ -5,7 +5,7 @@ import { StatCard } from './StatCard';
 import { Palette, ShoppingBag, Star, ImageIcon } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../ui/card';
 import { ChartCard } from './ChartCard';
-import { Bar, BarChart, ResponsiveContainer, XAxis, Tooltip, Legend } from 'recharts';
+import { Bar, BarChart, ResponsiveContainer, XAxis, Tooltip, Legend, CartesianGrid, YAxis, AreaChart, Area } from 'recharts';
 import { PieChart3D } from './PieChart3D';
 
 
@@ -82,11 +82,6 @@ export function AdminDashboardContent({ appState }: AdminDashboardContentProps) 
     color: PIE_COLORS[index % PIE_COLORS.length],
   }));
 
-  const testimonialStatusDataWithColors = testimonialStatusData.map((item, index) => ({
-    ...item,
-    color: PIE_COLORS[index % PIE_COLORS.length],
-  }));
-
 
   return (
     <div className="space-y-6">
@@ -135,7 +130,28 @@ export function AdminDashboardContent({ appState }: AdminDashboardContentProps) 
           title="Estado de Testimonios"
           description={`${testimonialsPending} pendientes de revisión`}
         >
-           <PieChart3D data={testimonialStatusDataWithColors} />
+           <ResponsiveContainer width="100%" height={250}>
+                <AreaChart data={testimonialStatusData} margin={{ top: 20, right: 30, left: 0, bottom: 0 }}>
+                    <defs>
+                        <linearGradient id="colorTestimonials" x1="0" y1="0" x2="0" y2="1">
+                            <stop offset="5%" stopColor="hsl(var(--chart-2))" stopOpacity={0.8}/>
+                            <stop offset="95%" stopColor="hsl(var(--chart-2))" stopOpacity={0}/>
+                        </linearGradient>
+                    </defs>
+                    <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="hsl(var(--border))" />
+                    <XAxis dataKey="name" stroke="hsl(var(--muted-foreground))" fontSize={12} tickLine={false} axisLine={false} />
+                    <YAxis stroke="hsl(var(--muted-foreground))" fontSize={12} tickLine={false} axisLine={false} />
+                    <Tooltip
+                        cursor={{ fill: 'hsl(var(--muted))' }}
+                        contentStyle={{
+                            backgroundColor: 'hsl(var(--background))',
+                            border: '1px solid hsl(var(--border))',
+                            borderRadius: 'var(--radius)',
+                        }}
+                    />
+                    <Area type="monotone" dataKey="value" name="Cantidad" stroke="hsl(var(--chart-2))" fillOpacity={1} fill="url(#colorTestimonials)" strokeWidth={2} />
+                </AreaChart>
+            </ResponsiveContainer>
         </ChartCard>
       </div>
 
