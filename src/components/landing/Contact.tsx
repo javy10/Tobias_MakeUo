@@ -79,7 +79,7 @@ export function Contact() {
         </Card>
         <div className="rounded-xl overflow-hidden shadow-xl aspect-video md:aspect-auto md:h-full">
            <iframe
-              src="https://maps.google.com/maps?q=14.092523,-88.957206&t=k&z=19&ie=UTF8&iwloc=&output=embed"
+              src="https://maps.google.com/maps?q=14.092523,-88.957206&t=k&z=19&ie=UTF8&iwloc=B&output=embed"
               width="100%"
               height="100%"
               style={{ border: 0 }}
