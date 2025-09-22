@@ -61,7 +61,7 @@ export function AdminDashboardContent({ appState }: AdminDashboardContentProps) 
   const productsByCategoryData = categories.map(category => ({
     name: category.name,
     value: products.filter(p => p.categoryId === category.id).length
-  })).filter(c => c.value > 0);
+  }));
 
   const testimonialStatusData = [
     { name: 'Aprobados', value: testimonials.filter(t => t.status === 'approved').length },
