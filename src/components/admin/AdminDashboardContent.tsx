@@ -66,12 +66,10 @@ export function AdminDashboardContent({ appState }: AdminDashboardContentProps) 
     { name: 'Pendientes', value: testimonials.filter(t => t.status === 'pending').length },
     { name: 'Rechazados', value: testimonials.filter(t => t.status === 'rejected').length },
   ];
-
-  const stockByCategoryData = categories.map(category => ({
-    name: category.name,
-    stock: products
-      .filter(p => p.categoryId === category.id)
-      .reduce((acc, p) => acc + p.stock, 0),
+  
+  const stockByProductData = products.map(product => ({
+    name: product.name,
+    stock: product.stock,
   }));
 
   const PIE_COLORS = ['hsl(260, 80%, 60%)', 'hsl(330, 85%, 65%)', 'hsl(180, 70%, 45%)', 'hsl(30, 95%, 60%)', 'hsl(210, 90%, 55%)'];
@@ -166,7 +164,7 @@ export function AdminDashboardContent({ appState }: AdminDashboardContentProps) 
               mainValue={totalStock.toString()}
             >
               <ResponsiveContainer width="100%" height={250}>
-                <BarChart data={stockByCategoryData} margin={{ top: 20, right: 10, left: -20, bottom: 0 }}>
+                <BarChart data={stockByProductData} margin={{ top: 20, right: 10, left: -20, bottom: 0 }}>
                    <XAxis dataKey="name" stroke="hsl(var(--muted-foreground))" fontSize={12} tickLine={false} axisLine={false} />
                    <Tooltip cursor={{ fill: 'hsl(var(--muted))' }} contentStyle={{ backgroundColor: 'hsl(var(--background))', border: '1px solid hsl(var(--border))', borderRadius: 'var(--radius)' }} />
                    <Legend />
