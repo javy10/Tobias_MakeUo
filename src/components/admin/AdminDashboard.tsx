@@ -238,7 +238,6 @@ export function AdminDashboard({
 
   const handleAddOrUpdateUser = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    const formData = new FormData(e.currentTarget);
     // Logic for this is in `admin/page.tsx` now
   };
 
@@ -565,7 +564,12 @@ export function AdminDashboard({
                   </CardContent>
                   <Dialog open={openCategoryDialog} onOpenChange={setOpenCategoryDialog}>
                       <DialogContent>
-                          <DialogHeader><DialogTitle>{isEditingCategory ? 'Editar' : 'Añadir'} Categoría</DialogTitle></DialogHeader>
+                          <DialogHeader>
+                            <DialogTitle>{isEditingCategory ? 'Editar' : 'Añadir'} Categoría</DialogTitle>
+                            <DialogDescription>
+                              {isEditingCategory ? 'Modifica el nombre de la categoría.' : 'Crea una nueva categoría para tus productos.'}
+                            </DialogDescription>
+                          </DialogHeader>
                           <form onSubmit={handleAddOrUpdateCategory} className="space-y-4">
                               <Input name="name" placeholder="Nombre de la categoría" defaultValue={currentCategoryToEdit?.name || ''} required />
                               <DialogFooter><Button type="submit">Guardar</Button></DialogFooter>
@@ -785,7 +789,10 @@ export function AdminDashboard({
                         <Dialog open={openPasswordDialog && currentUserForPasswordChange?.id === user.id} onOpenChange={(isOpen) => { if (!isOpen) setCurrentUserForPasswordChange(null); setOpenPasswordDialog(isOpen); }}>
                           <DialogTrigger asChild><Button variant="outline" size="icon" onClick={() => { setCurrentUserForPasswordChange(user); setOpenPasswordDialog(true); }} disabled={user.id !== loggedInUser.id}><KeyRound className="w-4 h-4" /></Button></DialogTrigger>
                           <DialogContent>
-                            <DialogHeader><DialogTitle>Cambiar Contraseña para {user.name}</DialogTitle></DialogHeader>
+                            <DialogHeader>
+                                <DialogTitle>Cambiar Contraseña para {user.name}</DialogTitle>
+                                <DialogDescription>Introduce la nueva contraseña para el usuario.</DialogDescription>
+                            </DialogHeader>
                             <form onSubmit={handleChangePassword} className="space-y-4">
                               <Input name="newPassword" type="password" required placeholder="Nueva Contraseña"/>
                               <DialogFooter><Button type="submit">Actualizar</Button></DialogFooter>
