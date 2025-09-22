@@ -1,5 +1,5 @@
 
-import { Brush, FileText, Home, ImageIcon, MessageSquare, Palette, ShoppingBag, Sparkles, Star, Users } from 'lucide-react';
+import { Brush, FileText, Home, ImageIcon, MessageSquare, Palette, ShoppingBag, Sparkles, Star, Users, SprayCan } from 'lucide-react';
 
 export const pageConfig = [
   { id: 'dashboard', title: 'Dashboard', icon: Home },
@@ -8,6 +8,7 @@ export const pageConfig = [
   { id: 'services', title: 'Servicios', icon: Palette },
   { id: 'categories', title: 'Categorías', icon: Brush },
   { id: 'products', title: 'Productos', icon: ShoppingBag },
+  { id: 'perfumes', title: 'Perfumes', icon: SprayCan },
   { id: 'gallery', title: 'Mis Trabajos', icon: ImageIcon },
   { id: 'testimonials', title: 'Testimonios', icon: Star },
   { id: 'users', title: 'Usuarios', icon: Users },

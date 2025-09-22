@@ -44,6 +44,14 @@ export interface Product {
   categoryId: string;
 }
 
+export interface Perfume {
+  id: string;
+  name: string;
+  description: string;
+  stock: number;
+  imageUrl: string;
+}
+
 export interface AboutMeContent {
   text: string;
   imageUrl: string;
@@ -64,6 +72,7 @@ export interface AppState {
   heroContent: HeroContent;
   services: Service[];
   products: Product[];
+  perfumes: Perfume[];
   galleryItems: GalleryItem[];
   testimonials: Testimonial[];
   aboutMeContent: AboutMeContent;

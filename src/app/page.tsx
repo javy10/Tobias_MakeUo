@@ -5,6 +5,7 @@ import { Header } from "@/components/landing/Header";
 import { Hero } from "@/components/landing/Hero";
 import { Services } from "@/components/landing/Services";
 import { Products } from "@/components/landing/Products";
+import { Perfumes } from "@/components/landing/Perfumes";
 import { Gallery } from "@/components/landing/Gallery";
 import { AboutMe } from "@/components/landing/AboutMe";
 import { Testimonials } from "@/components/landing/Testimonials";
@@ -28,6 +29,7 @@ export default function Home() {
         <AboutMe content={appState.aboutMeContent} />
         <Services services={appState.services} />
         <Products products={appState.products} categories={appState.categories} />
+        <Perfumes perfumes={appState.perfumes} />
         <Gallery galleryItems={appState.galleryItems} />
         <Testimonials testimonials={appState.testimonials} />
         <Contact />

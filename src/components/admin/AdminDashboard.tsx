@@ -2,7 +2,7 @@
 'use client';
 
 import { useState } from 'react';
-import type { HeroContent, Service, GalleryItem, Testimonial, Product, AboutMeContent, User, Category, AppState } from '@/lib/types';
+import type { HeroContent, Service, GalleryItem, Testimonial, Product, AboutMeContent, User, Category, AppState, Perfume } from '@/lib/types';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -35,6 +35,7 @@ interface AdminSectionProps {
   setHeroContent: React.Dispatch<React.SetStateAction<HeroContent>>;
   setServices: React.Dispatch<React.SetStateAction<Service[]>>;
   setProducts: React.Dispatch<React.SetStateAction<Product[]>>;
+  setPerfumes: React.Dispatch<React.SetStateAction<Perfume[]>>;
   setGalleryItems: React.Dispatch<React.SetStateAction<GalleryItem[]>>;
   setTestimonials: React.Dispatch<React.SetStateAction<Testimonial[]>>;
   setAboutMeContent: React.Dispatch<React.SetStateAction<AboutMeContent>>;
@@ -63,6 +64,7 @@ export function AdminDashboard({
   setHeroContent,
   setServices,
   setProducts,
+  setPerfumes,
   setGalleryItems,
   setTestimonials,
   setAboutMeContent,
@@ -71,7 +73,7 @@ export function AdminDashboard({
   loggedInUser,
   section,
 }: AdminSectionProps) {
-  const { heroContent, services, products, galleryItems, testimonials, aboutMeContent, users, categories } = appState;
+  const { heroContent, services, products, perfumes, galleryItems, testimonials, aboutMeContent, users, categories } = appState;
   const { toast } = useToast();
   
   const [openUserDialog, setOpenUserDialog] = useState(false);
@@ -89,6 +91,7 @@ export function AdminDashboard({
   const [heroImagePreview, setHeroImagePreview] = useState<string | null>(null);
   const [serviceImagePreview, setServiceImagePreview] = useState<string | null>(null);
   const [productImagePreview, setProductImagePreview] = useState<string | null>(null);
+  const [perfumeImagePreview, setPerfumeImagePreview] = useState<string | null>(null);
   const [galleryMediaPreview, setGalleryMediaPreview] = useState<{ url: string; type: 'image' | 'video' } | null>(null);
   const [aboutMeImagePreview, setAboutMeImagePreview] = useState<string | null>(null);
 
@@ -234,6 +237,53 @@ export function AdminDashboard({
     }
     setProducts(products.map(p => p.id === id ? { ...p, ...updatedProduct, imageUrl: imageUrl! } : p));
     toast({ title: 'Éxito', description: 'Producto actualizado.' });
+  };
+  
+  const handleAddPerfume = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    const form = e.currentTarget;
+    const formData = new FormData(form);
+    const imageFile = formData.get('imageFile') as File;
+    if (!imageFile || imageFile.size === 0) {
+      toast({ variant: 'destructive', title: 'Error', description: 'Debes seleccionar una imagen para el perfume.' });
+      return;
+    }
+    try {
+      const imageUrl = await readImageAsDataURL(imageFile);
+      const newPerfume: Perfume = {
+        id: crypto.randomUUID(),
+        name: formData.get('name') as string,
+        description: formData.get('description') as string,
+        stock: parseInt(formData.get('stock') as string, 10),
+        imageUrl: imageUrl,
+      };
+      setPerfumes([...perfumes, newPerfume]);
+      form.reset();
+      setPerfumeImagePreview(null);
+      toast({ title: 'Éxito', description: 'Nuevo perfume añadido.' });
+    } catch {
+      toast({ variant: 'destructive', title: 'Error', description: 'No se pudo cargar la imagen.' });
+    }
+  };
+
+  const handleDeletePerfume = (id: string) => {
+    setPerfumes(perfumes.filter(p => p.id !== id));
+    toast({ title: 'Éxito', description: 'Perfume eliminado.' });
+  };
+
+  const handleUpdatePerfume = async (id: string, updatedPerfume: Omit<Perfume, 'id' | 'imageUrl'>, newImageFile?: File) => {
+    let imageUrl = perfumes.find(p => p.id === id)?.imageUrl;
+    if (!imageUrl) return;
+    if (newImageFile) {
+      try {
+        imageUrl = await readImageAsDataURL(newImageFile);
+      } catch {
+        toast({ variant: 'destructive', title: 'Error', description: 'No se pudo cargar la imagen.' });
+        return;
+      }
+    }
+    setPerfumes(perfumes.map(p => p.id === id ? { ...p, ...updatedPerfume, imageUrl: imageUrl! } : p));
+    toast({ title: 'Éxito', description: 'Perfume actualizado.' });
   };
 
   const handleAddGalleryItem = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -477,6 +527,41 @@ export function AdminDashboard({
                             {categories.map(cat => <SelectItem key={cat.id} value={cat.id}>{cat.name}</SelectItem>)}
                         </SelectContent>
                     </Select>
+                    <Input name="imageFile" type="file" accept="image/*" onChange={(e) => handleFilePreview(e, setPreview)} />
+                    {preview && <Image src={preview} alt="Preview" width={100} height={100} />}
+                    <DialogFooter><Button type="submit">Guardar Cambios</Button></DialogFooter>
+                </form>
+            </DialogContent>
+        </Dialog>
+    );
+  };
+
+  const EditPerfumeDialog = ({ perfume, onSave }: { perfume: Perfume; onSave: (id: string, data: Omit<Perfume, 'id' | 'imageUrl'>, file?: File) => void }) => {
+    const [open, setOpen] = useState(false);
+    const [preview, setPreview] = useState<string | null>(null);
+
+    const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+        e.preventDefault();
+        const formData = new FormData(e.currentTarget);
+        const updatedData = {
+            name: formData.get('name') as string,
+            description: formData.get('description') as string,
+            stock: parseInt(formData.get('stock') as string, 10),
+        };
+        const imageFile = formData.get('imageFile') as File;
+        onSave(perfume.id, updatedData, imageFile && imageFile.size > 0 ? imageFile : undefined);
+        setOpen(false);
+    };
+
+    return (
+        <Dialog open={open} onOpenChange={setOpen}>
+            <DialogTrigger asChild><Button variant="outline" size="icon"><Pencil className="w-4 h-4" /></Button></DialogTrigger>
+            <DialogContent>
+                <DialogHeader><DialogTitle>Editar Perfume</DialogTitle></DialogHeader>
+                <form onSubmit={handleSubmit} className="space-y-4">
+                    <Input name="name" defaultValue={perfume.name} />
+                    <Textarea name="description" defaultValue={perfume.description} />
+                    <Input name="stock" type="number" defaultValue={perfume.stock} />
                     <Input name="imageFile" type="file" accept="image/*" onChange={(e) => handleFilePreview(e, setPreview)} />
                     {preview && <Image src={preview} alt="Preview" width={100} height={100} />}
                     <DialogFooter><Button type="submit">Guardar Cambios</Button></DialogFooter>
@@ -777,6 +862,70 @@ export function AdminDashboard({
                                     <AlertDialogFooter>
                                       <AlertDialogCancel>Cancelar</AlertDialogCancel>
                                       <AlertDialogAction onClick={() => handleDeleteProduct(product.id)}>Eliminar</AlertDialogAction>
+                                    </AlertDialogFooter>
+                                  </AlertDialogContent>
+                                </AlertDialog>
+                            </div>
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </CardContent>
+            </Card>
+        );
+      case 'perfumes':
+        return (
+            <Card>
+              <CardHeader><CardTitle className="font-headline">Gestionar Perfumes</CardTitle></CardHeader>
+              <CardContent className="space-y-6">
+                <form onSubmit={handleAddPerfume} className="bg-muted p-4 rounded-lg space-y-4">
+                   <h3 className="font-semibold">Añadir Nuevo Perfume</h3>
+                  <Input name="name" placeholder="Nombre del perfume" required />
+                  <Textarea name="description" placeholder="Descripción del perfume" required />
+                  <Input name="stock" type="number" placeholder="Stock disponible" required />
+                  <Input name="imageFile" type="file" accept="image/*" required onChange={(e) => handleFilePreview(e, setPerfumeImagePreview)} />
+                  {perfumeImagePreview && <Image src={perfumeImagePreview} alt="Vista previa" width={100} height={100} />}
+                  <Button type="submit">Añadir</Button>
+                </form>
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>Perfume</TableHead>
+                      <TableHead>Stock</TableHead>
+                      <TableHead className="text-right">Acciones</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {perfumes.map(perfume => (
+                      <TableRow key={perfume.id}>
+                        <TableCell>
+                            <div className="flex items-center gap-4">
+                                <Image src={perfume.imageUrl} alt={perfume.name} width={40} height={40} className="rounded-md object-cover"/>
+                                <div>
+                                    <p className="font-bold">{perfume.name}</p>
+                                    <p className="text-sm text-muted-foreground">{perfume.description}</p>
+                                </div>
+                            </div>
+                        </TableCell>
+                        <TableCell>{perfume.stock}</TableCell>
+                        <TableCell className="text-right">
+                            <div className="flex items-center gap-2 justify-end">
+                                <EditPerfumeDialog perfume={perfume} onSave={handleUpdatePerfume} />
+                                <AlertDialog>
+                                  <AlertDialogTrigger asChild>
+                                    <Button variant="ghost" size="icon"><Trash2 className="w-4 h-4 text-destructive" /></Button>
+                                  </AlertDialogTrigger>
+                                  <AlertDialogContent>
+                                    <AlertDialogHeader>
+                                      <AlertDialogTitle>¿Estás completamente seguro?</AlertDialogTitle>
+                                      <AlertDialogDescription>
+                                        Esta acción no se puede deshacer. Esto eliminará permanentemente el perfume.
+                                      </AlertDialogDescription>
+                                    </AlertDialogHeader>
+                                    <AlertDialogFooter>
+                                      <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                                      <AlertDialogAction onClick={() => handleDeletePerfume(perfume.id)}>Eliminar</AlertDialogAction>
                                     </AlertDialogFooter>
                                   </AlertDialogContent>
                                 </AlertDialog>

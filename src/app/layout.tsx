@@ -4,8 +4,8 @@
 import { useState, createContext, useContext, useEffect } from 'react';
 import './globals.css';
 import { Toaster } from "@/components/ui/toaster";
-import type { AboutMeContent, Category, GalleryItem, HeroContent, Product, Service, Testimonial, User } from '@/lib/types';
-import { initialAboutMeContent, initialCategories, initialGalleryItems, initialHeroContent, initialProducts, initialServices, initialTestimonials, initialUsers } from '@/lib/data';
+import type { AboutMeContent, Category, GalleryItem, HeroContent, Product, Service, Testimonial, User, Perfume } from '@/lib/types';
+import { initialAboutMeContent, initialCategories, initialGalleryItems, initialHeroContent, initialProducts, initialServices, initialTestimonials, initialUsers, initialPerfumes } from '@/lib/data';
 import { getAllItemsFromDB, saveItemToDB } from '@/lib/db';
 
 // 1. Define the shape of our global state
@@ -13,6 +13,7 @@ interface AppState {
   heroContent: HeroContent;
   services: Service[];
   products: Product[];
+  perfumes: Perfume[];
   galleryItems: GalleryItem[];
   testimonials: Testimonial[];
   aboutMeContent: AboutMeContent;
@@ -26,6 +27,7 @@ interface AppContextType {
   setHeroContent: React.Dispatch<React.SetStateAction<HeroContent>>;
   setServices: React.Dispatch<React.SetStateAction<Service[]>>;
   setProducts: React.Dispatch<React.SetStateAction<Product[]>>;
+  setPerfumes: React.Dispatch<React.SetStateAction<Perfume[]>>;
   setGalleryItems: React.Dispatch<React.SetStateAction<GalleryItem[]>>;
   setTestimonials: React.Dispatch<React.SetStateAction<Testimonial[]>>;
   setAboutMeContent: React.Dispatch<React.SetStateAction<AboutMeContent>>;
@@ -72,6 +74,7 @@ export default function RootLayout({
   const [heroContent, setHeroContent] = useState<HeroContent>(() => getInitialState('heroContent', initialHeroContent));
   const [services, setServices] = useState<Service[]>(() => getInitialState('services', initialServices));
   const [products, setProducts] = useState<Product[]>(() => getInitialState('products', initialProducts));
+  const [perfumes, setPerfumes] = useState<Perfume[]>(() => getInitialState('perfumes', initialPerfumes));
   const [galleryItems, setGalleryItems] = useState<GalleryItem[]>([]); // Start with empty gallery
   const [testimonials, setTestimonials] = useState<Testimonial[]>(() => getInitialState('testimonials', initialTestimonials));
   const [aboutMeContent, setAboutMeContent] = useState<AboutMeContent>(() => getInitialState('aboutMeContent', initialAboutMeContent));
@@ -83,6 +86,7 @@ export default function RootLayout({
     heroContent,
     services,
     products,
+    perfumes,
     galleryItems,
     testimonials,
     aboutMeContent,
@@ -97,6 +101,7 @@ export default function RootLayout({
         localStorage.setItem('heroContent', JSON.stringify(heroContent));
         localStorage.setItem('services', JSON.stringify(services));
         localStorage.setItem('products', JSON.stringify(products));
+        localStorage.setItem('perfumes', JSON.stringify(perfumes));
         // Do not save galleryItems to localStorage
         localStorage.setItem('testimonials', JSON.stringify(testimonials));
         localStorage.setItem('aboutMeContent', JSON.stringify(aboutMeContent));
@@ -107,7 +112,7 @@ export default function RootLayout({
       {
       console.error('Failed to save state to localStorage:', error);
     }
-  }, [appState, isStateLoaded, heroContent, services, products, testimonials, aboutMeContent, users, categories]);
+  }, [appState, isStateLoaded, heroContent, services, products, perfumes, testimonials, aboutMeContent, users, categories]);
   
   // Effect to load data from localStorage and IndexedDB
   useEffect(() => {
@@ -116,6 +121,7 @@ export default function RootLayout({
       setHeroContent(getInitialState('heroContent', initialHeroContent));
       setServices(getInitialState('services', initialServices));
       setProducts(getInitialState('products', initialProducts));
+      setPerfumes(getInitialState('perfumes', initialPerfumes));
       setTestimonials(getInitialState('testimonials', initialTestimonials));
       setAboutMeContent(getInitialState('aboutMeContent', initialAboutMeContent));
       setUsers(getInitialState('users', initialUsers));
@@ -165,6 +171,9 @@ export default function RootLayout({
           case 'products':
             setProducts(newValue);
             break;
+          case 'perfumes':
+            setPerfumes(newValue);
+            break;
           case 'testimonials':
             setTestimonials(newValue);
             break;
@@ -199,6 +208,7 @@ export default function RootLayout({
     setHeroContent,
     setServices,
     setProducts,
+    setPerfumes,
     setGalleryItems,
     setTestimonials,
     setAboutMeContent,

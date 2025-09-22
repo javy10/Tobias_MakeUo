@@ -1,4 +1,5 @@
-import type { HeroContent, Service, GalleryItem, Testimonial, Product, AboutMeContent, User, Category } from './types';
+
+import type { HeroContent, Service, GalleryItem, Testimonial, Product, AboutMeContent, User, Category, Perfume } from './types';
 import { PlaceHolderImages } from './placeholder-images';
 
 const heroImage = PlaceHolderImages.find(img => img.id === 'hero-background');
@@ -69,6 +70,23 @@ export const initialProducts: Product[] = [
     imageUrl: productImage3?.imageUrl || "https://picsum.photos/seed/product3/400/400",
     categoryId: '3',
   },
+];
+
+export const initialPerfumes: Perfume[] = [
+  {
+    id: '1',
+    name: "Fragancia 'Aura Floral'",
+    description: "Una esencia delicada con notas de jazmín y rosas, perfecta para el día a día.",
+    stock: 30,
+    imageUrl: "https://picsum.photos/seed/perfume1/400/400",
+  },
+  {
+    id: '2',
+    name: "Perfume 'Noche Intensa'",
+    description: "Aroma amaderado y profundo con toques de sándalo, ideal para ocasiones especiales.",
+    stock: 18,
+    imageUrl: "https://picsum.photos/seed/perfume2/400/400",
+  }
 ];
 
 export const initialGalleryItems: GalleryItem[] = PlaceHolderImages.filter(img => img.id.startsWith('gallery-')).map(img => ({
