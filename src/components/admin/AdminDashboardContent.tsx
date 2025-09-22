@@ -2,7 +2,7 @@
 'use client';
 import type { AppState, HeroContent, Service, GalleryItem, Testimonial, Product, AboutMeContent, User, Category, Perfume } from '@/lib/types';
 import { StatCard } from './StatCard';
-import { Palette, ShoppingBag, Star, ImageIcon } from 'lucide-react';
+import { Palette, ShoppingBag, Star, ImageIcon, SprayCan } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../ui/card';
 import { ChartCard } from './ChartCard';
 import { Bar, BarChart, ResponsiveContainer, XAxis, Tooltip, Legend, CartesianGrid, YAxis, AreaChart, Area, Cell } from 'recharts';
@@ -54,6 +54,7 @@ export function AdminDashboardContent({ appState }: AdminDashboardContentProps) 
   const { products, services, testimonials, galleryItems, categories, perfumes } = appState;
   
   const totalStock = products.reduce((acc, p) => acc + p.stock, 0);
+  const totalPerfumeStock = perfumes.reduce((acc, p) => acc + p.stock, 0);
   
   const testimonialsPending = testimonials.filter(t => t.status === 'pending').length;
 
@@ -97,18 +98,18 @@ export function AdminDashboardContent({ appState }: AdminDashboardContentProps) 
           changeColor="text-gray-500"
         />
         <StatCard 
+          title="Total de Perfumes" 
+          value={perfumes.length.toString()}
+          icon={SprayCan} 
+          change={`${totalPerfumeStock} en stock`}
+          changeColor="text-gray-500"
+        />
+        <StatCard 
           title="Servicios Ofrecidos" 
           value={services.length.toString()}
           icon={Palette} 
           change="activos"
           changeColor="text-gray-500"
-        />
-        <StatCard 
-          title="Testimonios" 
-          value={testimonials.length.toString()}
-          icon={Star} 
-          change={`${testimonialsPending} pendientes`}
-          changeColor={testimonialsPending > 0 ? "text-orange-500" : "text-gray-500"}
         />
         <StatCard 
           title="Galería" 
