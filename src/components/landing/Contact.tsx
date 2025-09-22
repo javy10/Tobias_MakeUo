@@ -27,7 +27,7 @@ export function Contact() {
     }
 
     const phoneNumber = "50379467621"; // Reemplaza con tu número de WhatsApp
-    const text = `Hola, soy ${name.trim()}. Mi mensaje es: ${message.trim()}`;
+    const text = `Hola, soy ${name.trim()}. ${message.trim()}`;
     
     // Codificación robusta para compatibilidad
     const encodedText = encodeURIComponent(text);
