@@ -56,7 +56,9 @@ export function AdminDashboardContent({ appState }: AdminDashboardContentProps) 
   const totalStock = products.reduce((acc, p) => acc + p.stock, 0);
   const totalPerfumeStock = perfumes.reduce((acc, p) => acc + p.stock, 0);
   
+  const testimonialsApproved = testimonials.filter(t => t.status === 'approved').length;
   const testimonialsPending = testimonials.filter(t => t.status === 'pending').length;
+  const testimonialsRejected = testimonials.filter(t => t.status === 'rejected').length;
 
   const productsByCategoryData = categories.map(category => ({
     name: category.name,
@@ -115,8 +117,13 @@ export function AdminDashboardContent({ appState }: AdminDashboardContentProps) 
           title="Testimonios" 
           value={testimonials.length.toString()}
           icon={Star} 
-          change={`${testimonialsPending} pendientes`}
-          changeColor={testimonialsPending > 0 ? "text-orange-500" : "text-gray-500"}
+          change={
+            <div className="flex flex-col">
+              <span className="text-green-500">{testimonialsApproved} aprobados</span>
+              <span className="text-orange-500">{testimonialsPending} pendientes</span>
+              <span className="text-red-500">{testimonialsRejected} rechazados</span>
+            </div>
+          }
         />
         <StatCard 
           title="Galería" 

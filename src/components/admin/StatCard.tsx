@@ -7,11 +7,11 @@ interface StatCardProps {
   title: string;
   value: string;
   icon: LucideIcon;
-  change: string;
-  changeColor?: string;
+  change: React.ReactNode; // Changed from string to React.ReactNode
+  changeColor?: string; // This will now be a fallback
 }
 
-export function StatCard({ title, value, icon: Icon, change, changeColor = 'text-green-500' }: StatCardProps) {
+export function StatCard({ title, value, icon: Icon, change, changeColor }: StatCardProps) {
   return (
     <Card className="shadow-sm">
       <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
@@ -22,9 +22,15 @@ export function StatCard({ title, value, icon: Icon, change, changeColor = 'text
       </CardHeader>
       <CardContent>
         <div className="text-2xl font-bold">{value}</div>
-        <p className={cn("text-xs text-muted-foreground", changeColor)}>
-          {change}
-        </p>
+        {typeof change === 'string' ? (
+           <p className={cn("text-xs text-muted-foreground", changeColor)}>
+             {change}
+           </p>
+        ) : (
+          <div className="text-xs text-muted-foreground">
+            {change}
+          </div>
+        )}
       </CardContent>
     </Card>
   );
