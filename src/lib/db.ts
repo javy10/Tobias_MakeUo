@@ -4,8 +4,16 @@
 import type { GalleryItem } from './types';
 
 const DB_NAME = 'TobiasMakeUpDB';
-const DB_VERSION = 1;
-const STORE_NAME = 'galleryStore';
+const DB_VERSION = 2; // Incremented version to trigger onupgradeneeded
+
+const STORE_NAMES = {
+  galleryItems: 'galleryItems',
+  heroContent: 'heroContent',
+  services: 'services',
+  products: 'products',
+  perfumes: 'perfumes',
+  aboutMeContent: 'aboutMeContent'
+};
 
 let db: IDBDatabase | null = null;
 
@@ -29,63 +37,73 @@ const openDB = (): Promise<IDBDatabase> => {
 
     request.onupgradeneeded = (event) => {
       const dbInstance = (event.target as IDBOpenDBRequest).result;
-      if (!dbInstance.objectStoreNames.contains(STORE_NAME)) {
-        dbInstance.createObjectStore(STORE_NAME, { keyPath: 'id' });
-      }
+      
+      Object.values(STORE_NAMES).forEach(storeName => {
+        if (!dbInstance.objectStoreNames.contains(storeName)) {
+            // HeroContent and AboutMeContent are single objects, not arrays.
+            // We'll store them with a predictable key like 'singleton'.
+            const keyPath = (storeName === STORE_NAMES.heroContent || storeName === STORE_NAMES.aboutMeContent) ? 'id' : 'id';
+            dbInstance.createObjectStore(storeName, { keyPath });
+        }
+      });
     };
   });
 };
 
-export const saveItemToDB = async (item: GalleryItem): Promise<void> => {
+export const saveItemToDB = async (item: any, storeName: string): Promise<void> => {
   const db = await openDB();
   return new Promise((resolve, reject) => {
-    const transaction = db.transaction(STORE_NAME, 'readwrite');
-    const store = transaction.objectStore(STORE_NAME);
+    const transaction = db.transaction(storeName, 'readwrite');
+    const store = transaction.objectStore(storeName);
+    
+    // For single-item stores, we give them a consistent ID
+    if (storeName === STORE_NAMES.heroContent || storeName === STORE_NAMES.aboutMeContent) {
+        item.id = 'singleton';
+    }
+
     const request = store.put(item);
 
     request.onsuccess = () => resolve();
     request.onerror = () => {
-        console.error('Error saving item to DB:', request.error)
-        reject(request.error)
+        console.error(`Error saving item to ${storeName}:`, request.error);
+        reject(request.error);
     };
   });
 };
 
-export const deleteItemFromDB = async (id: string): Promise<void> => {
+export const deleteItemFromDB = async (id: string, storeName: string): Promise<void> => {
     const db = await openDB();
     return new Promise((resolve, reject) => {
-        const transaction = db.transaction(STORE_NAME, 'readwrite');
-        const store = transaction.objectStore(STORE_NAME);
+        const transaction = db.transaction(storeName, 'readwrite');
+        const store = transaction.objectStore(storeName);
         const request = store.delete(id);
 
         request.onsuccess = () => resolve();
         request.onerror = () => {
-            console.error('Error deleting item from DB:', request.error);
+            console.error(`Error deleting item from ${storeName}:`, request.error);
             reject(request.error);
         };
     });
 };
 
-
-export const getAllItemsFromDB = async (): Promise<GalleryItem[]> => {
+export const getAllItemsFromDB = async <T>(storeName: string): Promise<T[]> => {
   const db = await openDB();
   return new Promise((resolve, reject) => {
-    const transaction = db.transaction(STORE_NAME, 'readonly');
-    const store = transaction.objectStore(STORE_NAME);
+    const transaction = db.transaction(storeName, 'readonly');
+    const store = transaction.objectStore(storeName);
     const request = store.getAll();
 
     request.onsuccess = () => {
-        // Blobs/Files from IndexedDB need to be converted to Object URLs to be used in src attributes
-        const items = request.result.map(item => {
+        const items = request.result.map((item: any) => {
             if (item.file) {
-                return { ...item, url: URL.createObjectURL(item.file) };
+                return { ...item, imageUrl: URL.createObjectURL(item.file) };
             }
             return item;
         });
         resolve(items);
     };
     request.onerror = () => {
-        console.error('Error getting items from DB:', request.error);
+        console.error(`Error getting items from ${storeName}:`, request.error);
         reject(request.error);
     };
   });

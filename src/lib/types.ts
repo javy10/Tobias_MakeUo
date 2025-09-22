@@ -9,14 +9,15 @@ export interface Service {
   title: string;
   description: string;
   imageUrl: string;
+  file?: File;
 }
 
 export interface GalleryItem {
   id: string;
-  url: string; // This will be an Object URL for files from IndexedDB
+  url: string; 
   alt: string;
   type: 'image' | 'video';
-  file?: File; // The actual file, to be stored in IndexedDB
+  file?: File; 
   title: string;
   description: string;
 }
@@ -30,9 +31,11 @@ export interface Testimonial {
 }
 
 export interface HeroContent {
+  id?: 'singleton';
   title: string;
   subtitle: string;
   imageUrl: string;
+  file?: File;
 }
 
 export interface Product {
@@ -42,6 +45,7 @@ export interface Product {
   stock: number;
   imageUrl: string;
   categoryId: string;
+  file?: File;
 }
 
 export interface Perfume {
@@ -50,21 +54,24 @@ export interface Perfume {
   description: string;
   stock: number;
   imageUrl: string;
+  file?: File;
 }
 
 export interface AboutMeContent {
+  id?: 'singleton';
   text: string;
   imageUrl: string;
   happyClients: string;
   yearsOfExperience: string;
   events: string;
+  file?: File;
 }
 
 export interface User {
   id: string;
   name: string;
   email: string;
-  password?: string; // Should be handled securely
+  password?: string;
 }
 
 // Global App State

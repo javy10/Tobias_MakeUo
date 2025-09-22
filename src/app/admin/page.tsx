@@ -1,7 +1,7 @@
 
 'use client';
 import { useState, useEffect } from 'react';
-import type { User, Perfume } from '@/lib/types';
+import type { User, Perfume, Service, Product, HeroContent, AboutMeContent } from '@/lib/types';
 import { useRouter } from 'next/navigation';
 import { useAppContext } from '../layout';
 import { AdminLayout } from '@/components/admin/layout/AdminLayout';
@@ -12,20 +12,7 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { AdminDashboard } from '@/components/admin/AdminDashboard';
 import { useToast } from '@/hooks/use-toast';
-
-
-// Function to read a file as a Data URL (Base64) - ONLY FOR IMAGES
-const readImageAsDataURL = (file: File): Promise<string> => {
-  return new Promise((resolve, reject) => {
-    if (!file.type.startsWith('image/')) {
-        return reject(new Error('File is not an image.'));
-    }
-    const reader = new FileReader();
-    reader.onload = () => resolve(reader.result as string);
-    reader.onerror = reject;
-    reader.readAsDataURL(file);
-  });
-};
+import { fileToStorable, saveItemToDB } from '@/lib/db';
 
 
 export default function AdminPage() {
@@ -88,50 +75,167 @@ export default function AdminPage() {
     router.push('/');
   };
   
-  const handleAddPerfume = async (newPerfumeData: Omit<Perfume, 'id' | 'imageUrl'>, imageFile: File) => {
+    const handleAddPerfume = async (newPerfumeData: Omit<Perfume, 'id' | 'imageUrl' | 'file'>, imageFile: File) => {
     try {
-      const imageUrl = await readImageAsDataURL(imageFile);
+      const { file } = await fileToStorable(imageFile);
       const newPerfume: Perfume = {
         id: crypto.randomUUID(),
         ...newPerfumeData,
-        imageUrl: imageUrl,
+        imageUrl: URL.createObjectURL(file),
+        file: file,
       };
+      await saveItemToDB(newPerfume, 'perfumes');
       setPerfumes(prev => [...prev, newPerfume]);
       toast({ title: 'Éxito', description: 'Nuevo perfume añadido.' });
       return true;
-    } catch {
-      toast({ variant: 'destructive', title: 'Error', description: 'No se pudo cargar la imagen.' });
+    } catch (error) {
+      console.error("Error adding perfume:", error);
+      toast({ variant: 'destructive', title: 'Error', description: 'No se pudo añadir el perfume.' });
       return false;
     }
   };
-  
+
   const handleDeletePerfume = (id: string) => {
     setPerfumes(prev => prev.filter(p => p.id !== id));
     toast({ title: 'Éxito', description: 'Perfume eliminado.' });
   };
-  
-  const handleUpdatePerfume = async (id: string, updatedPerfumeData: Omit<Perfume, 'id' | 'imageUrl'>, newImageFile?: File) => {
-    let imageUrl = appState.perfumes.find(p => p.id === id)?.imageUrl;
-    if (!imageUrl) return;
-  
+
+  const handleUpdatePerfume = async (id: string, updatedData: Omit<Perfume, 'id' | 'imageUrl' | 'file'>, newImageFile?: File) => {
+    const currentPerfume = appState.perfumes.find(p => p.id === id);
+    if (!currentPerfume) return;
+    let updatedPerfume: Perfume = { ...currentPerfume, ...updatedData };
     if (newImageFile) {
-      try {
-        imageUrl = await readImageAsDataURL(newImageFile);
-      } catch {
-        toast({ variant: 'destructive', title: 'Error', description: 'No se pudo cargar la imagen.' });
-        return;
-      }
+        try {
+            const { file } = await fileToStorable(newImageFile);
+            updatedPerfume = { ...updatedPerfume, imageUrl: URL.createObjectURL(file), file };
+        } catch {
+            toast({ variant: 'destructive', title: 'Error', description: 'No se pudo cargar la nueva imagen.' });
+            return;
+        }
     }
-    
-    setPerfumes(prev => 
-      prev.map(p => 
-        p.id === id 
-          ? { ...p, ...updatedPerfumeData, imageUrl: imageUrl! } 
-          : p
-      )
-    );
+    await saveItemToDB(updatedPerfume, 'perfumes');
+    setPerfumes(prev => prev.map(p => p.id === id ? updatedPerfume : p));
     toast({ title: 'Éxito', description: 'Perfume actualizado.' });
   };
+
+
+  const handleAddService = async (newServiceData: Omit<Service, 'id' | 'imageUrl' | 'file'>, imageFile: File) => {
+    try {
+        const { file } = await fileToStorable(imageFile);
+        const newService: Service = {
+            id: crypto.randomUUID(),
+            ...newServiceData,
+            imageUrl: URL.createObjectURL(file),
+            file: file,
+        };
+        await saveItemToDB(newService, 'services');
+        setServices(prev => [...prev, newService]);
+        toast({ title: 'Éxito', description: 'Nuevo servicio añadido.' });
+        return true;
+    } catch (error) {
+        console.error("Error adding service:", error);
+        toast({ variant: 'destructive', title: 'Error', description: 'No se pudo añadir el servicio.' });
+        return false;
+    }
+  };
+
+  const handleDeleteService = (id: string) => {
+      setServices(prev => prev.filter(s => s.id !== id));
+      toast({ title: 'Éxito', description: 'Servicio eliminado.' });
+  };
+
+  const handleUpdateService = async (id: string, updatedData: Omit<Service, 'id' | 'imageUrl' | 'file'>, newImageFile?: File) => {
+      const currentService = appState.services.find(s => s.id === id);
+      if (!currentService) return;
+      let updatedService: Service = { ...currentService, ...updatedData };
+      if (newImageFile) {
+          try {
+              const { file } = await fileToStorable(newImageFile);
+              updatedService = { ...updatedService, imageUrl: URL.createObjectURL(file), file };
+          } catch {
+              toast({ variant: 'destructive', title: 'Error', description: 'No se pudo cargar la nueva imagen.' });
+              return;
+          }
+      }
+      await saveItemToDB(updatedService, 'services');
+      setServices(prev => prev.map(s => s.id === id ? updatedService : s));
+      toast({ title: 'Éxito', description: 'Servicio actualizado.' });
+  };
+
+  const handleAddProduct = async (newProductData: Omit<Product, 'id' | 'imageUrl' | 'file'>, imageFile: File) => {
+    try {
+        const { file } = await fileToStorable(imageFile);
+        const newProduct: Product = {
+            id: crypto.randomUUID(),
+            ...newProductData,
+            imageUrl: URL.createObjectURL(file),
+            file: file,
+        };
+        await saveItemToDB(newProduct, 'products');
+        setProducts(prev => [...prev, newProduct]);
+        toast({ title: 'Éxito', description: 'Nuevo producto añadido.' });
+        return true;
+    } catch (error) {
+        console.error("Error adding product:", error);
+        toast({ variant: 'destructive', title: 'Error', description: 'No se pudo añadir el producto.' });
+        return false;
+    }
+  };
+
+  const handleDeleteProduct = (id: string) => {
+      setProducts(prev => prev.filter(p => p.id !== id));
+      toast({ title: 'Éxito', description: 'Producto eliminado.' });
+  };
+
+  const handleUpdateProduct = async (id: string, updatedData: Omit<Product, 'id' | 'imageUrl' | 'file'>, newImageFile?: File) => {
+      const currentProduct = appState.products.find(p => p.id === id);
+      if (!currentProduct) return;
+      let updatedProduct: Product = { ...currentProduct, ...updatedData };
+      if (newImageFile) {
+          try {
+              const { file } = await fileToStorable(newImageFile);
+              updatedProduct = { ...updatedProduct, imageUrl: URL.createObjectURL(file), file };
+          } catch {
+              toast({ variant: 'destructive', title: 'Error', description: 'No se pudo cargar la nueva imagen.' });
+              return;
+          }
+      }
+      await saveItemToDB(updatedProduct, 'products');
+      setProducts(prev => prev.map(p => p.id === id ? updatedProduct : p));
+      toast({ title: 'Éxito', description: 'Producto actualizado.' });
+  };
+  
+    const handleHeroUpdate = async (updatedData: Omit<HeroContent, 'imageUrl' | 'file'>, imageFile?: File) => {
+        let updatedHeroContent: HeroContent = { ...appState.heroContent, ...updatedData };
+        if (imageFile) {
+            try {
+                const { file } = await fileToStorable(imageFile);
+                updatedHeroContent = { ...updatedHeroContent, imageUrl: URL.createObjectURL(file), file };
+            } catch {
+                toast({ variant: 'destructive', title: 'Error', description: 'No se pudo cargar la imagen.' });
+                return;
+            }
+        }
+        await saveItemToDB(updatedHeroContent, 'heroContent');
+        setHeroContent(updatedHeroContent);
+        toast({ title: 'Éxito', description: 'Contenido de la sección inicial actualizado.' });
+    };
+
+    const handleAboutMeUpdate = async (updatedData: Omit<AboutMeContent, 'imageUrl' | 'file'>, imageFile?: File) => {
+        let updatedAboutMeContent: AboutMeContent = { ...appState.aboutMeContent, ...updatedData };
+        if (imageFile) {
+            try {
+                const { file } = await fileToStorable(imageFile);
+                updatedAboutMeContent = { ...updatedAboutMeContent, imageUrl: URL.createObjectURL(file), file };
+            } catch {
+                toast({ variant: 'destructive', title: 'Error', description: 'No se pudo cargar la imagen.' });
+                return;
+            }
+        }
+        await saveItemToDB(updatedAboutMeContent, 'aboutMeContent');
+        setAboutMeContent(updatedAboutMeContent);
+        toast({ title: 'Éxito', description: "La sección 'Sobre Mí' ha sido actualizada." });
+    };
 
 
   if (isLoadingSession || !isStateLoaded) {
@@ -187,16 +291,6 @@ export default function AdminPage() {
       return (
         <AdminDashboardContent
           appState={appState}
-          setHeroContent={setHeroContent}
-          setServices={setServices}
-          setProducts={setProducts}
-          setPerfumes={setPerfumes}
-          setGalleryItems={setGalleryItems}
-          setTestimonials={setTestimonials}
-          setAboutMeContent={setAboutMeContent}
-          setUsers={setUsers}
-          setCategories={setCategories}
-          loggedInUser={authenticatedUser}
         />
       );
     }
@@ -205,15 +299,19 @@ export default function AdminPage() {
       <AdminDashboard
         section={activeSection}
         appState={appState}
-        setHeroContent={setHeroContent}
-        setServices={setServices}
-        setProducts={setProducts}
+        onUpdateHeroContent={handleHeroUpdate}
+        onAddService={handleAddService}
+        onUpdateService={handleUpdateService}
+        onDeleteService={handleDeleteService}
+        onAddProduct={handleAddProduct}
+        onUpdateProduct={handleUpdateProduct}
+        onDeleteProduct={handleDeleteProduct}
         onAddPerfume={handleAddPerfume}
         onUpdatePerfume={handleUpdatePerfume}
         onDeletePerfume={handleDeletePerfume}
         setGalleryItems={setGalleryItems}
         setTestimonials={setTestimonials}
-        setAboutMeContent={setAboutMeContent}
+        onUpdateAboutMeContent={handleAboutMeUpdate}
         setUsers={setUsers}
         setCategories={setCategories}
         loggedInUser={authenticatedUser}

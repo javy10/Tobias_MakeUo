@@ -8,7 +8,23 @@ import type { AboutMeContent, Category, GalleryItem, HeroContent, Product, Servi
 import { initialAboutMeContent, initialCategories, initialGalleryItems, initialHeroContent, initialProducts, initialServices, initialTestimonials, initialUsers, initialPerfumes } from '@/lib/data';
 import { getAllItemsFromDB, saveItemToDB } from '@/lib/db';
 
-// 1. Define the shape of our global state
+// Define the keys for localStorage
+const LOCAL_STORAGE_KEYS = {
+  testimonials: 'testimonials',
+  users: 'users',
+  categories: 'categories',
+};
+
+// Define the store names for IndexedDB
+const DB_STORE_NAMES = {
+  heroContent: 'heroContent',
+  services: 'services',
+  products: 'products',
+  perfumes: 'perfumes',
+  galleryItems: 'galleryItems',
+  aboutMeContent: 'aboutMeContent',
+};
+
 interface AppState {
   heroContent: HeroContent;
   services: Service[];
@@ -21,7 +37,6 @@ interface AppState {
   categories: Category[];
 }
 
-// 2. Define the shape of our context, including setters
 interface AppContextType {
   appState: AppState;
   setHeroContent: React.Dispatch<React.SetStateAction<HeroContent>>;
@@ -36,10 +51,8 @@ interface AppContextType {
   isStateLoaded: boolean;
 }
 
-// 3. Create the context with a default value
 const AppContext = createContext<AppContextType | undefined>(undefined);
 
-// 4. Create a custom hook for easy access to the context
 export function useAppContext() {
   const context = useContext(AppContext);
   if (context === undefined) {
@@ -48,11 +61,8 @@ export function useAppContext() {
   return context;
 }
 
-// Helper function to get initial state from localStorage or defaults
-const getInitialState = <T>(key: string, defaultValue: T): T => {
-  if (typeof window === 'undefined') {
-    return defaultValue;
-  }
+const getInitialStateFromLocalStorage = <T>(key: string, defaultValue: T): T => {
+  if (typeof window === 'undefined') return defaultValue;
   try {
     const item = window.localStorage.getItem(key);
     return item ? JSON.parse(item) : defaultValue;
@@ -70,88 +80,87 @@ export default function RootLayout({
 }>) {
   const [isStateLoaded, setIsStateLoaded] = useState(false);
 
-  // 5. Initialize the state here in the root layout, lazily from localStorage
-  const [heroContent, setHeroContent] = useState<HeroContent>(() => getInitialState('heroContent', initialHeroContent));
-  const [services, setServices] = useState<Service[]>(() => getInitialState('services', initialServices));
-  const [products, setProducts] = useState<Product[]>(() => getInitialState('products', initialProducts));
-  const [perfumes, setPerfumes] = useState<Perfume[]>(() => getInitialState('perfumes', initialPerfumes));
-  const [galleryItems, setGalleryItems] = useState<GalleryItem[]>([]); // Start with empty gallery
-  const [testimonials, setTestimonials] = useState<Testimonial[]>(() => getInitialState('testimonials', initialTestimonials));
-  const [aboutMeContent, setAboutMeContent] = useState<AboutMeContent>(() => getInitialState('aboutMeContent', initialAboutMeContent));
-  const [users, setUsers] = useState<User[]>(() => getInitialState('users', initialUsers));
-  const [categories, setCategories] = useState<Category[]>(() => getInitialState('categories', initialCategories));
-
-
-  const appState: AppState = {
-    heroContent,
-    services,
-    products,
-    perfumes,
-    galleryItems,
-    testimonials,
-    aboutMeContent,
-    users,
-    categories,
-  };
-
-  // Effect to save state to localStorage whenever it changes (excluding gallery)
-  useEffect(() => {
-    try {
-      if (isStateLoaded) {
-        localStorage.setItem('heroContent', JSON.stringify(heroContent));
-        localStorage.setItem('services', JSON.stringify(services));
-        localStorage.setItem('products', JSON.stringify(products));
-        localStorage.setItem('perfumes', JSON.stringify(perfumes));
-        // Do not save galleryItems to localStorage
-        localStorage.setItem('testimonials', JSON.stringify(testimonials));
-        localStorage.setItem('aboutMeContent', JSON.stringify(aboutMeContent));
-        localStorage.setItem('users', JSON.stringify(users));
-        localStorage.setItem('categories', JSON.stringify(categories));
-      }
-    } catch (error)
-      {
-      console.error('Failed to save state to localStorage:', error);
-    }
-  }, [appState, isStateLoaded, heroContent, services, products, perfumes, testimonials, aboutMeContent, users, categories]);
+  // Initialize state with default values first
+  const [heroContent, setHeroContent] = useState<HeroContent>(initialHeroContent);
+  const [services, setServices] = useState<Service[]>(initialServices);
+  const [products, setProducts] = useState<Product[]>(initialProducts);
+  const [perfumes, setPerfumes] = useState<Perfume[]>(initialPerfumes);
+  const [galleryItems, setGalleryItems] = useState<GalleryItem[]>(initialGalleryItems);
+  const [aboutMeContent, setAboutMeContent] = useState<AboutMeContent>(initialAboutMeContent);
   
-  // Effect to load data from localStorage and IndexedDB
+  // State from localStorage
+  const [testimonials, setTestimonials] = useState<Testimonial[]>(() => getInitialStateFromLocalStorage(LOCAL_STORAGE_KEYS.testimonials, initialTestimonials));
+  const [users, setUsers] = useState<User[]>(() => getInitialStateFromLocalStorage(LOCAL_STORAGE_KEYS.users, initialUsers));
+  const [categories, setCategories] = useState<Category[]>(() => getInitialStateFromLocalStorage(LOCAL_STORAGE_KEYS.categories, initialCategories));
+
+
+  // Effect to save simple data to localStorage
+  useEffect(() => {
+    if (isStateLoaded) {
+      try {
+        localStorage.setItem(LOCAL_STORAGE_KEYS.testimonials, JSON.stringify(testimonials));
+        localStorage.setItem(LOCAL_STORAGE_KEYS.users, JSON.stringify(users));
+        localStorage.setItem(LOCAL_STORAGE_KEYS.categories, JSON.stringify(categories));
+      } catch (error) {
+        console.error('Failed to save state to localStorage:', error);
+      }
+    }
+  }, [isStateLoaded, testimonials, users, categories]);
+
+
+  // Effect to load data from IndexedDB on initial mount
   useEffect(() => {
     const loadData = async () => {
-      // Load non-gallery items from localStorage
-      setHeroContent(getInitialState('heroContent', initialHeroContent));
-      setServices(getInitialState('services', initialServices));
-      setProducts(getInitialState('products', initialProducts));
-      setPerfumes(getInitialState('perfumes', initialPerfumes));
-      setTestimonials(getInitialState('testimonials', initialTestimonials));
-      setAboutMeContent(getInitialState('aboutMeContent', initialAboutMeContent));
-      setUsers(getInitialState('users', initialUsers));
-      setCategories(getInitialState('categories', initialCategories));
-
-      // Load gallery items from IndexedDB
       try {
-          let dbItems = await getAllItemsFromDB();
-
-          // If DB has fewer items than initial data, it might be a fresh start
-          // or a partial user-driven state. We'll populate missing initial items.
-          if (dbItems.length < initialGalleryItems.length) {
-              const dbItemIds = new Set(dbItems.map(item => item.id));
-              const missingInitialItems = initialGalleryItems.filter(item => !dbItemIds.has(item.id));
-
-              for (const item of missingInitialItems) {
-                  await saveItemToDB(item);
-              }
-              // Re-fetch after potentially adding missing items
-              dbItems = await getAllItemsFromDB();
+        const loadStore = async <T>(storeName: string, initialState: T[] | T, isArray = true): Promise<T | T[]> => {
+          let dbItems = await getAllItemsFromDB<T>(storeName);
+          // If the store is empty, populate it with initial data
+          if (dbItems.length === 0) {
+            const itemsToSave = Array.isArray(initialState) ? initialState : [initialState];
+            for (const item of itemsToSave) {
+              await saveItemToDB(item, storeName);
+            }
+            dbItems = await getAllItemsFromDB<T>(storeName);
           }
-          setGalleryItems(dbItems);
-      } catch (error) {
-          console.error('Failed to load gallery from IndexedDB, using initial data.', error);
-          setGalleryItems(initialGalleryItems);
-      }
-      
-      setIsStateLoaded(true);
-    };
+          return isArray ? dbItems : dbItems[0];
+        };
+        
+        const [
+            loadedHero, 
+            loadedServices, 
+            loadedProducts, 
+            loadedPerfumes, 
+            loadedGallery, 
+            loadedAbout
+        ] = await Promise.all([
+            loadStore(DB_STORE_NAMES.heroContent, initialHeroContent, false) as Promise<HeroContent>,
+            loadStore(DB_STORE_NAMES.services, initialServices) as Promise<Service[]>,
+            loadStore(DB_STORE_NAMES.products, initialProducts) as Promise<Product[]>,
+            loadStore(DB_STORE_NAMES.perfumes, initialPerfumes) as Promise<Perfume[]>,
+            loadStore(DB_STORE_NAMES.galleryItems, initialGalleryItems) as Promise<GalleryItem[]>,
+            loadStore(DB_STORE_NAMES.aboutMeContent, initialAboutMeContent, false) as Promise<AboutMeContent>,
+        ]);
+        
+        setHeroContent(loadedHero);
+        setServices(loadedServices);
+        setProducts(loadedProducts);
+        setPerfumes(loadedPerfumes);
+        setGalleryItems(loadedGallery);
+        setAboutMeContent(loadedAbout);
 
+      } catch (error) {
+          console.error('Failed to load data from IndexedDB, using initial data.', error);
+          // Set initial data as fallback
+          setHeroContent(initialHeroContent);
+          setServices(initialServices);
+          setProducts(initialProducts);
+          setPerfumes(initialPerfumes);
+          setGalleryItems(initialGalleryItems);
+          setAboutMeContent(initialAboutMeContent);
+      } finally {
+        setIsStateLoaded(true);
+      }
+    };
     loadData();
   }, []);
   
@@ -162,28 +171,13 @@ export default function RootLayout({
       try {
         const newValue = JSON.parse(event.newValue);
         switch (event.key) {
-          case 'heroContent':
-            setHeroContent(newValue);
-            break;
-          case 'services':
-            setServices(newValue);
-            break;
-          case 'products':
-            setProducts(newValue);
-            break;
-          case 'perfumes':
-            setPerfumes(newValue);
-            break;
-          case 'testimonials':
+          case LOCAL_STORAGE_KEYS.testimonials:
             setTestimonials(newValue);
             break;
-          case 'aboutMeContent':
-            setAboutMeContent(newValue);
-            break;
-          case 'users':
+          case LOCAL_STORAGE_KEYS.users:
             setUsers(newValue);
             break;
-          case 'categories':
+          case LOCAL_STORAGE_KEYS.categories:
             setCategories(newValue);
             break;
           default:
@@ -201,8 +195,18 @@ export default function RootLayout({
     };
   }, []);
 
+  const appState: AppState = {
+    heroContent,
+    services,
+    products,
+    perfumes,
+    galleryItems,
+    testimonials,
+    aboutMeContent,
+    users,
+    categories,
+  };
 
-  // 6. Assemble the state and setters into the context value
   const contextValue: AppContextType = {
     appState,
     setHeroContent,
@@ -227,9 +231,8 @@ export default function RootLayout({
         <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..900;1,400..900&family=Inter:wght@100..900&display=swap" rel="stylesheet" />
       </head>
       <body className="font-body antialiased">
-        {/* 7. Provide the context to all children */}
         <AppContext.Provider value={contextValue}>
-          {isStateLoaded ? children : null /* Or a loading spinner */}
+          {isStateLoaded ? children : <div className="flex h-screen items-center justify-center">Cargando...</div>}
         </AppContext.Provider>
         <Toaster />
       </body>
