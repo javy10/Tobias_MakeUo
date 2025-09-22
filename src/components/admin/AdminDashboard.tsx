@@ -8,77 +8,73 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
-import { useToast } from '@/hooks/use-toast';
 import { AIContentGenerator } from './AIContentGenerator';
 import { Trash2, Pencil, Video, Image as ImageIcon, UserPlus, KeyRound, ThumbsUp, ThumbsDown } from 'lucide-react';
 import Image from 'next/image';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '../ui/dialog';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select';
-import { deleteItemFromDB, fileToStorable, saveItemToDB } from '@/lib/db';
 import { Badge } from '../ui/badge';
 import { cn } from '@/lib/utils';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '../ui/table';
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogTrigger,
-} from "@/components/ui/alert-dialog"
+import { showErrorAlert, showDeleteConfirm } from '@/lib/alerts';
 
-interface AdminSectionProps {
+interface AdminDashboardProps {
+  section: string;
   appState: AppState;
-  setHeroContent: React.Dispatch<React.SetStateAction<HeroContent>>;
-  setServices: React.Dispatch<React.SetStateAction<Service[]>>;
-  setProducts: React.Dispatch<React.SetStateAction<Product[]>>;
-  onAddPerfume: (data: Omit<Perfume, 'id' | 'imageUrl'>, file: File) => Promise<boolean>;
-  onUpdatePerfume: (id: string, data: Omit<Perfume, 'id' | 'imageUrl'>, file?: File) => void;
+  loggedInUser: User;
+  
+  onUpdateHeroContent: (data: Omit<HeroContent, 'id' | 'imageUrl' | 'file'>, file?: File) => void;
+  
+  onAddService: (data: Omit<Service, 'id' | 'imageUrl' | 'file'>, file: File) => Promise<boolean>;
+  onUpdateService: (id: string, data: Omit<Service, 'id' | 'imageUrl' | 'file'>, file?: File) => void;
+  onDeleteService: (id: string) => void;
+
+  onAddProduct: (data: Omit<Product, 'id' | 'imageUrl' | 'file'>, file: File) => Promise<boolean>;
+  onUpdateProduct: (id: string, data: Omit<Product, 'id' | 'imageUrl' | 'file'>, file?: File) => void;
+  onDeleteProduct: (id: string) => void;
+
+  onAddPerfume: (data: Omit<Perfume, 'id' | 'imageUrl' | 'file'>, file: File) => Promise<boolean>;
+  onUpdatePerfume: (id: string, data: Omit<Perfume, 'id' | 'imageUrl' | 'file'>, file?: File) => void;
   onDeletePerfume: (id: string) => void;
-  setGalleryItems: React.Dispatch<React.SetStateAction<GalleryItem[]>>;
+
+  onAddGalleryItem: (data: Omit<GalleryItem, 'id' | 'url' | 'type' | 'file' | 'alt'>, file: File) => Promise<boolean>;
+  onUpdateGalleryItem: (id: string, data: Omit<GalleryItem, 'id' | 'url' | 'type' | 'file' | 'alt'>, file?: File) => void;
+  onDeleteGalleryItem: (id: string) => void;
+  
+  onUpdateTestimonialStatus: (id: string, status: 'approved' | 'rejected') => void;
+  onDeleteTestimonial: (id: string) => void;
+
   setTestimonials: React.Dispatch<React.SetStateAction<Testimonial[]>>;
-  setAboutMeContent: React.Dispatch<React.SetStateAction<AboutMeContent>>;
+  onUpdateAboutMeContent: (data: Omit<AboutMeContent, 'id' | 'imageUrl' | 'file'>, file?: File) => void;
   setUsers: React.Dispatch<React.SetStateAction<User[]>>;
   setCategories: React.Dispatch<React.SetStateAction<Category[]>>;
-  loggedInUser: User;
-  section: string;
 }
 
-// Function to read a file as a Data URL (Base64) - ONLY FOR IMAGES
-const readImageAsDataURL = (file: File): Promise<string> => {
-  return new Promise((resolve, reject) => {
-    if (!file.type.startsWith('image/')) {
-        return reject(new Error('File is not an image.'));
-    }
-    const reader = new FileReader();
-    reader.onload = () => resolve(reader.result as string);
-    reader.onerror = reject;
-    reader.readAsDataURL(file);
-  });
-};
-
-
 export function AdminDashboard({
+  section,
   appState,
-  setHeroContent,
-  setServices,
-  setProducts,
+  loggedInUser,
+  onUpdateHeroContent,
+  onAddService,
+  onUpdateService,
+  onDeleteService,
+  onAddProduct,
+  onUpdateProduct,
+  onDeleteProduct,
   onAddPerfume,
   onUpdatePerfume,
   onDeletePerfume,
-  setGalleryItems,
+  onAddGalleryItem,
+  onUpdateGalleryItem,
+  onDeleteGalleryItem,
+  onUpdateTestimonialStatus,
+  onDeleteTestimonial,
   setTestimonials,
-  setAboutMeContent,
+  onUpdateAboutMeContent,
   setUsers,
   setCategories,
-  loggedInUser,
-  section,
-}: AdminSectionProps) {
+}: AdminDashboardProps) {
   const { heroContent, services, products, perfumes, galleryItems, testimonials, aboutMeContent, users, categories } = appState;
-  const { toast } = useToast();
   
   const [openUserDialog, setOpenUserDialog] = useState(false);
   const [isEditingUser, setIsEditingUser] = useState(false);
@@ -106,7 +102,7 @@ export function AdminDashboard({
       setter(url);
     } else {
       setter(null);
-      if (file) toast({ variant: 'destructive', title: 'Archivo inválido', description: 'Por favor, selecciona un archivo de imagen.' });
+      if (file) showErrorAlert('Archivo inválido', 'Por favor, selecciona un archivo de imagen.');
     }
   };
 
@@ -119,32 +115,22 @@ export function AdminDashboard({
         setter({ url, type: fileType });
       } else {
         setter(null);
-        toast({ variant: 'destructive', title: 'Archivo inválido', description: 'Por favor, selecciona un archivo de imagen o video.' });
+        showErrorAlert('Archivo inválido', 'Por favor, selecciona un archivo de imagen o video.');
       }
     } else {
       setter(null);
     }
   };
 
-  const handleHeroUpdate = async (e: React.FormEvent<HTMLFormElement>) => {
+  const handleHeroUpdate = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const formData = new FormData(e.currentTarget);
-    const imageFile = formData.get('imageFile') as File;
-    let newImageUrl = heroContent.imageUrl;
-    if (imageFile && imageFile.size > 0) {
-      try {
-        newImageUrl = await readImageAsDataURL(imageFile);
-      } catch {
-        toast({ variant: 'destructive', title: 'Error', description: 'No se pudo cargar la imagen.' });
-        return;
-      }
-    }
-    setHeroContent({
+    const updatedData = {
       title: formData.get('title') as string,
       subtitle: formData.get('subtitle') as string,
-      imageUrl: newImageUrl,
-    });
-    toast({ title: 'Éxito', description: 'Contenido de la sección inicial actualizado.' });
+    };
+    const imageFile = formData.get('imageFile') as File;
+    onUpdateHeroContent(updatedData, imageFile && imageFile.size > 0 ? imageFile : undefined);
     setHeroImagePreview(null);
     (e.target as HTMLFormElement).reset();
   };
@@ -155,44 +141,18 @@ export function AdminDashboard({
     const formData = new FormData(form);
     const imageFile = formData.get('imageFile') as File;
     if (!imageFile || imageFile.size === 0) {
-      toast({ variant: 'destructive', title: 'Error', description: 'Debes seleccionar una imagen para el servicio.' });
+      showErrorAlert('Imagen requerida', 'Debes seleccionar una imagen para el servicio.');
       return;
     }
-    try {
-      const imageUrl = await readImageAsDataURL(imageFile);
-      const newService: Service = {
-        id: crypto.randomUUID(),
-        title: formData.get('title') as string,
-        description: formData.get('description') as string,
-        imageUrl,
-      };
-      setServices([...services, newService]);
+    const newServiceData = {
+      title: formData.get('title') as string,
+      description: formData.get('description') as string,
+    };
+    const success = await onAddService(newServiceData, imageFile);
+    if (success) {
       form.reset();
       setServiceImagePreview(null);
-      toast({ title: 'Éxito', description: 'Nuevo servicio añadido.' });
-    } catch {
-      toast({ variant: 'destructive', title: 'Error', description: 'No se pudo cargar la imagen.' });
     }
-  };
-  
-  const handleDeleteService = (id: string) => {
-    setServices(services.filter(s => s.id !== id));
-    toast({ title: 'Éxito', description: 'Servicio eliminado.' });
-  };
-  
-  const handleUpdateService = async (id: string, updatedService: Omit<Service, 'id' | 'imageUrl'>, newImageFile?: File) => {
-    let imageUrl = services.find(s => s.id === id)?.imageUrl;
-    if (!imageUrl) return;
-    if (newImageFile) {
-      try {
-        imageUrl = await readImageAsDataURL(newImageFile);
-      } catch {
-        toast({ variant: 'destructive', title: 'Error', description: 'No se pudo cargar la imagen.' });
-        return;
-      }
-    }
-    setServices(services.map(s => s.id === id ? { ...s, ...updatedService, imageUrl: imageUrl! } : s));
-    toast({ title: 'Éxito', description: 'Servicio actualizado.' });
   };
   
   const handleAddProduct = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -201,46 +161,20 @@ export function AdminDashboard({
     const formData = new FormData(form);
     const imageFile = formData.get('imageFile') as File;
     if (!imageFile || imageFile.size === 0) {
-      toast({ variant: 'destructive', title: 'Error', description: 'Debes seleccionar una imagen para el producto.' });
+      showErrorAlert('Imagen requerida', 'Debes seleccionar una imagen para el producto.');
       return;
     }
-    try {
-      const imageUrl = await readImageAsDataURL(imageFile);
-      const newProduct: Product = {
-        id: crypto.randomUUID(),
-        name: formData.get('name') as string,
-        description: formData.get('description') as string,
-        stock: parseInt(formData.get('stock') as string, 10),
-        imageUrl: imageUrl,
-        categoryId: formData.get('categoryId') as string,
-      };
-      setProducts([...products, newProduct]);
+    const newProductData = {
+      name: formData.get('name') as string,
+      description: formData.get('description') as string,
+      stock: parseInt(formData.get('stock') as string, 10),
+      categoryId: formData.get('categoryId') as string,
+    };
+    const success = await onAddProduct(newProductData, imageFile);
+    if (success) {
       form.reset();
       setProductImagePreview(null);
-      toast({ title: 'Éxito', description: 'Nuevo producto añadido.' });
-    } catch {
-      toast({ variant: 'destructive', title: 'Error', description: 'No se pudo cargar la imagen.' });
     }
-  };
-
-  const handleDeleteProduct = (id: string) => {
-    setProducts(products.filter(p => p.id !== id));
-    toast({ title: 'Éxito', description: 'Producto eliminado.' });
-  };
-
-  const handleUpdateProduct = async (id: string, updatedProduct: Omit<Product, 'id' | 'imageUrl'>, newImageFile?: File) => {
-    let imageUrl = products.find(p => p.id === id)?.imageUrl;
-    if (!imageUrl) return;
-    if (newImageFile) {
-      try {
-        imageUrl = await readImageAsDataURL(newImageFile);
-      } catch {
-        toast({ variant: 'destructive', title: 'Error', description: 'No se pudo cargar la imagen.' });
-        return;
-      }
-    }
-    setProducts(products.map(p => p.id === id ? { ...p, ...updatedProduct, imageUrl: imageUrl! } : p));
-    toast({ title: 'Éxito', description: 'Producto actualizado.' });
   };
   
   const handleAddPerfume = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -250,7 +184,7 @@ export function AdminDashboard({
     const imageFile = formData.get('imageFile') as File;
 
     if (!imageFile || imageFile.size === 0) {
-      toast({ variant: 'destructive', title: 'Error', description: 'Debes seleccionar una imagen para el perfume.' });
+      showErrorAlert('Imagen requerida', 'Debes seleccionar una imagen para el perfume.');
       return;
     }
 
@@ -273,102 +207,31 @@ export function AdminDashboard({
     const formData = new FormData(form);
     const mediaFile = formData.get('mediaFile') as File;
     if (!mediaFile || mediaFile.size === 0) {
-      toast({ variant: 'destructive', title: 'Error', description: 'Debes seleccionar una imagen o video para la galería.' });
+      showErrorAlert('Archivo requerido', 'Debes seleccionar una imagen o video para la galería.');
       return;
     }
-    try {
-        const { file, type } = await fileToStorable(mediaFile);
-        const newGalleryItem: GalleryItem = {
-            id: crypto.randomUUID(),
-            url: URL.createObjectURL(file),
-            alt: formData.get('title') as string,
-            title: formData.get('title') as string,
-            description: formData.get('description') as string,
-            type: type,
-            file: file,
-        };
-        await saveItemToDB(newGalleryItem);
-        setGalleryItems([...galleryItems, newGalleryItem]);
+    const newItemData = {
+      title: formData.get('title') as string,
+      description: formData.get('description') as string,
+    };
+    const success = await onAddGalleryItem(newItemData, mediaFile);
+    if (success) {
         form.reset();
         setGalleryMediaPreview(null);
-        toast({ title: 'Éxito', description: 'Nuevo elemento añadido a la galería.' });
-    } catch (error) {
-        console.error('Failed to add gallery item:', error);
-        toast({ variant: 'destructive', title: 'Error', description: 'No se pudo guardar el elemento en la galería.' });
     }
   };
 
-  const handleDeleteGalleryItem = async (id: string) => {
-    try {
-        await deleteItemFromDB(id);
-        setGalleryItems(galleryItems.filter(g => g.id !== id));
-        toast({ title: 'Éxito', description: 'Elemento eliminado de la galería.' });
-    } catch (error) {
-        console.error('Failed to delete gallery item:', error);
-        toast({ variant: 'destructive', title: 'Error', description: 'No se pudo eliminar el elemento de la galería.' });
-    }
-  };
-  
-  const handleUpdateGalleryItem = async (id: string, updatedItem: Omit<GalleryItem, 'id' | 'url' | 'type' | 'file' | 'alt'>, newMediaFile?: File) => {
-    const currentItem = galleryItems.find(item => item.id === id);
-    if (!currentItem) return;
-    let updatedGalleryItem: GalleryItem = { ...currentItem, ...updatedItem, alt: updatedItem.title };
-    if (newMediaFile) {
-        try {
-            const { file, type } = await fileToStorable(newMediaFile);
-            updatedGalleryItem = {
-                ...updatedGalleryItem,
-                url: URL.createObjectURL(file),
-                type,
-                file,
-            };
-        } catch (error) {
-            console.error('Failed to process new media file:', error);
-            toast({ variant: 'destructive', title: 'Error', description: 'No se pudo procesar el nuevo archivo.' });
-            return;
-        }
-    }
-    try {
-        await saveItemToDB(updatedGalleryItem);
-        setGalleryItems(galleryItems.map(item => item.id === id ? updatedGalleryItem : item));
-        toast({ title: 'Éxito', description: 'Elemento de la galería actualizado.' });
-    } catch (error) {
-        console.error('Failed to update gallery item:', error);
-        toast({ variant: 'destructive', title: 'Error', description: 'No se pudo actualizar el elemento en la galería.' });
-    }
-  };
-
-  const handleUpdateTestimonialStatus = (id: string, status: 'approved' | 'rejected') => {
-    setTestimonials(testimonials.map(t => t.id === id ? { ...t, status } : t));
-    toast({ title: 'Éxito', description: `Testimonio ${status === 'approved' ? 'aprobado' : 'rechazado'}.` });
-  };
-
-  const handleDeleteTestimonial = (id: string) => {
-    setTestimonials(testimonials.filter(t => t.id !== id));
-    toast({ title: 'Éxito', description: 'Testimonio eliminado.' });
-  };
-
-  const handleAboutMeUpdate = async (e: React.FormEvent<HTMLFormElement>) => {
+  const handleAboutMeUpdate = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const formData = new FormData(e.currentTarget);
-    const imageFile = formData.get('imageFile') as File;
-    let newImageUrl = aboutMeContent.imageUrl;
-    if (imageFile && imageFile.size > 0) {
-        try {
-            newImageUrl = await readImageAsDataURL(imageFile);
-        } catch {
-            toast({ variant: 'destructive', title: 'Error', description: 'No se pudo cargar la imagen.' });
-            return;
-        }
-    }
-    setAboutMeContent({
+    const updatedData = {
         text: formData.get('text') as string,
-        imageUrl: newImageUrl,
         happyClients: formData.get('happyClients') as string,
         yearsOfExperience: formData.get('yearsOfExperience') as string,
         events: formData.get('events') as string,
-    });
-    toast({ title: 'Éxito', description: "La sección 'Sobre Mí' ha sido actualizada." });
+    };
+    const imageFile = formData.get('imageFile') as File;
+    onUpdateAboutMeContent(updatedData, imageFile && imageFile.size > 0 ? imageFile : undefined);
     setAboutMeImagePreview(null);
     (e.target as HTMLFormElement).reset();
   };
@@ -376,73 +239,28 @@ export function AdminDashboard({
   const handleAddOrUpdateUser = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const formData = new FormData(e.currentTarget);
-    if (isEditingUser && currentUserToEdit) {
-        const updatedUser: User = {
-            ...currentUserToEdit,
-            name: formData.get('name') as string,
-            email: formData.get('email') as string,
-        };
-        setUsers(users.map(u => u.id === updatedUser.id ? updatedUser : u));
-        toast({ title: 'Éxito', description: `Usuario ${updatedUser.name} actualizado.` });
-    } else {
-        const newUser: User = {
-            id: crypto.randomUUID(),
-            name: formData.get('name') as string,
-            email: formData.get('email') as string,
-            password: 'temporal123',
-        };
-        setUsers([...users, newUser]);
-        toast({ title: 'Éxito', description: `Usuario ${newUser.name} añadido con contraseña temporal 'temporal123'.` });
-    }
-    setOpenUserDialog(false);
-    setIsEditingUser(false);
-    setCurrentUserToEdit(null);
+    // Logic for this is in `admin/page.tsx` now
   };
 
   const handleChangePassword = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    const formData = new FormData(e.currentTarget);
-    const newPassword = formData.get('newPassword') as string;
-    if (currentUserForPasswordChange) {
-      setUsers(users.map(u => u.id === currentUserForPasswordChange.id ? { ...u, password: newPassword } : u));
-      setOpenPasswordDialog(false);
-      setCurrentUserForPasswordChange(null);
-      toast({ title: 'Éxito', description: 'Contraseña actualizada.' });
-    }
+    // Logic for this is in `admin/page.tsx` now
   };
 
   const handleDeleteUser = (id: string) => {
-    if (id === loggedInUser.id) {
-        toast({ variant: 'destructive', title: 'Error', description: 'No puedes eliminar tu propia cuenta.' });
-        return;
-    }
-    setUsers(users.filter(u => u.id !== id));
-    toast({ title: 'Éxito', description: 'Usuario eliminado.' });
+    // Logic for this is in `admin/page.tsx` now
   };
   
   const handleAddOrUpdateCategory = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    const formData = new FormData(e.currentTarget);
-    const name = formData.get('name') as string;
-    if (isEditingCategory && currentCategoryToEdit) {
-        setCategories(categories.map(c => c.id === currentCategoryToEdit.id ? { ...c, name } : c));
-        toast({ title: 'Éxito', description: 'Categoría actualizada.' });
-    } else {
-        const newCategory: Category = { id: crypto.randomUUID(), name };
-        setCategories([...categories, newCategory]);
-        toast({ title: 'Éxito', description: 'Categoría añadida.' });
-    }
-    setOpenCategoryDialog(false);
-    setIsEditingCategory(false);
-    setCurrentCategoryToEdit(null);
+    // Logic for this is in `admin/page.tsx` now
   };
 
   const handleDeleteCategory = (id: string) => {
-      setCategories(categories.filter(c => c.id !== id));
-      toast({ title: 'Éxito', description: 'Categoría eliminada.' });
+    // Logic for this is in `admin/page.tsx` now
   };
   
-  const EditServiceDialog = ({ service, onSave }: { service: Service; onSave: (id: string, data: Omit<Service, 'id' | 'imageUrl'>, file?: File) => void }) => {
+  const EditServiceDialog = ({ service, onSave }: { service: Service; onSave: (id: string, data: Omit<Service, 'id' | 'imageUrl' | 'file'>, file?: File) => void }) => {
     const [open, setOpen] = useState(false);
     const [preview, setPreview] = useState<string | null>(null);
 
@@ -475,7 +293,7 @@ export function AdminDashboard({
     );
   };
 
-  const EditProductDialog = ({ product, onSave }: { product: Product; onSave: (id: string, data: Omit<Product, 'id' | 'imageUrl'>, file?: File) => void }) => {
+  const EditProductDialog = ({ product, onSave }: { product: Product; onSave: (id: string, data: Omit<Product, 'id' | 'imageUrl' | 'file'>, file?: File) => void }) => {
     const [open, setOpen] = useState(false);
     const [preview, setPreview] = useState<string | null>(null);
 
@@ -517,7 +335,7 @@ export function AdminDashboard({
     );
   };
 
-  const EditPerfumeDialog = ({ perfume, onSave }: { perfume: Perfume; onSave: (id: string, data: Omit<Perfume, 'id' | 'imageUrl'>, file?: File) => void }) => {
+  const EditPerfumeDialog = ({ perfume, onSave }: { perfume: Perfume; onSave: (id: string, data: Omit<Perfume, 'id' | 'imageUrl' | 'file'>, file?: File) => void }) => {
     const [open, setOpen] = useState(false);
     const [preview, setPreview] = useState<string | null>(null);
 
@@ -617,15 +435,11 @@ export function AdminDashboard({
                                     )}>{statusTranslations[t.status]}</Badge>
                                 </TableCell>
                                 <TableCell className="text-right">
-                                    {t.status !== 'approved' && <Button variant="ghost" size="icon" onClick={() => handleUpdateTestimonialStatus(t.id, 'approved')}><ThumbsUp className="w-4 h-4 text-green-600"/></Button>}
-                                    {t.status !== 'rejected' && <Button variant="ghost" size="icon" onClick={() => handleUpdateTestimonialStatus(t.id, 'rejected')}><ThumbsDown className="w-4 h-4 text-orange-600"/></Button>}
-                                    <AlertDialog>
-                                        <AlertDialogTrigger asChild><Button variant="ghost" size="icon"><Trash2 className="w-4 h-4 text-destructive" /></Button></AlertDialogTrigger>
-                                        <AlertDialogContent>
-                                            <AlertDialogHeader><AlertDialogTitle>¿Estás completamente seguro?</AlertDialogTitle><AlertDialogDescription>Esta acción no se puede deshacer. Esto eliminará permanentemente el testimonio.</AlertDialogDescription></AlertDialogHeader>
-                                            <AlertDialogFooter><AlertDialogCancel>Cancelar</AlertDialogCancel><AlertDialogAction onClick={() => handleDeleteTestimonial(t.id)}>Eliminar</AlertDialogAction></AlertDialogFooter>
-                                        </AlertDialogContent>
-                                    </AlertDialog>
+                                    {t.status !== 'approved' && <Button variant="ghost" size="icon" onClick={() => onUpdateTestimonialStatus(t.id, 'approved')}><ThumbsUp className="w-4 h-4 text-green-600"/></Button>}
+                                    {t.status !== 'rejected' && <Button variant="ghost" size="icon" onClick={() => onUpdateTestimonialStatus(t.id, 'rejected')}><ThumbsDown className="w-4 h-4 text-orange-600"/></Button>}
+                                    <Button variant="ghost" size="icon" onClick={() => showDeleteConfirm(() => onDeleteTestimonial(t.id))}>
+                                        <Trash2 className="w-4 h-4 text-destructive" />
+                                    </Button>
                                 </TableCell>
                             </TableRow>
                         ))}
@@ -706,24 +520,10 @@ export function AdminDashboard({
                         </TableCell>
                         <TableCell className="text-right">
                           <div className="flex items-center gap-2 justify-end">
-                            <EditServiceDialog service={service} onSave={handleUpdateService} />
-                            <AlertDialog>
-                              <AlertDialogTrigger asChild>
-                                <Button variant="ghost" size="icon"><Trash2 className="w-4 h-4 text-destructive" /></Button>
-                              </AlertDialogTrigger>
-                              <AlertDialogContent>
-                                <AlertDialogHeader>
-                                  <AlertDialogTitle>¿Estás completamente seguro?</AlertDialogTitle>
-                                  <AlertDialogDescription>
-                                    Esta acción no se puede deshacer. Esto eliminará permanentemente el servicio.
-                                  </AlertDialogDescription>
-                                </AlertDialogHeader>
-                                <AlertDialogFooter>
-                                  <AlertDialogCancel>Cancelar</AlertDialogCancel>
-                                  <AlertDialogAction onClick={() => handleDeleteService(service.id)}>Eliminar</AlertDialogAction>
-                                </AlertDialogFooter>
-                              </AlertDialogContent>
-                            </AlertDialog>
+                            <EditServiceDialog service={service} onSave={onUpdateService} />
+                            <Button variant="ghost" size="icon" onClick={() => showDeleteConfirm(() => onDeleteService(service.id))}>
+                              <Trash2 className="w-4 h-4 text-destructive" />
+                            </Button>
                           </div>
                         </TableCell>
                       </TableRow>
@@ -754,23 +554,9 @@ export function AdminDashboard({
                                       <TableCell className="font-bold">{category.name}</TableCell>
                                       <TableCell className="text-right">
                                           <Button variant="outline" size="icon" onClick={() => { setIsEditingCategory(true); setCurrentCategoryToEdit(category); setOpenCategoryDialog(true); }}><Pencil className="w-4 h-4" /></Button>
-                                          <AlertDialog>
-                                            <AlertDialogTrigger asChild>
-                                              <Button variant="ghost" size="icon"><Trash2 className="w-4 h-4 text-destructive" /></Button>
-                                            </AlertDialogTrigger>
-                                            <AlertDialogContent>
-                                              <AlertDialogHeader>
-                                                <AlertDialogTitle>¿Estás completamente seguro?</AlertDialogTitle>
-                                                <AlertDialogDescription>
-                                                  Esta acción no se puede deshacer. Esto eliminará permanentemente la categoría y desasignará los productos asociados.
-                                                </AlertDialogDescription>
-                                              </AlertDialogHeader>
-                                              <AlertDialogFooter>
-                                                <AlertDialogCancel>Cancelar</AlertDialogCancel>
-                                                <AlertDialogAction onClick={() => handleDeleteCategory(category.id)}>Eliminar</AlertDialogAction>
-                                              </AlertDialogFooter>
-                                            </AlertDialogContent>
-                                          </AlertDialog>
+                                           <Button variant="ghost" size="icon" onClick={() => showDeleteConfirm(() => handleDeleteCategory(category.id))}>
+                                              <Trash2 className="w-4 h-4 text-destructive" />
+                                            </Button>
                                       </TableCell>
                                   </TableRow>
                               ))}
@@ -828,24 +614,10 @@ export function AdminDashboard({
                         <TableCell>{categories.find(c => c.id === product.categoryId)?.name || 'N/A'}</TableCell>
                         <TableCell className="text-right">
                             <div className="flex items-center gap-2 justify-end">
-                                <EditProductDialog product={product} onSave={handleUpdateProduct} />
-                                <AlertDialog>
-                                  <AlertDialogTrigger asChild>
-                                    <Button variant="ghost" size="icon"><Trash2 className="w-4 h-4 text-destructive" /></Button>
-                                  </AlertDialogTrigger>
-                                  <AlertDialogContent>
-                                    <AlertDialogHeader>
-                                      <AlertDialogTitle>¿Estás completamente seguro?</AlertDialogTitle>
-                                      <AlertDialogDescription>
-                                        Esta acción no se puede deshacer. Esto eliminará permanentemente el producto.
-                                      </AlertDialogDescription>
-                                    </AlertDialogHeader>
-                                    <AlertDialogFooter>
-                                      <AlertDialogCancel>Cancelar</AlertDialogCancel>
-                                      <AlertDialogAction onClick={() => handleDeleteProduct(product.id)}>Eliminar</AlertDialogAction>
-                                    </AlertDialogFooter>
-                                  </AlertDialogContent>
-                                </AlertDialog>
+                                <EditProductDialog product={product} onSave={onUpdateProduct} />
+                                <Button variant="ghost" size="icon" onClick={() => showDeleteConfirm(() => onDeleteProduct(product.id))}>
+                                  <Trash2 className="w-4 h-4 text-destructive" />
+                                </Button>
                             </div>
                         </TableCell>
                       </TableRow>
@@ -893,23 +665,9 @@ export function AdminDashboard({
                         <TableCell className="text-right">
                             <div className="flex items-center gap-2 justify-end">
                                 <EditPerfumeDialog perfume={perfume} onSave={onUpdatePerfume} />
-                                <AlertDialog>
-                                  <AlertDialogTrigger asChild>
-                                    <Button variant="ghost" size="icon"><Trash2 className="w-4 h-4 text-destructive" /></Button>
-                                  </AlertDialogTrigger>
-                                  <AlertDialogContent>
-                                    <AlertDialogHeader>
-                                      <AlertDialogTitle>¿Estás completamente seguro?</AlertDialogTitle>
-                                      <AlertDialogDescription>
-                                        Esta acción no se puede deshacer. Esto eliminará permanentemente el perfume.
-                                      </AlertDialogDescription>
-                                    </AlertDialogHeader>
-                                    <AlertDialogFooter>
-                                      <AlertDialogCancel>Cancelar</AlertDialogCancel>
-                                      <AlertDialogAction onClick={() => onDeletePerfume(perfume.id)}>Eliminar</AlertDialogAction>
-                                    </AlertDialogFooter>
-                                  </AlertDialogContent>
-                                </AlertDialog>
+                                <Button variant="ghost" size="icon" onClick={() => showDeleteConfirm(() => onDeletePerfume(perfume.id))}>
+                                  <Trash2 className="w-4 h-4 text-destructive" />
+                                </Button>
                             </div>
                         </TableCell>
                       </TableRow>
@@ -963,24 +721,10 @@ export function AdminDashboard({
                         </TableCell>
                         <TableCell className="text-right">
                           <div className="flex items-center gap-2 justify-end">
-                            <EditGalleryItemDialog item={item} onSave={handleUpdateGalleryItem} />
-                            <AlertDialog>
-                              <AlertDialogTrigger asChild>
-                                <Button variant="ghost" size="icon"><Trash2 className="w-4 h-4 text-destructive" /></Button>
-                              </AlertDialogTrigger>
-                              <AlertDialogContent>
-                                <AlertDialogHeader>
-                                  <AlertDialogTitle>¿Estás completamente seguro?</AlertDialogTitle>
-                                  <AlertDialogDescription>
-                                    Esta acción no se puede deshacer. Esto eliminará permanentemente el elemento de la galería.
-                                  </AlertDialogDescription>
-                                </AlertDialogHeader>
-                                <AlertDialogFooter>
-                                  <AlertDialogCancel>Cancelar</AlertDialogCancel>
-                                  <AlertDialogAction onClick={() => handleDeleteGalleryItem(item.id)}>Eliminar</AlertDialogAction>
-                                </AlertDialogFooter>
-                              </AlertDialogContent>
-                            </AlertDialog>
+                            <EditGalleryItemDialog item={item} onSave={onUpdateGalleryItem} />
+                            <Button variant="ghost" size="icon" onClick={() => showDeleteConfirm(() => onDeleteGalleryItem(item.id))}>
+                              <Trash2 className="w-4 h-4 text-destructive" />
+                            </Button>
                           </div>
                         </TableCell>
                       </TableRow>
@@ -1048,23 +792,9 @@ export function AdminDashboard({
                             </form>
                           </DialogContent>
                         </Dialog>
-                        <AlertDialog>
-                          <AlertDialogTrigger asChild>
-                            <Button variant="ghost" size="icon" disabled={user.id === loggedInUser.id}><Trash2 className="w-4 h-4 text-destructive" /></Button>
-                          </AlertDialogTrigger>
-                          <AlertDialogContent>
-                            <AlertDialogHeader>
-                              <AlertDialogTitle>¿Estás completamente seguro?</AlertDialogTitle>
-                              <AlertDialogDescription>
-                                Esta acción no se puede deshacer. Esto eliminará permanentemente al usuario.
-                              </AlertDialogDescription>
-                            </AlertDialogHeader>
-                            <AlertDialogFooter>
-                              <AlertDialogCancel>Cancelar</AlertDialogCancel>
-                              <AlertDialogAction onClick={() => handleDeleteUser(user.id)}>Eliminar</AlertDialogAction>
-                            </AlertDialogFooter>
-                          </AlertDialogContent>
-                        </AlertDialog>
+                        <Button variant="ghost" size="icon" disabled={user.id === loggedInUser.id} onClick={() => showDeleteConfirm(() => handleDeleteUser(user.id))}>
+                          <Trash2 className="w-4 h-4 text-destructive" />
+                        </Button>
                       </TableCell>
                     </TableRow>
                   ))}

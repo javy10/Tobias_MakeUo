@@ -1,7 +1,7 @@
 
 'use client';
 import { useState, useEffect } from 'react';
-import type { User, Perfume, Service, Product, HeroContent, AboutMeContent } from '@/lib/types';
+import type { User, Perfume, Service, Product, HeroContent, AboutMeContent, GalleryItem, Testimonial } from '@/lib/types';
 import { useRouter } from 'next/navigation';
 import { useAppContext } from '../layout';
 import { AdminLayout } from '@/components/admin/layout/AdminLayout';
@@ -11,8 +11,8 @@ import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { AdminDashboard } from '@/components/admin/AdminDashboard';
-import { useToast } from '@/hooks/use-toast';
-import { fileToStorable, saveItemToDB } from '@/lib/db';
+import { fileToStorable, saveItemToDB, deleteItemFromDB } from '@/lib/db';
+import { showSuccessAlert, showErrorAlert } from '@/lib/alerts';
 
 
 export default function AdminPage() {
@@ -36,7 +36,6 @@ export default function AdminPage() {
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const router = useRouter();
-  const { toast } = useToast();
 
   // State for the active section, managed here
   const [activeSection, setActiveSection] = useState('dashboard');
@@ -75,7 +74,7 @@ export default function AdminPage() {
     router.push('/');
   };
   
-    const handleAddPerfume = async (newPerfumeData: Omit<Perfume, 'id' | 'imageUrl' | 'file'>, imageFile: File) => {
+  const handleAddPerfume = async (newPerfumeData: Omit<Perfume, 'id' | 'imageUrl' | 'file'>, imageFile: File) => {
     try {
       const { file } = await fileToStorable(imageFile);
       const newPerfume: Perfume = {
@@ -86,18 +85,24 @@ export default function AdminPage() {
       };
       await saveItemToDB(newPerfume, 'perfumes');
       setPerfumes(prev => [...prev, newPerfume]);
-      toast({ title: 'Éxito', description: 'Nuevo perfume añadido.' });
+      showSuccessAlert('Perfume añadido', 'El nuevo perfume se ha guardado correctamente.');
       return true;
     } catch (error) {
       console.error("Error adding perfume:", error);
-      toast({ variant: 'destructive', title: 'Error', description: 'No se pudo añadir el perfume.' });
+      showErrorAlert('Error al añadir', 'No se pudo añadir el perfume.');
       return false;
     }
   };
 
-  const handleDeletePerfume = (id: string) => {
-    setPerfumes(prev => prev.filter(p => p.id !== id));
-    toast({ title: 'Éxito', description: 'Perfume eliminado.' });
+  const handleDeletePerfume = async (id: string) => {
+    try {
+      await deleteItemFromDB(id, 'perfumes');
+      setPerfumes(prev => prev.filter(p => p.id !== id));
+      showSuccessAlert('Perfume eliminado', 'El perfume ha sido eliminado.');
+    } catch (error) {
+       console.error("Error deleting perfume:", error);
+       showErrorAlert('Error al eliminar', 'No se pudo eliminar el perfume.');
+    }
   };
 
   const handleUpdatePerfume = async (id: string, updatedData: Omit<Perfume, 'id' | 'imageUrl' | 'file'>, newImageFile?: File) => {
@@ -109,13 +114,13 @@ export default function AdminPage() {
             const { file } = await fileToStorable(newImageFile);
             updatedPerfume = { ...updatedPerfume, imageUrl: URL.createObjectURL(file), file };
         } catch {
-            toast({ variant: 'destructive', title: 'Error', description: 'No se pudo cargar la nueva imagen.' });
+            showErrorAlert('Error de imagen', 'No se pudo cargar la nueva imagen.');
             return;
         }
     }
     await saveItemToDB(updatedPerfume, 'perfumes');
     setPerfumes(prev => prev.map(p => p.id === id ? updatedPerfume : p));
-    toast({ title: 'Éxito', description: 'Perfume actualizado.' });
+    showSuccessAlert('Perfume actualizado', 'Los datos del perfume se han actualizado.');
   };
 
 
@@ -130,18 +135,24 @@ export default function AdminPage() {
         };
         await saveItemToDB(newService, 'services');
         setServices(prev => [...prev, newService]);
-        toast({ title: 'Éxito', description: 'Nuevo servicio añadido.' });
+        showSuccessAlert('Servicio añadido', 'El nuevo servicio se ha guardado correctamente.');
         return true;
     } catch (error) {
         console.error("Error adding service:", error);
-        toast({ variant: 'destructive', title: 'Error', description: 'No se pudo añadir el servicio.' });
+        showErrorAlert('Error al añadir', 'No se pudo añadir el servicio.');
         return false;
     }
   };
 
-  const handleDeleteService = (id: string) => {
-      setServices(prev => prev.filter(s => s.id !== id));
-      toast({ title: 'Éxito', description: 'Servicio eliminado.' });
+  const handleDeleteService = async (id: string) => {
+      try {
+        await deleteItemFromDB(id, 'services');
+        setServices(prev => prev.filter(s => s.id !== id));
+        showSuccessAlert('Servicio eliminado', 'El servicio ha sido eliminado.');
+      } catch (error) {
+        console.error("Error deleting service:", error);
+        showErrorAlert('Error al eliminar', 'No se pudo eliminar el servicio.');
+      }
   };
 
   const handleUpdateService = async (id: string, updatedData: Omit<Service, 'id' | 'imageUrl' | 'file'>, newImageFile?: File) => {
@@ -153,13 +164,13 @@ export default function AdminPage() {
               const { file } = await fileToStorable(newImageFile);
               updatedService = { ...updatedService, imageUrl: URL.createObjectURL(file), file };
           } catch {
-              toast({ variant: 'destructive', title: 'Error', description: 'No se pudo cargar la nueva imagen.' });
+              showErrorAlert('Error de imagen', 'No se pudo cargar la nueva imagen.');
               return;
           }
       }
       await saveItemToDB(updatedService, 'services');
       setServices(prev => prev.map(s => s.id === id ? updatedService : s));
-      toast({ title: 'Éxito', description: 'Servicio actualizado.' });
+      showSuccessAlert('Servicio actualizado', 'Los datos del servicio se han actualizado.');
   };
 
   const handleAddProduct = async (newProductData: Omit<Product, 'id' | 'imageUrl' | 'file'>, imageFile: File) => {
@@ -173,18 +184,24 @@ export default function AdminPage() {
         };
         await saveItemToDB(newProduct, 'products');
         setProducts(prev => [...prev, newProduct]);
-        toast({ title: 'Éxito', description: 'Nuevo producto añadido.' });
+        showSuccessAlert('Producto añadido', 'El nuevo producto se ha guardado correctamente.');
         return true;
     } catch (error) {
         console.error("Error adding product:", error);
-        toast({ variant: 'destructive', title: 'Error', description: 'No se pudo añadir el producto.' });
+        showErrorAlert('Error al añadir', 'No se pudo añadir el producto.');
         return false;
     }
   };
 
-  const handleDeleteProduct = (id: string) => {
-      setProducts(prev => prev.filter(p => p.id !== id));
-      toast({ title: 'Éxito', description: 'Producto eliminado.' });
+  const handleDeleteProduct = async (id: string) => {
+      try {
+        await deleteItemFromDB(id, 'products');
+        setProducts(prev => prev.filter(p => p.id !== id));
+        showSuccessAlert('Producto eliminado', 'El producto ha sido eliminado.');
+      } catch (error) {
+        console.error("Error deleting product:", error);
+        showErrorAlert('Error al eliminar', 'No se pudo eliminar el producto.');
+      }
   };
 
   const handleUpdateProduct = async (id: string, updatedData: Omit<Product, 'id' | 'imageUrl' | 'file'>, newImageFile?: File) => {
@@ -196,45 +213,111 @@ export default function AdminPage() {
               const { file } = await fileToStorable(newImageFile);
               updatedProduct = { ...updatedProduct, imageUrl: URL.createObjectURL(file), file };
           } catch {
-              toast({ variant: 'destructive', title: 'Error', description: 'No se pudo cargar la nueva imagen.' });
+              showErrorAlert('Error de imagen', 'No se pudo cargar la nueva imagen.');
               return;
           }
       }
       await saveItemToDB(updatedProduct, 'products');
       setProducts(prev => prev.map(p => p.id === id ? updatedProduct : p));
-      toast({ title: 'Éxito', description: 'Producto actualizado.' });
+      showSuccessAlert('Producto actualizado', 'Los datos del producto se han actualizado.');
   };
   
-    const handleHeroUpdate = async (updatedData: Omit<HeroContent, 'imageUrl' | 'file'>, imageFile?: File) => {
+    const handleHeroUpdate = async (updatedData: Omit<HeroContent, 'imageUrl' | 'file' | 'id'>, imageFile?: File) => {
         let updatedHeroContent: HeroContent = { ...appState.heroContent, ...updatedData };
         if (imageFile) {
             try {
                 const { file } = await fileToStorable(imageFile);
                 updatedHeroContent = { ...updatedHeroContent, imageUrl: URL.createObjectURL(file), file };
             } catch {
-                toast({ variant: 'destructive', title: 'Error', description: 'No se pudo cargar la imagen.' });
+                showErrorAlert('Error de imagen', 'No se pudo cargar la imagen.');
                 return;
             }
         }
         await saveItemToDB(updatedHeroContent, 'heroContent');
         setHeroContent(updatedHeroContent);
-        toast({ title: 'Éxito', description: 'Contenido de la sección inicial actualizado.' });
+        showSuccessAlert('Sección actualizada', 'El contenido de la sección inicial ha sido actualizado.');
     };
 
-    const handleAboutMeUpdate = async (updatedData: Omit<AboutMeContent, 'imageUrl' | 'file'>, imageFile?: File) => {
+    const handleAboutMeUpdate = async (updatedData: Omit<AboutMeContent, 'imageUrl' | 'file' | 'id'>, imageFile?: File) => {
         let updatedAboutMeContent: AboutMeContent = { ...appState.aboutMeContent, ...updatedData };
         if (imageFile) {
             try {
                 const { file } = await fileToStorable(imageFile);
                 updatedAboutMeContent = { ...updatedAboutMeContent, imageUrl: URL.createObjectURL(file), file };
             } catch {
-                toast({ variant: 'destructive', title: 'Error', description: 'No se pudo cargar la imagen.' });
+                showErrorAlert('Error de imagen', 'No se pudo cargar la imagen.');
                 return;
             }
         }
         await saveItemToDB(updatedAboutMeContent, 'aboutMeContent');
         setAboutMeContent(updatedAboutMeContent);
-        toast({ title: 'Éxito', description: "La sección 'Sobre Mí' ha sido actualizada." });
+        showSuccessAlert('Sección actualizada', "La sección 'Sobre Mí' ha sido actualizada.");
+    };
+
+    const handleAddGalleryItem = async (newItemData: Omit<GalleryItem, 'id' | 'url' | 'file' | 'type'>, mediaFile: File) => {
+      try {
+        const { file, type } = await fileToStorable(mediaFile);
+        const newGalleryItem: GalleryItem = {
+          id: crypto.randomUUID(),
+          ...newItemData,
+          alt: newItemData.title,
+          url: URL.createObjectURL(file),
+          type: type,
+          file: file,
+        };
+        await saveItemToDB(newGalleryItem, 'galleryItems');
+        setGalleryItems(prev => [...prev, newGalleryItem]);
+        showSuccessAlert('Elemento añadido', 'El nuevo elemento se ha guardado en la galería.');
+        return true;
+      } catch (error) {
+        console.error("Error adding gallery item:", error);
+        showErrorAlert('Error al añadir', 'No se pudo añadir el elemento a la galería.');
+        return false;
+      }
+    };
+
+    const handleDeleteGalleryItem = async (id: string) => {
+        try {
+            await deleteItemFromDB(id, 'galleryItems');
+            setGalleryItems(prev => prev.filter(g => g.id !== id));
+            showSuccessAlert('Elemento eliminado', 'El elemento ha sido eliminado de la galería.');
+        } catch (error) {
+            console.error('Failed to delete gallery item:', error);
+            showErrorAlert('Error al eliminar', 'No se pudo eliminar el elemento de la galería.');
+        }
+    };
+
+    const handleUpdateGalleryItem = async (id: string, updatedData: Omit<GalleryItem, 'id' | 'url' | 'type' | 'file' | 'alt'>, newMediaFile?: File) => {
+        const currentItem = appState.galleryItems.find(item => item.id === id);
+        if (!currentItem) return;
+        let updatedGalleryItem: GalleryItem = { ...currentItem, ...updatedData, alt: updatedData.title };
+        if (newMediaFile) {
+            try {
+                const { file, type } = await fileToStorable(newMediaFile);
+                updatedGalleryItem = { ...updatedGalleryItem, url: URL.createObjectURL(file), type, file };
+            } catch (error) {
+                showErrorAlert('Error de archivo', 'No se pudo procesar el nuevo archivo.');
+                return;
+            }
+        }
+        await saveItemToDB(updatedGalleryItem, 'galleryItems');
+        setGalleryItems(prev => prev.map(item => item.id === id ? updatedGalleryItem : item));
+        showSuccessAlert('Elemento actualizado', 'El elemento de la galería se ha actualizado.');
+    };
+
+    const handleUpdateTestimonialStatus = (id: string, status: 'approved' | 'rejected') => {
+        const updatedTestimonials = appState.testimonials.map(t => t.id === id ? { ...t, status } : t);
+        setTestimonials(updatedTestimonials);
+        localStorage.setItem('testimonials', JSON.stringify(updatedTestimonials));
+        const statusText = status === 'approved' ? 'aprobado' : 'rechazado';
+        showSuccessAlert('Estado actualizado', `El testimonio ha sido ${statusText}.`);
+    };
+
+    const handleDeleteTestimonial = (id: string) => {
+        const updatedTestimonials = appState.testimonials.filter(t => t.id !== id);
+        setTestimonials(updatedTestimonials);
+        localStorage.setItem('testimonials', JSON.stringify(updatedTestimonials));
+        showSuccessAlert('Testimonio eliminado', 'El testimonio ha sido eliminado.');
     };
 
 
@@ -309,7 +392,11 @@ export default function AdminPage() {
         onAddPerfume={handleAddPerfume}
         onUpdatePerfume={handleUpdatePerfume}
         onDeletePerfume={handleDeletePerfume}
-        setGalleryItems={setGalleryItems}
+        onAddGalleryItem={handleAddGalleryItem}
+        onUpdateGalleryItem={handleUpdateGalleryItem}
+        onDeleteGalleryItem={handleDeleteGalleryItem}
+        onUpdateTestimonialStatus={handleUpdateTestimonialStatus}
+        onDeleteTestimonial={handleDeleteTestimonial}
         setTestimonials={setTestimonials}
         onUpdateAboutMeContent={handleAboutMeUpdate}
         setUsers={setUsers}
