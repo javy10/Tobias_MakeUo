@@ -89,7 +89,7 @@ export function AdminDashboardContent({ appState }: AdminDashboardContentProps) 
   return (
     <div className="space-y-6">
       {/* Stat Cards */}
-      <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
+      <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
         <StatCard 
           title="Total de Productos" 
           value={products.length.toString()}
@@ -110,6 +110,13 @@ export function AdminDashboardContent({ appState }: AdminDashboardContentProps) 
           icon={Palette} 
           change="activos"
           changeColor="text-gray-500"
+        />
+        <StatCard 
+          title="Testimonios" 
+          value={testimonials.length.toString()}
+          icon={Star} 
+          change={`${testimonialsPending} pendientes`}
+          changeColor={testimonialsPending > 0 ? "text-orange-500" : "text-gray-500"}
         />
         <StatCard 
           title="Galería" 
