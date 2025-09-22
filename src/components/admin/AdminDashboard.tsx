@@ -35,7 +35,9 @@ interface AdminSectionProps {
   setHeroContent: React.Dispatch<React.SetStateAction<HeroContent>>;
   setServices: React.Dispatch<React.SetStateAction<Service[]>>;
   setProducts: React.Dispatch<React.SetStateAction<Product[]>>;
-  setPerfumes: React.Dispatch<React.SetStateAction<Perfume[]>>;
+  onAddPerfume: (data: Omit<Perfume, 'id' | 'imageUrl'>, file: File) => Promise<boolean>;
+  onUpdatePerfume: (id: string, data: Omit<Perfume, 'id' | 'imageUrl'>, file?: File) => void;
+  onDeletePerfume: (id: string) => void;
   setGalleryItems: React.Dispatch<React.SetStateAction<GalleryItem[]>>;
   setTestimonials: React.Dispatch<React.SetStateAction<Testimonial[]>>;
   setAboutMeContent: React.Dispatch<React.SetStateAction<AboutMeContent>>;
@@ -64,7 +66,9 @@ export function AdminDashboard({
   setHeroContent,
   setServices,
   setProducts,
-  setPerfumes,
+  onAddPerfume,
+  onUpdatePerfume,
+  onDeletePerfume,
   setGalleryItems,
   setTestimonials,
   setAboutMeContent,
@@ -244,46 +248,23 @@ export function AdminDashboard({
     const form = e.currentTarget;
     const formData = new FormData(form);
     const imageFile = formData.get('imageFile') as File;
+
     if (!imageFile || imageFile.size === 0) {
       toast({ variant: 'destructive', title: 'Error', description: 'Debes seleccionar una imagen para el perfume.' });
       return;
     }
-    try {
-      const imageUrl = await readImageAsDataURL(imageFile);
-      const newPerfume: Perfume = {
-        id: crypto.randomUUID(),
-        name: formData.get('name') as string,
-        description: formData.get('description') as string,
-        stock: parseInt(formData.get('stock') as string, 10),
-        imageUrl: imageUrl,
-      };
-      setPerfumes([...perfumes, newPerfume]);
+
+    const newPerfumeData = {
+      name: formData.get('name') as string,
+      description: formData.get('description') as string,
+      stock: parseInt(formData.get('stock') as string, 10),
+    };
+
+    const success = await onAddPerfume(newPerfumeData, imageFile);
+    if (success) {
       form.reset();
       setPerfumeImagePreview(null);
-      toast({ title: 'Éxito', description: 'Nuevo perfume añadido.' });
-    } catch {
-      toast({ variant: 'destructive', title: 'Error', description: 'No se pudo cargar la imagen.' });
     }
-  };
-
-  const handleDeletePerfume = (id: string) => {
-    setPerfumes(perfumes.filter(p => p.id !== id));
-    toast({ title: 'Éxito', description: 'Perfume eliminado.' });
-  };
-
-  const handleUpdatePerfume = async (id: string, updatedPerfume: Omit<Perfume, 'id' | 'imageUrl'>, newImageFile?: File) => {
-    let imageUrl = perfumes.find(p => p.id === id)?.imageUrl;
-    if (!imageUrl) return;
-    if (newImageFile) {
-      try {
-        imageUrl = await readImageAsDataURL(newImageFile);
-      } catch {
-        toast({ variant: 'destructive', title: 'Error', description: 'No se pudo cargar la imagen.' });
-        return;
-      }
-    }
-    setPerfumes(perfumes.map(p => p.id === id ? { ...p, ...updatedPerfume, imageUrl: imageUrl! } : p));
-    toast({ title: 'Éxito', description: 'Perfume actualizado.' });
   };
 
   const handleAddGalleryItem = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -911,7 +892,7 @@ export function AdminDashboard({
                         <TableCell>{perfume.stock}</TableCell>
                         <TableCell className="text-right">
                             <div className="flex items-center gap-2 justify-end">
-                                <EditPerfumeDialog perfume={perfume} onSave={handleUpdatePerfume} />
+                                <EditPerfumeDialog perfume={perfume} onSave={onUpdatePerfume} />
                                 <AlertDialog>
                                   <AlertDialogTrigger asChild>
                                     <Button variant="ghost" size="icon"><Trash2 className="w-4 h-4 text-destructive" /></Button>
@@ -925,7 +906,7 @@ export function AdminDashboard({
                                     </AlertDialogHeader>
                                     <AlertDialogFooter>
                                       <AlertDialogCancel>Cancelar</AlertDialogCancel>
-                                      <AlertDialogAction onClick={() => handleDeletePerfume(perfume.id)}>Eliminar</AlertDialogAction>
+                                      <AlertDialogAction onClick={() => onDeletePerfume(perfume.id)}>Eliminar</AlertDialogAction>
                                     </AlertDialogFooter>
                                   </AlertDialogContent>
                                 </AlertDialog>

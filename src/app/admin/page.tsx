@@ -1,7 +1,7 @@
 
 'use client';
 import { useState, useEffect } from 'react';
-import type { User } from '@/lib/types';
+import type { User, Perfume } from '@/lib/types';
 import { useRouter } from 'next/navigation';
 import { useAppContext } from '../layout';
 import { AdminLayout } from '@/components/admin/layout/AdminLayout';
@@ -11,6 +11,22 @@ import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { AdminDashboard } from '@/components/admin/AdminDashboard';
+import { useToast } from '@/hooks/use-toast';
+
+
+// Function to read a file as a Data URL (Base64) - ONLY FOR IMAGES
+const readImageAsDataURL = (file: File): Promise<string> => {
+  return new Promise((resolve, reject) => {
+    if (!file.type.startsWith('image/')) {
+        return reject(new Error('File is not an image.'));
+    }
+    const reader = new FileReader();
+    reader.onload = () => resolve(reader.result as string);
+    reader.onerror = reject;
+    reader.readAsDataURL(file);
+  });
+};
+
 
 export default function AdminPage() {
   const { 
@@ -18,6 +34,7 @@ export default function AdminPage() {
     setHeroContent,
     setServices,
     setProducts,
+    setPerfumes,
     setGalleryItems,
     setTestimonials,
     setAboutMeContent,
@@ -32,6 +49,7 @@ export default function AdminPage() {
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const router = useRouter();
+  const { toast } = useToast();
 
   // State for the active section, managed here
   const [activeSection, setActiveSection] = useState('dashboard');
@@ -70,6 +88,52 @@ export default function AdminPage() {
     router.push('/');
   };
   
+  const handleAddPerfume = async (newPerfumeData: Omit<Perfume, 'id' | 'imageUrl'>, imageFile: File) => {
+    try {
+      const imageUrl = await readImageAsDataURL(imageFile);
+      const newPerfume: Perfume = {
+        id: crypto.randomUUID(),
+        ...newPerfumeData,
+        imageUrl: imageUrl,
+      };
+      setPerfumes(prev => [...prev, newPerfume]);
+      toast({ title: 'Éxito', description: 'Nuevo perfume añadido.' });
+      return true;
+    } catch {
+      toast({ variant: 'destructive', title: 'Error', description: 'No se pudo cargar la imagen.' });
+      return false;
+    }
+  };
+  
+  const handleDeletePerfume = (id: string) => {
+    setPerfumes(prev => prev.filter(p => p.id !== id));
+    toast({ title: 'Éxito', description: 'Perfume eliminado.' });
+  };
+  
+  const handleUpdatePerfume = async (id: string, updatedPerfumeData: Omit<Perfume, 'id' | 'imageUrl'>, newImageFile?: File) => {
+    let imageUrl = appState.perfumes.find(p => p.id === id)?.imageUrl;
+    if (!imageUrl) return;
+  
+    if (newImageFile) {
+      try {
+        imageUrl = await readImageAsDataURL(newImageFile);
+      } catch {
+        toast({ variant: 'destructive', title: 'Error', description: 'No se pudo cargar la imagen.' });
+        return;
+      }
+    }
+    
+    setPerfumes(prev => 
+      prev.map(p => 
+        p.id === id 
+          ? { ...p, ...updatedPerfumeData, imageUrl: imageUrl! } 
+          : p
+      )
+    );
+    toast({ title: 'Éxito', description: 'Perfume actualizado.' });
+  };
+
+
   if (isLoadingSession || !isStateLoaded) {
     // Show a loader while checking session and loading app state
     return <div className="flex h-screen items-center justify-center">Cargando...</div>;
@@ -126,6 +190,7 @@ export default function AdminPage() {
           setHeroContent={setHeroContent}
           setServices={setServices}
           setProducts={setProducts}
+          setPerfumes={setPerfumes}
           setGalleryItems={setGalleryItems}
           setTestimonials={setTestimonials}
           setAboutMeContent={setAboutMeContent}
@@ -143,6 +208,9 @@ export default function AdminPage() {
         setHeroContent={setHeroContent}
         setServices={setServices}
         setProducts={setProducts}
+        onAddPerfume={handleAddPerfume}
+        onUpdatePerfume={handleUpdatePerfume}
+        onDeletePerfume={handleDeletePerfume}
         setGalleryItems={setGalleryItems}
         setTestimonials={setTestimonials}
         setAboutMeContent={setAboutMeContent}
