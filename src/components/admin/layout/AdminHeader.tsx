@@ -1,7 +1,7 @@
 
 'use client';
 
-import { Bell, FileText, LogOut, Settings, User } from 'lucide-react';
+import { Bell, FileText, LogOut, Menu, Settings, User } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useSidebarContext } from './AdminLayout';
 import Link from 'next/link';
@@ -46,6 +46,10 @@ export function AdminHeader({
 
   return (
     <header className="sticky top-0 z-30 flex h-16 items-center gap-4 border-b bg-background/80 backdrop-blur-sm px-6">
+       <Button variant="ghost" size="icon" className="md:hidden" onClick={toggleSidebar}>
+          <Menu className="h-5 w-5" />
+          <span className="sr-only">Toggle Sidebar</span>
+      </Button>
       <div className="flex items-center gap-4">
         <h1 className="text-lg font-semibold">{pageName}</h1>
       </div>
