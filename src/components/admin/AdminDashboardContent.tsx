@@ -1,11 +1,11 @@
 
 'use client';
-import type { AppState, HeroContent, Service, GalleryItem, Testimonial, Product, AboutMeContent, User, Category } from '@/lib/types';
+import type { AppState, HeroContent, Service, GalleryItem, Testimonial, Product, AboutMeContent, User, Category, Perfume } from '@/lib/types';
 import { StatCard } from './StatCard';
 import { Palette, ShoppingBag, Star, ImageIcon } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../ui/card';
 import { ChartCard } from './ChartCard';
-import { Bar, BarChart, ResponsiveContainer, XAxis, Tooltip, Legend, CartesianGrid, YAxis, AreaChart, Area } from 'recharts';
+import { Bar, BarChart, ResponsiveContainer, XAxis, Tooltip, Legend, CartesianGrid, YAxis, AreaChart, Area, Cell } from 'recharts';
 import { PieChart3D } from './PieChart3D';
 
 
@@ -14,6 +14,7 @@ interface AdminDashboardContentProps {
   setHeroContent: React.Dispatch<React.SetStateAction<HeroContent>>;
   setServices: React.Dispatch<React.SetStateAction<Service[]>>;
   setProducts: React.Dispatch<React.SetStateAction<Product[]>>;
+  setPerfumes: React.Dispatch<React.SetStateAction<Perfume[]>>;
   setGalleryItems: React.Dispatch<React.SetStateAction<GalleryItem[]>>;
   setTestimonials: React.Dispatch<React.SetStateAction<Testimonial[]>>;
   setAboutMeContent: React.Dispatch<React.SetStateAction<AboutMeContent>>;
@@ -50,7 +51,7 @@ const ServicesSummaryCard = ({ services }: { services: Service[] }) => (
 
 
 export function AdminDashboardContent({ appState }: AdminDashboardContentProps) {
-  const { products, services, testimonials, galleryItems, categories } = appState;
+  const { products, services, testimonials, galleryItems, categories, perfumes } = appState;
   
   const totalStock = products.reduce((acc, p) => acc + p.stock, 0);
   
@@ -67,10 +68,13 @@ export function AdminDashboardContent({ appState }: AdminDashboardContentProps) 
     { name: 'Rechazados', value: testimonials.filter(t => t.status === 'rejected').length },
   ];
   
-  const stockByProductData = products.map(product => ({
+  const BAR_COLORS = ['#8884d8', '#82ca9d', '#ffc658', '#ff8042', '#0088FE', '#00C49F'];
+  const stockByProductData = products.map((product, index) => ({
     name: product.name,
     stock: product.stock,
+    fill: BAR_COLORS[index % BAR_COLORS.length],
   }));
+
 
   const PIE_COLORS = ['hsl(260, 80%, 60%)', 'hsl(330, 85%, 65%)', 'hsl(180, 70%, 45%)', 'hsl(30, 95%, 60%)', 'hsl(210, 90%, 55%)'];
   
@@ -165,10 +169,14 @@ export function AdminDashboardContent({ appState }: AdminDashboardContentProps) 
             >
               <ResponsiveContainer width="100%" height={250}>
                 <BarChart data={stockByProductData} margin={{ top: 20, right: 10, left: -20, bottom: 0 }}>
-                   <XAxis dataKey="name" stroke="hsl(var(--muted-foreground))" fontSize={12} tickLine={false} axisLine={false} />
+                   <XAxis dataKey="name" stroke="hsl(var(--muted-foreground))" fontSize={12} tickLine={false} axisLine={false} tickFormatter={() => ''} />
                    <Tooltip cursor={{ fill: 'hsl(var(--muted))' }} contentStyle={{ backgroundColor: 'hsl(var(--background))', border: '1px solid hsl(var(--border))', borderRadius: 'var(--radius)' }} />
                    <Legend />
-                   <Bar dataKey="stock" fill="hsl(var(--chart-2))" radius={[4, 4, 0, 0]} />
+                   <Bar dataKey="stock" radius={[4, 4, 0, 0]}>
+                     {stockByProductData.map((entry, index) => (
+                       <Cell key={`cell-${index}`} fill={entry.fill} />
+                     ))}
+                   </Bar>
                 </BarChart>
               </ResponsiveContainer>
             </ChartCard>
