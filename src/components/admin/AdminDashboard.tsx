@@ -365,7 +365,12 @@ export function AdminDashboard({
         <Dialog open={open} onOpenChange={setOpen}>
             <DialogTrigger asChild><Button variant="outline" size="icon"><Pencil className="w-4 h-4" /></Button></DialogTrigger>
             <DialogContent>
-                <DialogHeader><DialogTitle>Editar Perfume</DialogTitle></DialogHeader>
+                <DialogHeader>
+                  <DialogTitle>Editar Perfume</DialogTitle>
+                   <DialogDescription>
+                    Modifica los detalles de este perfume. Haz clic en guardar cuando hayas terminado.
+                  </DialogDescription>
+                </DialogHeader>
                 <form onSubmit={handleSubmit} className="space-y-4">
                     <Input name="name" defaultValue={perfume.name} />
                     <Textarea name="description" defaultValue={perfume.description} />
@@ -398,7 +403,12 @@ export function AdminDashboard({
         <Dialog open={open} onOpenChange={setOpen}>
             <DialogTrigger asChild><Button variant="outline" size="icon"><Pencil className="w-4 h-4" /></Button></DialogTrigger>
             <DialogContent>
-                <DialogHeader><DialogTitle>Editar Elemento de Galería</DialogTitle></DialogHeader>
+                <DialogHeader>
+                  <DialogTitle>Editar Elemento de Galería</DialogTitle>
+                  <DialogDescription>
+                    Modifica los detalles de este elemento. Haz clic en guardar cuando hayas terminado.
+                  </DialogDescription>
+                </DialogHeader>
                 <form onSubmit={handleSubmit} className="space-y-4">
                     <Input name="title" placeholder="Título" defaultValue={item.title} required/>
                     <Textarea name="description" placeholder="Descripción Breve" defaultValue={item.description} required />
