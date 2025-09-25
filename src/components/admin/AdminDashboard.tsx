@@ -279,7 +279,12 @@ export function AdminDashboard({
         <Dialog open={open} onOpenChange={setOpen}>
             <DialogTrigger asChild><Button variant="outline" size="icon"><Pencil className="w-4 h-4" /></Button></DialogTrigger>
             <DialogContent>
-                <DialogHeader><DialogTitle>Editar Servicio</DialogTitle></DialogHeader>
+                <DialogHeader>
+                  <DialogTitle>Editar Servicio</DialogTitle>
+                  <DialogDescription>
+                    Modifica los detalles de este servicio. Haz clic en guardar cuando hayas terminado.
+                  </DialogDescription>
+                </DialogHeader>
                 <form onSubmit={handleSubmit} className="space-y-4">
                     <Input name="title" defaultValue={service.title} />
                     <Textarea name="description" defaultValue={service.description} />
@@ -314,7 +319,12 @@ export function AdminDashboard({
         <Dialog open={open} onOpenChange={setOpen}>
             <DialogTrigger asChild><Button variant="outline" size="icon"><Pencil className="w-4 h-4" /></Button></DialogTrigger>
             <DialogContent>
-                <DialogHeader><DialogTitle>Editar Producto</DialogTitle></DialogHeader>
+                <DialogHeader>
+                  <DialogTitle>Editar Producto</DialogTitle>
+                  <DialogDescription>
+                    Modifica los detalles de este producto. Haz clic en guardar cuando hayas terminado.
+                  </DialogDescription>
+                </DialogHeader>
                 <form onSubmit={handleSubmit} className="space-y-4">
                     <Input name="name" defaultValue={product.name} />
                     <Textarea name="description" defaultValue={product.description} />
