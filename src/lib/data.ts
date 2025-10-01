@@ -1,4 +1,3 @@
-
 import type { HeroContent, Service, GalleryItem, Testimonial, Product, AboutMeContent, User, Category, Perfume } from './types';
 import { PlaceHolderImages } from './placeholder-images';
 
@@ -15,7 +14,8 @@ const aboutMeImage = PlaceHolderImages.find(img => img.id === 'about-me');
 export const initialHeroContent: HeroContent = {
   title: "Belleza que Transforma",
   subtitle: "Tu estilo personal, realzado con el arte del maquillaje profesional.",
-  imageUrl: heroImage?.imageUrl || "https://picsum.photos/seed/makeup1/1920/1080"
+  url: heroImage?.imageUrl || "https://picsum.photos/seed/makeup1/1920/1080",
+  type: 'image',
 };
 
 export const initialServices: Service[] = [
@@ -23,19 +23,22 @@ export const initialServices: Service[] = [
     id: '1',
     title: "Maquillaje Social",
     description: "Ideal para eventos, fiestas y ocasiones especiales. Resaltamos tu belleza natural para que luzcas radiante.",
-    imageUrl: serviceImage1?.imageUrl || "https://picsum.photos/seed/service1/600/400"
+    url: serviceImage1?.imageUrl || "https://picsum.photos/seed/service1/600/400",
+    type: 'image',
   },
   {
     id: '2',
     title: "Maquillaje de Novia",
     description: "Un servicio completo y personalizado para que en tu día más importante te sientas única y espectacular.",
-    imageUrl: serviceImage2?.imageUrl || "https://picsum.photos/seed/service2/600/400"
+    url: serviceImage2?.imageUrl || "https://picsum.photos/seed/service2/600/400",
+    type: 'image',
   },
   {
     id: '3',
     title: "Clases de Automaquillaje",
     description: "Aprende a maquillarte como una profesional. Clases personalizadas para sacar el máximo partido a tus rasgos.",
-    imageUrl: serviceImage3?.imageUrl || "https://picsum.photos/seed/service3/600/400"
+    url: serviceImage3?.imageUrl || "https://picsum.photos/seed/service3/600/400",
+    type: 'image',
   }
 ];
 
@@ -51,7 +54,8 @@ export const initialProducts: Product[] = [
     name: "Paleta de Sombras 'Ocaso'",
     description: "12 tonos cálidos y vibrantes para un look perfecto del día a la noche.",
     stock: 15,
-    imageUrl: productImage1?.imageUrl || "https://picsum.photos/seed/product1/400/400",
+    url: productImage1?.imageUrl || "https://picsum.photos/seed/product1/400/400",
+    type: 'image',
     categoryId: '1',
   },
   {
@@ -59,7 +63,8 @@ export const initialProducts: Product[] = [
     name: "Base de Maquillaje 'Piel de Seda'",
     description: "Cobertura media y acabado natural para una piel impecable todo el día.",
     stock: 25,
-    imageUrl: productImage2?.imageUrl || "https://picsum.photos/seed/product2/400/400",
+    url: productImage2?.imageUrl || "https://picsum.photos/seed/product2/400/400",
+    type: 'image',
     categoryId: '2',
   },
   {
@@ -67,7 +72,8 @@ export const initialProducts: Product[] = [
     name: "Labial Líquido Mate 'Rojo Pasión'",
     description: "Color intenso de larga duración que no reseca tus labios.",
     stock: 20,
-    imageUrl: productImage3?.imageUrl || "https://picsum.photos/seed/product3/400/400",
+    url: productImage3?.imageUrl || "https://picsum.photos/seed/product3/400/400",
+    type: 'image',
     categoryId: '3',
   },
 ];
@@ -78,14 +84,16 @@ export const initialPerfumes: Perfume[] = [
     name: "Fragancia 'Aura Floral'",
     description: "Una esencia delicada con notas de jazmín y rosas, perfecta para el día a día.",
     stock: 30,
-    imageUrl: "https://picsum.photos/seed/perfume1/400/400",
+    url: "https://picsum.photos/seed/perfume1/400/400",
+    type: 'image',
   },
   {
     id: '2',
     name: "Perfume 'Noche Intensa'",
     description: "Aroma amaderado y profundo con toques de sándalo, ideal para ocasiones especiales.",
     stock: 18,
-    imageUrl: "https://picsum.photos/seed/perfume2/400/400",
+    url: "https://picsum.photos/seed/perfume2/400/400",
+    type: 'image',
   }
 ];
 
@@ -133,7 +141,8 @@ export const initialTestimonials: Testimonial[] = [
 
 export const initialAboutMeContent: AboutMeContent = {
   text: "¡Hola! Soy Tobias, un apasionado maquillador profesional con más de 5 años de experiencia en realzar la belleza única de cada persona. Mi objetivo es que te sientas segura y radiante en cualquier ocasión. Me especializo en maquillaje para novias, eventos sociales y clases personalizadas. ¡Espero conocerte pronto!",
-  imageUrl: aboutMeImage?.imageUrl || "https://picsum.photos/seed/aboutme/600/600",
+  url: aboutMeImage?.imageUrl || "https://picsum.photos/seed/aboutme/600/600",
+  type: 'image',
   happyClients: "500+",
   yearsOfExperience: "5+",
   events: "100+",

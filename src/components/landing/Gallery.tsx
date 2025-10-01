@@ -1,102 +1,61 @@
+'use client'
 
-'use client';
-
-import { useRef } from 'react';
-import Image from 'next/image';
-import type { GalleryItem } from '@/lib/types';
-import { PlayCircle } from 'lucide-react';
-import { Card, CardContent } from '../ui/card';
+import type { GalleryItem } from '@/lib/types'
+import { Card } from '../ui/card'
+import { Media } from '../shared/Media'
+import { Button } from '../ui/button'
+import Link from 'next/link'
 
 interface GalleryProps {
-  galleryItems: GalleryItem[];
+  galleryItems: GalleryItem[]
 }
 
 export function Gallery({ galleryItems }: GalleryProps) {
-  const videoRefs = useRef<(HTMLVideoElement | null)[]>([]);
-
-  const handleVideoClick = (index: number) => {
-    const clickedVideo = videoRefs.current[index];
-    if (!clickedVideo) return;
-
-    // Pause all other videos before playing the new one
-    videoRefs.current.forEach((video, i) => {
-      if (video && i !== index && !video.paused) {
-        video.pause();
-        const otherOverlay = video.nextElementSibling;
-        if (otherOverlay) {
-          otherOverlay.classList.remove('opacity-0', 'pointer-events-none');
-        }
-        video.removeAttribute('controls');
-        video.muted = true; // Re-mute the video
-      }
-    });
-
-    const overlay = clickedVideo.nextElementSibling;
-    if (clickedVideo.paused) {
-      clickedVideo.play();
-      clickedVideo.muted = false; // Unmute on play
-      clickedVideo.setAttribute('controls', 'true');
-      if (overlay) {
-        overlay.classList.add('opacity-0', 'pointer-events-none');
-      }
-    }
-  };
-
-  const handlePause = (index: number) => {
-     const video = videoRefs.current[index];
-     if (video) {
-        video.setAttribute('controls', 'true');
-     }
-  }
-
-
   return (
-    <section id="mis-trabajos" className="py-16 md:py-24">
-      <div className="container mx-auto px-4">
-        <h2 className="text-4xl font-bold font-headline text-center mb-12">Mis Trabajos</h2>
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8">
-          {galleryItems.map((item, index) => (
-            <Card key={item.id} className="group overflow-hidden shadow-lg hover:shadow-xl transition-shadow duration-300">
+    <section id="mis-trabajos" className="py-12 sm:py-16 md:py-20 lg:py-24">
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+        <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold font-headline text-center mb-8 sm:mb-12 lg:mb-16">
+          Mis Trabajos
+        </h2>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 lg:gap-8">
+          {galleryItems.map((item) => (
+            <Card 
+              key={item.id} 
+              className="group overflow-hidden shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1"
+            >
               <div className="relative aspect-square w-full">
-                {item.type === 'image' ? (
-                  <Image
-                    src={item.url}
-                    alt={item.alt}
-                    fill
-                    className="object-cover w-full h-full transition-transform duration-300 group-hover:scale-110"
-                    sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
-                    data-ai-hint={item.alt.split(' ').slice(0, 2).join(' ')}
-                  />
-                ) : (
-                  <>
-                    <video
-                      ref={(el) => (videoRefs.current[index] = el)}
-                      src={item.url}
-                      title={item.alt}
-                      className="object-cover w-full h-full transition-transform duration-300 group-hover:scale-110"
-                      playsInline
-                      loop
-                      muted // Start muted
-                      onPause={() => handlePause(index)}
-                      onClick={() => handleVideoClick(index)} // Allow clicking the video itself
-                    />
-                    {/* Clickable overlay with Play Icon */}
-                    <div 
-                      className="absolute inset-0 bg-black/20 flex items-center justify-center group-hover:opacity-100 transition-opacity cursor-pointer"
-                      onClick={() => handleVideoClick(index)}
-                    >
-                      <PlayCircle className="w-16 h-16 text-white/80" />
+                <Media
+                  src={item.url}
+                  alt={item.alt}
+                  type={item.type}
+                  fill
+                  className="w-full h-full transition-transform duration-300 group-hover:scale-105"
+                  style={{ objectFit: 'contain' as const }}
+                />
+                {/* Gradiente - visible solo en hover */}
+                <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                
+                {/* Contenido - visible solo en hover */}
+                <div className="absolute inset-0 p-4 sm:p-6 flex flex-col justify-end translate-y-4 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-300">
+                  {/* Título siempre visible con sombra */}
+                  <h3 className="font-headline text-lg sm:text-xl font-bold text-white mb-2 drop-shadow-lg">
+                    {item.title}
+                  </h3>
+                  
+                  {/* Elementos que aparecen en hover */}
+                  <div className="space-y-3 transform transition-all duration-300">
+                    <p className="text-sm sm:text-base text-white/90 line-clamp-2 sm:line-clamp-3">
+                      {item.description}
+                    </p>
+                    <div className="flex justify-end pt-2">
+                      <Button 
+                        asChild 
+                        className="rounded-full text-sm sm:text-base px-4 sm:px-6 py-2 sm:py-2.5 hover:scale-105 transition-transform"
+                      >
+                        <Link href="#contacto">Contáctame</Link>
+                      </Button>
                     </div>
-                  </>
-                )}
-                {/* Overlay for Title and Description */}
-                <div 
-                  className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/30 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end pointer-events-none"
-                >
-                  <CardContent className="p-4 text-white w-full">
-                    <h3 className="font-headline text-xl font-bold">{item.title}</h3>
-                    <p className="text-sm text-white/90">{item.description}</p>
-                  </CardContent>
+                  </div>
                 </div>
               </div>
             </Card>
@@ -104,5 +63,5 @@ export function Gallery({ galleryItems }: GalleryProps) {
         </div>
       </div>
     </section>
-  );
+  )
 }

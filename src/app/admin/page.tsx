@@ -16,8 +16,8 @@ import { showSuccessAlert, showErrorAlert } from '@/lib/alerts';
 
 
 export default function AdminPage() {
-  const { 
-    appState, 
+  const {
+    appState,
     setHeroContent,
     setServices,
     setProducts,
@@ -37,10 +37,8 @@ export default function AdminPage() {
   const [error, setError] = useState('');
   const router = useRouter();
 
-  // State for the active section, managed here
   const [activeSection, setActiveSection] = useState('dashboard');
 
-  // Effect to check for a logged-in user in localStorage on component mount
   useEffect(() => {
     try {
       const storedUser = localStorage.getItem('authenticatedUser');
@@ -59,7 +57,7 @@ export default function AdminPage() {
     const user = appState.users.find(u => u.email === email && u.password === password);
 
     if (user) {
-      const userToStore = { id: user.id, name: user.name, email: user.email }; // Don't store password
+      const userToStore = { id: user.id, name: user.name, email: user.email };
       localStorage.setItem('authenticatedUser', JSON.stringify(userToStore));
       setAuthenticatedUser(userToStore);
       setError('');
@@ -74,13 +72,14 @@ export default function AdminPage() {
     router.push('/');
   };
   
-  const handleAddPerfume = async (newPerfumeData: Omit<Perfume, 'id' | 'imageUrl' | 'file'>, imageFile: File) => {
+  const handleAddPerfume = async (newPerfumeData: Omit<Perfume, 'id' | 'url' | 'type' | 'file'>, mediaFile: File) => {
     try {
-      const { file } = await fileToStorable(imageFile);
+      const { file, type } = await fileToStorable(mediaFile);
       const newPerfume: Perfume = {
         id: crypto.randomUUID(),
         ...newPerfumeData,
-        imageUrl: URL.createObjectURL(file),
+        url: URL.createObjectURL(file),
+        type: type,
         file: file,
       };
       await saveItemToDB(newPerfume, 'perfumes');
@@ -105,16 +104,16 @@ export default function AdminPage() {
     }
   };
 
-  const handleUpdatePerfume = async (id: string, updatedData: Omit<Perfume, 'id' | 'imageUrl' | 'file'>, newImageFile?: File) => {
+  const handleUpdatePerfume = async (id: string, updatedData: Omit<Perfume, 'id' | 'url' | 'type' | 'file'>, newMediaFile?: File) => {
     const currentPerfume = appState.perfumes.find(p => p.id === id);
     if (!currentPerfume) return;
     let updatedPerfume: Perfume = { ...currentPerfume, ...updatedData };
-    if (newImageFile) {
+    if (newMediaFile) {
         try {
-            const { file } = await fileToStorable(newImageFile);
-            updatedPerfume = { ...updatedPerfume, imageUrl: URL.createObjectURL(file), file };
+            const { file, type } = await fileToStorable(newMediaFile);
+            updatedPerfume = { ...updatedPerfume, url: URL.createObjectURL(file), type, file };
         } catch {
-            showErrorAlert('Error de imagen', 'No se pudo cargar la nueva imagen.');
+            showErrorAlert('Error de archivo', 'No se pudo cargar el nuevo archivo.');
             return;
         }
     }
@@ -124,13 +123,14 @@ export default function AdminPage() {
   };
 
 
-  const handleAddService = async (newServiceData: Omit<Service, 'id' | 'imageUrl' | 'file'>, imageFile: File) => {
+  const handleAddService = async (newServiceData: Omit<Service, 'id' | 'url' | 'type' | 'file'>, mediaFile: File) => {
     try {
-        const { file } = await fileToStorable(imageFile);
+        const { file, type } = await fileToStorable(mediaFile);
         const newService: Service = {
             id: crypto.randomUUID(),
             ...newServiceData,
-            imageUrl: URL.createObjectURL(file),
+            url: URL.createObjectURL(file),
+            type: type,
             file: file,
         };
         await saveItemToDB(newService, 'services');
@@ -155,16 +155,16 @@ export default function AdminPage() {
       }
   };
 
-  const handleUpdateService = async (id: string, updatedData: Omit<Service, 'id' | 'imageUrl' | 'file'>, newImageFile?: File) => {
+  const handleUpdateService = async (id: string, updatedData: Omit<Service, 'id' | 'url' | 'type' | 'file'>, newMediaFile?: File) => {
       const currentService = appState.services.find(s => s.id === id);
       if (!currentService) return;
       let updatedService: Service = { ...currentService, ...updatedData };
-      if (newImageFile) {
+      if (newMediaFile) {
           try {
-              const { file } = await fileToStorable(newImageFile);
-              updatedService = { ...updatedService, imageUrl: URL.createObjectURL(file), file };
+              const { file, type } = await fileToStorable(newMediaFile);
+              updatedService = { ...updatedService, url: URL.createObjectURL(file), type, file };
           } catch {
-              showErrorAlert('Error de imagen', 'No se pudo cargar la nueva imagen.');
+              showErrorAlert('Error de archivo', 'No se pudo cargar el nuevo archivo.');
               return;
           }
       }
@@ -173,13 +173,14 @@ export default function AdminPage() {
       showSuccessAlert('Servicio actualizado', 'Los datos del servicio se han actualizado.');
   };
 
-  const handleAddProduct = async (newProductData: Omit<Product, 'id' | 'imageUrl' | 'file'>, imageFile: File) => {
+  const handleAddProduct = async (newProductData: Omit<Product, 'id' | 'url' | 'type' | 'file'>, mediaFile: File) => {
     try {
-        const { file } = await fileToStorable(imageFile);
+        const { file, type } = await fileToStorable(mediaFile);
         const newProduct: Product = {
             id: crypto.randomUUID(),
             ...newProductData,
-            imageUrl: URL.createObjectURL(file),
+            url: URL.createObjectURL(file),
+            type: type,
             file: file,
         };
         await saveItemToDB(newProduct, 'products');
@@ -204,16 +205,16 @@ export default function AdminPage() {
       }
   };
 
-  const handleUpdateProduct = async (id: string, updatedData: Omit<Product, 'id' | 'imageUrl' | 'file'>, newImageFile?: File) => {
+  const handleUpdateProduct = async (id: string, updatedData: Omit<Product, 'id' | 'url' | 'type' | 'file'>, newMediaFile?: File) => {
       const currentProduct = appState.products.find(p => p.id === id);
       if (!currentProduct) return;
       let updatedProduct: Product = { ...currentProduct, ...updatedData };
-      if (newImageFile) {
+      if (newMediaFile) {
           try {
-              const { file } = await fileToStorable(newImageFile);
-              updatedProduct = { ...updatedProduct, imageUrl: URL.createObjectURL(file), file };
+              const { file, type } = await fileToStorable(newMediaFile);
+              updatedProduct = { ...updatedProduct, url: URL.createObjectURL(file), type, file };
           } catch {
-              showErrorAlert('Error de imagen', 'No se pudo cargar la nueva imagen.');
+              showErrorAlert('Error de archivo', 'No se pudo cargar el nuevo archivo.');
               return;
           }
       }
@@ -222,14 +223,14 @@ export default function AdminPage() {
       showSuccessAlert('Producto actualizado', 'Los datos del producto se han actualizado.');
   };
   
-    const handleHeroUpdate = async (updatedData: Omit<HeroContent, 'imageUrl' | 'file' | 'id'>, imageFile?: File) => {
+    const handleHeroUpdate = async (updatedData: Omit<HeroContent, 'id' | 'url' | 'type' | 'file'>, mediaFile?: File) => {
         let updatedHeroContent: HeroContent = { ...appState.heroContent, ...updatedData };
-        if (imageFile) {
+        if (mediaFile) {
             try {
-                const { file } = await fileToStorable(imageFile);
-                updatedHeroContent = { ...updatedHeroContent, imageUrl: URL.createObjectURL(file), file };
+                const { file, type } = await fileToStorable(mediaFile);
+                updatedHeroContent = { ...updatedHeroContent, url: URL.createObjectURL(file), type, file };
             } catch {
-                showErrorAlert('Error de imagen', 'No se pudo cargar la imagen.');
+                showErrorAlert('Error de archivo', 'No se pudo cargar el archivo.');
                 return;
             }
         }
@@ -238,14 +239,14 @@ export default function AdminPage() {
         showSuccessAlert('Sección actualizada', 'El contenido de la sección inicial ha sido actualizado.');
     };
 
-    const handleAboutMeUpdate = async (updatedData: Omit<AboutMeContent, 'imageUrl' | 'file' | 'id'>, imageFile?: File) => {
+    const handleAboutMeUpdate = async (updatedData: Omit<AboutMeContent, 'id' | 'url' | 'type' | 'file'>, mediaFile?: File) => {
         let updatedAboutMeContent: AboutMeContent = { ...appState.aboutMeContent, ...updatedData };
-        if (imageFile) {
+        if (mediaFile) {
             try {
-                const { file } = await fileToStorable(imageFile);
-                updatedAboutMeContent = { ...updatedAboutMeContent, imageUrl: URL.createObjectURL(file), file };
+                const { file, type } = await fileToStorable(mediaFile);
+                updatedAboutMeContent = { ...updatedAboutMeContent, url: URL.createObjectURL(file), type, file };
             } catch {
-                showErrorAlert('Error de imagen', 'No se pudo cargar la imagen.');
+                showErrorAlert('Error de archivo', 'No se pudo cargar el archivo.');
                 return;
             }
         }
@@ -254,7 +255,7 @@ export default function AdminPage() {
         showSuccessAlert('Sección actualizada', "La sección 'Sobre Mí' ha sido actualizada.");
     };
 
-    const handleAddGalleryItem = async (newItemData: Omit<GalleryItem, 'id' | 'url' | 'file' | 'type'>, mediaFile: File) => {
+    const handleAddGalleryItem = async (newItemData: Omit<GalleryItem, 'id' | 'url' | 'file' | 'type' | 'alt'>, mediaFile: File) => {
       try {
         const { file, type } = await fileToStorable(mediaFile);
         const newGalleryItem: GalleryItem = {
@@ -322,7 +323,6 @@ export default function AdminPage() {
 
 
   if (isLoadingSession || !isStateLoaded) {
-    // Show a loader while checking session and loading app state
     return <div className="flex h-screen items-center justify-center">Cargando...</div>;
   }
 
@@ -377,7 +377,6 @@ export default function AdminPage() {
         />
       );
     }
-    // For all other sections, render the management component
     return (
       <AdminDashboard
         section={activeSection}

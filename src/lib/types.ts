@@ -8,7 +8,8 @@ export interface Service {
   id: string;
   title: string;
   description: string;
-  imageUrl: string;
+  url: string;
+  type: 'image' | 'video';
   file?: File;
 }
 
@@ -34,7 +35,8 @@ export interface HeroContent {
   id?: 'singleton';
   title: string;
   subtitle: string;
-  imageUrl: string;
+  url: string;
+  type: 'image' | 'video';
   file?: File;
 }
 
@@ -43,7 +45,8 @@ export interface Product {
   name: string;
   description: string;
   stock: number;
-  imageUrl: string;
+  url: string;
+  type: 'image' | 'video';
   categoryId: string;
   file?: File;
 }
@@ -53,14 +56,16 @@ export interface Perfume {
   name: string;
   description: string;
   stock: number;
-  imageUrl: string;
+  url: string;
+  type: 'image' | 'video';
   file?: File;
 }
 
 export interface AboutMeContent {
   id?: 'singleton';
   text: string;
-  imageUrl: string;
+  url: string;
+  type: 'image' | 'video';
   happyClients: string;
   yearsOfExperience: string;
   events: string;

@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState } from 'react';
@@ -8,8 +7,9 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
+import { Media } from '@/components/shared/Media';
 import { AIContentGenerator } from './AIContentGenerator';
-import { Trash2, Pencil, Video, Image as ImageIcon, UserPlus, KeyRound, ThumbsUp, ThumbsDown } from 'lucide-react';
+import { Trash2, Pencil, Video, Image as ImageIcon, UserPlus, KeyRound, ThumbsUp, ThumbsDown, X } from 'lucide-react';
 import Image from 'next/image';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '../ui/dialog';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select';
@@ -17,24 +17,28 @@ import { Badge } from '../ui/badge';
 import { cn } from '@/lib/utils';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '../ui/table';
 import { showErrorAlert, showDeleteConfirm } from '@/lib/alerts';
+import { CameraFileInput } from './CameraFileInput';
+
+// Define a reusable type for media previews
+type MediaPreview = { url: string; type: 'image' | 'video' } | null;
 
 interface AdminDashboardProps {
   section: string;
   appState: AppState;
   loggedInUser: User;
   
-  onUpdateHeroContent: (data: Omit<HeroContent, 'id' | 'imageUrl' | 'file'>, file?: File) => void;
+  onUpdateHeroContent: (data: Omit<HeroContent, 'id' | 'url' | 'type' | 'file'>, file?: File) => void;
   
-  onAddService: (data: Omit<Service, 'id' | 'imageUrl' | 'file'>, file: File) => Promise<boolean>;
-  onUpdateService: (id: string, data: Omit<Service, 'id' | 'imageUrl' | 'file'>, file?: File) => void;
+  onAddService: (data: Omit<Service, 'id' | 'url' | 'type' | 'file'>, file: File) => Promise<boolean>;
+  onUpdateService: (id: string, data: Omit<Service, 'id' | 'url' | 'type' | 'file'>, file?: File) => void;
   onDeleteService: (id: string) => void;
 
-  onAddProduct: (data: Omit<Product, 'id' | 'imageUrl' | 'file'>, file: File) => Promise<boolean>;
-  onUpdateProduct: (id: string, data: Omit<Product, 'id' | 'imageUrl' | 'file'>, file?: File) => void;
+  onAddProduct: (data: Omit<Product, 'id' | 'url' | 'type' | 'file'>, file: File) => Promise<boolean>;
+  onUpdateProduct: (id: string, data: Omit<Product, 'id' | 'url' | 'type' | 'file'>, file?: File) => void;
   onDeleteProduct: (id: string) => void;
 
-  onAddPerfume: (data: Omit<Perfume, 'id' | 'imageUrl' | 'file'>, file: File) => Promise<boolean>;
-  onUpdatePerfume: (id: string, data: Omit<Perfume, 'id' | 'imageUrl' | 'file'>, file?: File) => void;
+  onAddPerfume: (data: Omit<Perfume, 'id' | 'url' | 'type' | 'file'>, file: File) => Promise<boolean>;
+  onUpdatePerfume: (id: string, data: Omit<Perfume, 'id' | 'url' | 'type' | 'file'>, file?: File) => void;
   onDeletePerfume: (id: string) => void;
 
   onAddGalleryItem: (data: Omit<GalleryItem, 'id' | 'url' | 'type' | 'file' | 'alt'>, file: File) => Promise<boolean>;
@@ -45,7 +49,7 @@ interface AdminDashboardProps {
   onDeleteTestimonial: (id: string) => void;
 
   setTestimonials: React.Dispatch<React.SetStateAction<Testimonial[]>>;
-  onUpdateAboutMeContent: (data: Omit<AboutMeContent, 'id' | 'imageUrl' | 'file'>, file?: File) => void;
+  onUpdateAboutMeContent: (data: Omit<AboutMeContent, 'id' | 'url' | 'type' | 'file'>, file?: File) => void;
   setUsers: React.Dispatch<React.SetStateAction<User[]>>;
   setCategories: React.Dispatch<React.SetStateAction<Category[]>>;
 }
@@ -87,26 +91,15 @@ export function AdminDashboard({
   const [currentCategoryToEdit, setCurrentCategoryToEdit] = useState<Category | null>(null);
   const [openCategoryDialog, setOpenCategoryDialog] = useState(false);
 
-  // State for image previews
-  const [heroImagePreview, setHeroImagePreview] = useState<string | null>(null);
-  const [serviceImagePreview, setServiceImagePreview] = useState<string | null>(null);
-  const [productImagePreview, setProductImagePreview] = useState<string | null>(null);
-  const [perfumeImagePreview, setPerfumeImagePreview] = useState<string | null>(null);
-  const [galleryMediaPreview, setGalleryMediaPreview] = useState<{ url: string; type: 'image' | 'video' } | null>(null);
-  const [aboutMeImagePreview, setAboutMeImagePreview] = useState<string | null>(null);
+  // Unified state for media previews
+  const [heroPreview, setHeroPreview] = useState<MediaPreview>(null);
+  const [servicePreview, setServicePreview] = useState<MediaPreview>(null);
+  const [productPreview, setProductPreview] = useState<MediaPreview>(null);
+  const [perfumePreview, setPerfumePreview] = useState<MediaPreview>(null);
+  const [galleryMediaPreview, setGalleryMediaPreview] = useState<MediaPreview>(null);
+  const [aboutMePreview, setAboutMePreview] = useState<MediaPreview>(null);
 
-  const handleFilePreview = (e: React.ChangeEvent<HTMLInputElement>, setter: React.Dispatch<React.SetStateAction<string | null>>) => {
-    const file = e.target.files?.[0];
-    if (file && file.type.startsWith('image/')) {
-      const url = URL.createObjectURL(file);
-      setter(url);
-    } else {
-      setter(null);
-      if (file) showErrorAlert('Archivo inválido', 'Por favor, selecciona un archivo de imagen.');
-    }
-  };
-
-  const handleMediaFilePreview = (e: React.ChangeEvent<HTMLInputElement>, setter: React.Dispatch<React.SetStateAction<{ url: string; type: 'image' | 'video' } | null>>) => {
+  const handleMediaFilePreview = (e: React.ChangeEvent<HTMLInputElement>, setter: React.Dispatch<React.SetStateAction<MediaPreview>>) => {
     const file = e.target.files?.[0];
     if (file) {
       const fileType = file.type.startsWith('image/') ? 'image' : file.type.startsWith('video/') ? 'video' : null;
@@ -129,9 +122,9 @@ export function AdminDashboard({
       title: formData.get('title') as string,
       subtitle: formData.get('subtitle') as string,
     };
-    const imageFile = formData.get('imageFile') as File;
-    onUpdateHeroContent(updatedData, imageFile && imageFile.size > 0 ? imageFile : undefined);
-    setHeroImagePreview(null);
+    const mediaFile = formData.get('mediaFile') as File;
+    onUpdateHeroContent(updatedData, mediaFile && mediaFile.size > 0 ? mediaFile : undefined);
+    setHeroPreview(null);
     (e.target as HTMLFormElement).reset();
   };
   
@@ -139,19 +132,19 @@ export function AdminDashboard({
     e.preventDefault();
     const form = e.currentTarget;
     const formData = new FormData(form);
-    const imageFile = formData.get('imageFile') as File;
-    if (!imageFile || imageFile.size === 0) {
-      showErrorAlert('Imagen requerida', 'Debes seleccionar una imagen para el servicio.');
+    const mediaFile = formData.get('mediaFile') as File;
+    if (!mediaFile || mediaFile.size === 0) {
+      showErrorAlert('Archivo requerido', 'Debes seleccionar un archivo para el servicio.');
       return;
     }
     const newServiceData = {
       title: formData.get('title') as string,
       description: formData.get('description') as string,
     };
-    const success = await onAddService(newServiceData, imageFile);
+    const success = await onAddService(newServiceData, mediaFile);
     if (success) {
       form.reset();
-      setServiceImagePreview(null);
+      setServicePreview(null);
     }
   };
   
@@ -159,9 +152,9 @@ export function AdminDashboard({
     e.preventDefault();
     const form = e.currentTarget;
     const formData = new FormData(form);
-    const imageFile = formData.get('imageFile') as File;
-    if (!imageFile || imageFile.size === 0) {
-      showErrorAlert('Imagen requerida', 'Debes seleccionar una imagen para el producto.');
+    const mediaFile = formData.get('mediaFile') as File;
+    if (!mediaFile || mediaFile.size === 0) {
+      showErrorAlert('Archivo requerido', 'Debes seleccionar un archivo para el producto.');
       return;
     }
     const newProductData = {
@@ -170,10 +163,10 @@ export function AdminDashboard({
       stock: parseInt(formData.get('stock') as string, 10),
       categoryId: formData.get('categoryId') as string,
     };
-    const success = await onAddProduct(newProductData, imageFile);
+    const success = await onAddProduct(newProductData, mediaFile);
     if (success) {
       form.reset();
-      setProductImagePreview(null);
+      setProductPreview(null);
     }
   };
   
@@ -181,10 +174,10 @@ export function AdminDashboard({
     e.preventDefault();
     const form = e.currentTarget;
     const formData = new FormData(form);
-    const imageFile = formData.get('imageFile') as File;
+    const mediaFile = formData.get('mediaFile') as File;
 
-    if (!imageFile || imageFile.size === 0) {
-      showErrorAlert('Imagen requerida', 'Debes seleccionar una imagen para el perfume.');
+    if (!mediaFile || mediaFile.size === 0) {
+      showErrorAlert('Archivo requerido', 'Debes seleccionar un archivo para el perfume.');
       return;
     }
 
@@ -194,10 +187,10 @@ export function AdminDashboard({
       stock: parseInt(formData.get('stock') as string, 10),
     };
 
-    const success = await onAddPerfume(newPerfumeData, imageFile);
+    const success = await onAddPerfume(newPerfumeData, mediaFile);
     if (success) {
       form.reset();
-      setPerfumeImagePreview(null);
+      setPerfumePreview(null);
     }
   };
 
@@ -230,38 +223,56 @@ export function AdminDashboard({
         yearsOfExperience: formData.get('yearsOfExperience') as string,
         events: formData.get('events') as string,
     };
-    const imageFile = formData.get('imageFile') as File;
-    onUpdateAboutMeContent(updatedData, imageFile && imageFile.size > 0 ? imageFile : undefined);
-    setAboutMeImagePreview(null);
+    const mediaFile = formData.get('mediaFile') as File;
+    onUpdateAboutMeContent(updatedData, mediaFile && mediaFile.size > 0 ? mediaFile : undefined);
+    setAboutMePreview(null);
     (e.target as HTMLFormElement).reset();
   };
 
-  const handleAddOrUpdateUser = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    // Logic for this is in `admin/page.tsx` now
-  };
-
-  const handleChangePassword = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    // Logic for this is in `admin/page.tsx` now
-  };
-
-  const handleDeleteUser = (id: string) => {
-    // Logic for this is in `admin/page.tsx` now
-  };
+  // Placeholder functions for user/category management which happens in page.tsx
+  const handleAddOrUpdateUser = (e: React.FormEvent<HTMLFormElement>) => e.preventDefault();
+  const handleChangePassword = (e: React.FormEvent<HTMLFormElement>) => e.preventDefault();
+  const handleDeleteUser = (id: string) => {};
+  const handleAddOrUpdateCategory = (e: React.FormEvent<HTMLFormElement>) => e.preventDefault();
+  const handleDeleteCategory = (id: string) => {};
   
-  const handleAddOrUpdateCategory = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    // Logic for this is in `admin/page.tsx` now
+  // Reusable component for rendering media in tables
+  const MediaCell = ({ item }: { item: { url: string, type: 'image' | 'video', title?: string, name?: string } }) => (
+    <div className="flex items-center gap-4">
+        {item.type === 'image' ? 
+            <Image src={item.url} alt={item.title || item.name || ''} width={40} height={40} className="rounded-md object-cover"/> :
+            <div className="w-10 h-10 bg-muted rounded-md flex items-center justify-center"><Video className="w-5 h-5"/></div>
+        }
+        <div>
+            <p className="font-bold">{item.title || item.name}</p>
+            {/* For items with descriptions */}
+            {'description' in item && <p className="text-sm text-muted-foreground">{(item as any).description}</p>}
+        </div>
+    </div>
+  );
+
+  // Reusable component for rendering media previews in forms
+  const MediaPreview = ({ preview, onRemove }: { preview: MediaPreview, onRemove: () => void }) => {
+    if (!preview) return null;
+    return (
+      <div className="relative w-fit mt-2">
+        {preview.type === 'image' 
+          ? <Image src={preview.url} alt="Vista previa" width={100} height={100} className="rounded-md object-cover" />
+          : <video src={preview.url} width={160} controls className="rounded-md" />}
+        <button
+          type="button"
+          onClick={onRemove}
+          className="absolute top-0 right-0 -mt-2 -mr-2 p-1 bg-red-600 text-white rounded-full shadow-md hover:bg-red-700 transition-colors"
+        >
+          <X className="h-4 w-4" />
+        </button>
+      </div>
+    );
   };
 
-  const handleDeleteCategory = (id: string) => {
-    // Logic for this is in `admin/page.tsx` now
-  };
-  
-  const EditServiceDialog = ({ service, onSave }: { service: Service; onSave: (id: string, data: Omit<Service, 'id' | 'imageUrl' | 'file'>, file?: File) => void }) => {
+  const EditServiceDialog = ({ service, onSave }: { service: Service; onSave: (id: string, data: Omit<Service, 'id' | 'url' | 'type' | 'file'>, file?: File) => void }) => {
     const [open, setOpen] = useState(false);
-    const [preview, setPreview] = useState<string | null>(null);
+    const [preview, setPreview] = useState<MediaPreview>(null);
 
     const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
@@ -270,8 +281,8 @@ export function AdminDashboard({
             title: formData.get('title') as string,
             description: formData.get('description') as string,
         };
-        const imageFile = formData.get('imageFile') as File;
-        onSave(service.id, updatedData, imageFile && imageFile.size > 0 ? imageFile : undefined);
+        const mediaFile = formData.get('mediaFile') as File;
+        onSave(service.id, updatedData, mediaFile && mediaFile.size > 0 ? mediaFile : undefined);
         setOpen(false);
     };
 
@@ -281,15 +292,13 @@ export function AdminDashboard({
             <DialogContent>
                 <DialogHeader>
                   <DialogTitle>Editar Servicio</DialogTitle>
-                  <DialogDescription>
-                    Modifica los detalles de este servicio. Haz clic en guardar cuando hayas terminado.
-                  </DialogDescription>
+                  <DialogDescription>Modifica los detalles de este servicio.</DialogDescription>
                 </DialogHeader>
                 <form onSubmit={handleSubmit} className="space-y-4">
                     <Input name="title" defaultValue={service.title} />
                     <Textarea name="description" defaultValue={service.description} />
-                    <Input name="imageFile" type="file" accept="image/*" onChange={(e) => handleFilePreview(e, setPreview)} />
-                    {preview && <Image src={preview} alt="Preview" width={100} height={100} />}
+                    <CameraFileInput name="mediaFile" accept="image/*,video/*" onChange={(e) => handleMediaFilePreview(e, setPreview)} />
+                    <MediaPreview preview={preview} onRemove={() => setPreview(null)} />
                     <DialogFooter><Button type="submit">Guardar Cambios</Button></DialogFooter>
                 </form>
             </DialogContent>
@@ -297,9 +306,9 @@ export function AdminDashboard({
     );
   };
 
-  const EditProductDialog = ({ product, onSave }: { product: Product; onSave: (id: string, data: Omit<Product, 'id' | 'imageUrl' | 'file'>, file?: File) => void }) => {
+  const EditProductDialog = ({ product, onSave }: { product: Product; onSave: (id: string, data: Omit<Product, 'id' | 'url' | 'type' | 'file'>, file?: File) => void }) => {
     const [open, setOpen] = useState(false);
-    const [preview, setPreview] = useState<string | null>(null);
+    const [preview, setPreview] = useState<MediaPreview>(null);
 
     const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
@@ -310,8 +319,8 @@ export function AdminDashboard({
             stock: parseInt(formData.get('stock') as string, 10),
             categoryId: formData.get('categoryId') as string,
         };
-        const imageFile = formData.get('imageFile') as File;
-        onSave(product.id, updatedData, imageFile && imageFile.size > 0 ? imageFile : undefined);
+        const mediaFile = formData.get('mediaFile') as File;
+        onSave(product.id, updatedData, mediaFile && mediaFile.size > 0 ? mediaFile : undefined);
         setOpen(false);
     };
 
@@ -321,9 +330,7 @@ export function AdminDashboard({
             <DialogContent>
                 <DialogHeader>
                   <DialogTitle>Editar Producto</DialogTitle>
-                  <DialogDescription>
-                    Modifica los detalles de este producto. Haz clic en guardar cuando hayas terminado.
-                  </DialogDescription>
+                  <DialogDescription>Modifica los detalles de este producto.</DialogDescription>
                 </DialogHeader>
                 <form onSubmit={handleSubmit} className="space-y-4">
                     <Input name="name" defaultValue={product.name} />
@@ -335,8 +342,8 @@ export function AdminDashboard({
                             {categories.map(cat => <SelectItem key={cat.id} value={cat.id}>{cat.name}</SelectItem>)}
                         </SelectContent>
                     </Select>
-                    <Input name="imageFile" type="file" accept="image/*" onChange={(e) => handleFilePreview(e, setPreview)} />
-                    {preview && <Image src={preview} alt="Preview" width={100} height={100} />}
+                    <CameraFileInput name="mediaFile" accept="image/*,video/*" onChange={(e) => handleMediaFilePreview(e, setPreview)} />
+                    <MediaPreview preview={preview} onRemove={() => setPreview(null)} />
                     <DialogFooter><Button type="submit">Guardar Cambios</Button></DialogFooter>
                 </form>
             </DialogContent>
@@ -344,9 +351,9 @@ export function AdminDashboard({
     );
   };
 
-  const EditPerfumeDialog = ({ perfume, onSave }: { perfume: Perfume; onSave: (id: string, data: Omit<Perfume, 'id' | 'imageUrl' | 'file'>, file?: File) => void }) => {
+  const EditPerfumeDialog = ({ perfume, onSave }: { perfume: Perfume; onSave: (id: string, data: Omit<Perfume, 'id' | 'url' | 'type' | 'file'>, file?: File) => void }) => {
     const [open, setOpen] = useState(false);
-    const [preview, setPreview] = useState<string | null>(null);
+    const [preview, setPreview] = useState<MediaPreview>(null);
 
     const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
@@ -356,8 +363,8 @@ export function AdminDashboard({
             description: formData.get('description') as string,
             stock: parseInt(formData.get('stock') as string, 10),
         };
-        const imageFile = formData.get('imageFile') as File;
-        onSave(perfume.id, updatedData, imageFile && imageFile.size > 0 ? imageFile : undefined);
+        const mediaFile = formData.get('mediaFile') as File;
+        onSave(perfume.id, updatedData, mediaFile && mediaFile.size > 0 ? mediaFile : undefined);
         setOpen(false);
     };
 
@@ -367,16 +374,14 @@ export function AdminDashboard({
             <DialogContent>
                 <DialogHeader>
                   <DialogTitle>Editar Perfume</DialogTitle>
-                   <DialogDescription>
-                    Modifica los detalles de este perfume. Haz clic en guardar cuando hayas terminado.
-                  </DialogDescription>
+                   <DialogDescription>Modifica los detalles de este perfume.</DialogDescription>
                 </DialogHeader>
                 <form onSubmit={handleSubmit} className="space-y-4">
                     <Input name="name" defaultValue={perfume.name} />
                     <Textarea name="description" defaultValue={perfume.description} />
                     <Input name="stock" type="number" defaultValue={perfume.stock} />
-                    <Input name="imageFile" type="file" accept="image/*" onChange={(e) => handleFilePreview(e, setPreview)} />
-                    {preview && <Image src={preview} alt="Preview" width={100} height={100} />}
+                    <CameraFileInput name="mediaFile" accept="image/*,video/*" onChange={(e) => handleMediaFilePreview(e, setPreview)} />
+                    <MediaPreview preview={preview} onRemove={() => setPreview(null)} />
                     <DialogFooter><Button type="submit">Guardar Cambios</Button></DialogFooter>
                 </form>
             </DialogContent>
@@ -386,7 +391,7 @@ export function AdminDashboard({
 
   const EditGalleryItemDialog = ({ item, onSave }: { item: GalleryItem; onSave: (id: string, data: Omit<GalleryItem, 'id' | 'url' | 'type' | 'file' | 'alt'>, file?: File) => void }) => {
     const [open, setOpen] = useState(false);
-    const [preview, setPreview] = useState<{ url: string; type: 'image' | 'video' } | null>(null);
+    const [preview, setPreview] = useState<MediaPreview>(null);
     const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         const formData = new FormData(e.currentTarget);
@@ -405,15 +410,13 @@ export function AdminDashboard({
             <DialogContent>
                 <DialogHeader>
                   <DialogTitle>Editar Elemento de Galería</DialogTitle>
-                  <DialogDescription>
-                    Modifica los detalles de este elemento. Haz clic en guardar cuando hayas terminado.
-                  </DialogDescription>
+                  <DialogDescription>Modifica los detalles de este elemento.</DialogDescription>
                 </DialogHeader>
                 <form onSubmit={handleSubmit} className="space-y-4">
                     <Input name="title" placeholder="Título" defaultValue={item.title} required/>
                     <Textarea name="description" placeholder="Descripción Breve" defaultValue={item.description} required />
-                    <Input name="mediaFile" type="file" accept="image/*,video/*" onChange={(e) => handleMediaFilePreview(e, setPreview)} />
-                    {preview && ( preview.type === 'image' ? <Image src={preview.url} alt="Preview" width={100} height={100} /> : <video src={preview.url} width={200} controls /> )}
+                    <CameraFileInput name="mediaFile" accept="image/*,video/*" onChange={(e) => handleMediaFilePreview(e, setPreview)} />
+                    <MediaPreview preview={preview} onRemove={() => setPreview(null)} />
                     <DialogFooter><Button type="submit">Guardar Cambios</Button></DialogFooter>
                 </form>
             </DialogContent>
@@ -432,38 +435,75 @@ export function AdminDashboard({
         return (
             <div className="space-y-4">
                 <h3 className="text-xl font-semibold">{title}</h3>
-                <Table>
-                    <TableHeader>
-                        <TableRow>
-                            <TableHead>Autor</TableHead>
-                            <TableHead>Testimonio</TableHead>
-                            <TableHead>Estado</TableHead>
-                            <TableHead className="text-right">Acciones</TableHead>
-                        </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                        {list.map(t => (
-                            <TableRow key={t.id}>
-                                <TableCell className="font-bold">{t.author}</TableCell>
-                                <TableCell className="max-w-xs truncate">{t.text}</TableCell>
-                                <TableCell>
-                                    <Badge variant={t.status === 'approved' ? 'default' : t.status === 'pending' ? 'secondary' : 'destructive'} className={cn(
-                                        {'bg-green-100 text-green-800': t.status === 'approved'},
-                                        {'bg-yellow-100 text-yellow-800': t.status === 'pending'},
-                                        {'bg-red-100 text-red-800': t.status === 'rejected'}
-                                    )}>{statusTranslations[t.status]}</Badge>
-                                </TableCell>
-                                <TableCell className="text-right">
+                {/* Mobile view: Cards */}
+                <div className="grid gap-4 md:hidden">
+                    {list.map(t => (
+                        <Card key={t.id} className="p-4 space-y-3">
+                            <div className="flex items-start gap-3">
+                                <div className="w-10 h-10 rounded-full bg-muted flex items-center justify-center font-bold text-sm shrink-0">
+                                    {t.author.charAt(0)}
+                                </div>
+                                <div className="flex-grow">
+                                    <p className="font-bold">{t.author}</p>
+                                    <p className="text-sm text-muted-foreground break-words">"{t.text}"</p>
+                                </div>
+                            </div>
+                            <div className="flex flex-wrap items-center justify-between gap-2 pt-2 border-t border-border">
+                                <Badge variant={t.status === 'approved' ? 'default' : t.status === 'pending' ? 'secondary' : 'destructive'} className={cn(
+                                    {'bg-green-100 text-green-800': t.status === 'approved'},
+                                    {'bg-yellow-100 text-yellow-800': t.status === 'pending'},
+                                    {'bg-red-100 text-red-800': t.status === 'rejected'}
+                                )}>{statusTranslations[t.status]}</Badge>
+                                <div className="flex items-center">
                                     {t.status !== 'approved' && <Button variant="ghost" size="icon" onClick={() => onUpdateTestimonialStatus(t.id, 'approved')}><ThumbsUp className="w-4 h-4 text-green-600"/></Button>}
                                     {t.status !== 'rejected' && <Button variant="ghost" size="icon" onClick={() => onUpdateTestimonialStatus(t.id, 'rejected')}><ThumbsDown className="w-4 h-4 text-orange-600"/></Button>}
                                     <Button variant="ghost" size="icon" onClick={() => showDeleteConfirm(() => onDeleteTestimonial(t.id))}>
                                         <Trash2 className="w-4 h-4 text-destructive" />
                                     </Button>
-                                </TableCell>
+                                </div>
+                            </div>
+                        </Card>
+                    ))}
+                </div>
+                {/* Desktop view: Table */}
+                <div className="hidden md:block">
+                    <Table>
+                        <TableHeader>
+                            <TableRow>
+                                <TableHead>Autor</TableHead>
+                                <TableHead className="hidden lg:table-cell">Testimonio</TableHead>
+                                <TableHead>Estado</TableHead>
+                                <TableHead className="text-right">Acciones</TableHead>
                             </TableRow>
-                        ))}
-                    </TableBody>
-                </Table>
+                        </TableHeader>
+                        <TableBody>
+                            {list.map(t => (
+                                <TableRow key={t.id}>
+                                    <TableCell className="font-bold">{t.author}</TableCell>
+                                    <TableCell className="hidden lg:table-cell max-w-sm">
+                                        <p className="truncate">{t.text}</p>
+                                    </TableCell>
+                                    <TableCell>
+                                        <Badge variant={t.status === 'approved' ? 'default' : t.status === 'pending' ? 'secondary' : 'destructive'} className={cn(
+                                            {'bg-green-100 text-green-800': t.status === 'approved'},
+                                            {'bg-yellow-100 text-yellow-800': t.status === 'pending'},
+                                            {'bg-red-100 text-red-800': t.status === 'rejected'}
+                                        )}>{statusTranslations[t.status]}</Badge>
+                                    </TableCell>
+                                    <TableCell className="text-right">
+                                        <div className="flex items-center justify-end">
+                                            {t.status !== 'approved' && <Button variant="ghost" size="icon" onClick={() => onUpdateTestimonialStatus(t.id, 'approved')}><ThumbsUp className="w-4 h-4 text-green-600"/></Button>}
+                                            {t.status !== 'rejected' && <Button variant="ghost" size="icon" onClick={() => onUpdateTestimonialStatus(t.id, 'rejected')}><ThumbsDown className="w-4 h-4 text-orange-600"/></Button>}
+                                            <Button variant="ghost" size="icon" onClick={() => showDeleteConfirm(() => onDeleteTestimonial(t.id))}>
+                                                <Trash2 className="w-4 h-4 text-destructive" />
+                                            </Button>
+                                        </div>
+                                    </TableCell>
+                                </TableRow>
+                            ))}
+                        </TableBody>
+                    </Table>
+                </div>
             </div>
         );
     };
@@ -476,12 +516,49 @@ export function AdminDashboard({
             <Card>
               <CardHeader><CardTitle className="font-headline">Contenido de la Sección Inicial</CardTitle></CardHeader>
               <CardContent>
-                <form onSubmit={handleHeroUpdate} className="space-y-4">
-                  <Input name="title" defaultValue={heroContent.title} />
-                  <Textarea name="subtitle" defaultValue={heroContent.subtitle} />
-                  <Input name="imageFile" type="file" accept="image/*" onChange={(e) => handleFilePreview(e, setHeroImagePreview)} />
-                  {heroImagePreview && <Image src={heroImagePreview} alt="Vista previa" width={200} height={100} className="rounded-md object-cover" />}
-                  <Button type="submit">Actualizar</Button>
+                <form onSubmit={handleHeroUpdate} className="space-y-6">
+                  <div className="space-y-4">
+                    <div>
+                      <Label>Título</Label>
+                      <Input name="title" defaultValue={heroContent.title} />
+                    </div>
+                    <div>
+                      <Label>Subtítulo</Label>
+                      <Textarea name="subtitle" defaultValue={heroContent.subtitle} />
+                    </div>
+                  </div>
+                  
+                  <div className="space-y-4">
+                    <div>
+                      <Label>Imagen Actual</Label>
+                      <div className="mt-2 relative w-full max-w-sm h-[150px] rounded-lg overflow-hidden border border-border">
+                        <Media
+                          src={heroContent.url}
+                          type={heroContent.type}
+                          alt="Imagen actual de la sección inicial"
+                          fill
+                          className="object-contain"
+                        />
+                      </div>
+                    </div>
+                    
+                    <div>
+                      <Label>Nueva Imagen (opcional)</Label>
+                      <CameraFileInput name="mediaFile" accept="image/*,video/*" onChange={(e) => handleMediaFilePreview(e, setHeroPreview)} />
+                      {heroPreview && (
+                        <div className="mt-2">
+                          <Label>Vista previa de la nueva imagen</Label>
+                          <div className="w-full max-w-sm">
+                            <MediaPreview preview={heroPreview} onRemove={() => setHeroPreview(null)} />
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                  
+                  <div className="flex justify-start">
+                    <Button type="submit">Actualizar Sección Inicial</Button>
+                  </div>
                 </form>
               </CardContent>
             </Card>
@@ -498,8 +575,8 @@ export function AdminDashboard({
                     <Input name="yearsOfExperience" defaultValue={aboutMeContent.yearsOfExperience} />
                     <Input name="events" defaultValue={aboutMeContent.events} />
                   </div>
-                  <Input name="imageFile" type="file" accept="image/*" onChange={(e) => handleFilePreview(e, setAboutMeImagePreview)} />
-                  {aboutMeImagePreview && <Image src={aboutMeImagePreview} alt="Vista previa" width={100} height={100} className="rounded-full object-cover" />}
+                  <CameraFileInput name="mediaFile" accept="image/*,video/*" onChange={(e) => handleMediaFilePreview(e, setAboutMePreview)} />
+                  <MediaPreview preview={aboutMePreview} onRemove={() => setAboutMePreview(null)} />
                   <Button type="submit">Actualizar 'Sobre Mí'</Button>
                 </form>
               </CardContent>
@@ -514,29 +591,16 @@ export function AdminDashboard({
                   <h3 className="font-semibold">Añadir Nuevo Servicio</h3>
                   <Input name="title" placeholder="Título" required />
                   <Textarea name="description" placeholder="Descripción" required />
-                  <Input name="imageFile" type="file" accept="image/*" required onChange={(e) => handleFilePreview(e, setServiceImagePreview)} />
-                  {serviceImagePreview && <Image src={serviceImagePreview} alt="Vista previa" width={100} height={100} />}
+                  <CameraFileInput name="mediaFile" accept="image/*,video/*" required onChange={(e) => handleMediaFilePreview(e, setServicePreview)} />
+                  <MediaPreview preview={servicePreview} onRemove={() => setServicePreview(null)} />
                   <Button type="submit">Añadir</Button>
                 </form>
                 <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead>Servicio</TableHead>
-                      <TableHead>Acciones</TableHead>
-                    </TableRow>
-                  </TableHeader>
+                  <TableHeader><TableRow><TableHead>Servicio</TableHead><TableHead>Acciones</TableHead></TableRow></TableHeader>
                   <TableBody>
                     {services.map(service => (
                       <TableRow key={service.id}>
-                        <TableCell>
-                            <div className="flex items-center gap-4">
-                                <Image src={service.imageUrl} alt={service.title} width={40} height={40} className="rounded-md object-cover"/>
-                                <div>
-                                    <p className="font-bold">{service.title}</p>
-                                    <p className="text-sm text-muted-foreground">{service.description}</p>
-                                </div>
-                            </div>
-                        </TableCell>
+                        <TableCell><MediaCell item={service} /></TableCell>
                         <TableCell className="text-right">
                           <div className="flex items-center gap-2 justify-end">
                             <EditServiceDialog service={service} onSave={onUpdateService} />
@@ -561,12 +625,7 @@ export function AdminDashboard({
                   </CardHeader>
                   <CardContent>
                       <Table>
-                          <TableHeader>
-                              <TableRow>
-                                  <TableHead>Nombre</TableHead>
-                                  <TableHead className="text-right">Acciones</TableHead>
-                              </TableRow>
-                          </TableHeader>
+                          <TableHeader><TableRow><TableHead>Nombre</TableHead><TableHead className="text-right">Acciones</TableHead></TableRow></TableHeader>
                           <TableBody>
                               {categories.map(category => (
                                   <TableRow key={category.id}>
@@ -586,9 +645,7 @@ export function AdminDashboard({
                       <DialogContent>
                           <DialogHeader>
                             <DialogTitle>{isEditingCategory ? 'Editar' : 'Añadir'} Categoría</DialogTitle>
-                            <DialogDescription>
-                              {isEditingCategory ? 'Modifica el nombre de la categoría.' : 'Crea una nueva categoría para tus productos.'}
-                            </DialogDescription>
+                            <DialogDescription>{isEditingCategory ? 'Modifica el nombre de la categoría.' : 'Crea una nueva categoría para tus productos.'}</DialogDescription>
                           </DialogHeader>
                           <form onSubmit={handleAddOrUpdateCategory} className="space-y-4">
                               <Input name="name" placeholder="Nombre de la categoría" defaultValue={currentCategoryToEdit?.name || ''} required />
@@ -609,45 +666,51 @@ export function AdminDashboard({
                   <Textarea name="description" placeholder="Descripción del producto" required />
                   <Input name="stock" type="number" placeholder="Stock disponible" required />
                   <Select name="categoryId" required><SelectTrigger><SelectValue placeholder="Selecciona una categoría" /></SelectTrigger><SelectContent>{categories.map(cat => <SelectItem key={cat.id} value={cat.id}>{cat.name}</SelectItem>)}</SelectContent></Select>
-                  <Input name="imageFile" type="file" accept="image/*" required onChange={(e) => handleFilePreview(e, setProductImagePreview)} />
-                  {productImagePreview && <Image src={productImagePreview} alt="Vista previa" width={100} height={100} />}
+                  <CameraFileInput name="mediaFile" accept="image/*,video/*" required onChange={(e) => handleMediaFilePreview(e, setProductPreview)} />
+                  <MediaPreview preview={productPreview} onRemove={() => setProductPreview(null)} />
                   <Button type="submit">Añadir</Button>
                 </form>
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead>Producto</TableHead>
-                      <TableHead>Stock</TableHead>
-                      <TableHead>Categoría</TableHead>
-                      <TableHead className="text-right">Acciones</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
+                {/* Mobile view: Cards */}
+                <div className="grid gap-4 md:hidden">
                     {products.map(product => (
-                      <TableRow key={product.id}>
-                        <TableCell>
-                            <div className="flex items-center gap-4">
-                                <Image src={product.imageUrl} alt={product.name} width={40} height={40} className="rounded-md object-cover"/>
-                                <div>
-                                    <p className="font-bold">{product.name}</p>
-                                    <p className="text-sm text-muted-foreground">{product.description}</p>
-                                </div>
+                        <Card key={product.id} className="p-4 space-y-3">
+                            <MediaCell item={product} />
+                            <div className="flex items-center justify-between">
+                                <span className="text-sm font-medium">Stock: {product.stock}</span>
+                                <Badge variant="outline">{categories.find(c => c.id === product.categoryId)?.name || 'N/A'}</Badge>
                             </div>
-                        </TableCell>
-                        <TableCell>{product.stock}</TableCell>
-                        <TableCell>{categories.find(c => c.id === product.categoryId)?.name || 'N/A'}</TableCell>
-                        <TableCell className="text-right">
-                            <div className="flex items-center gap-2 justify-end">
+                            <div className="flex items-center justify-end gap-2">
                                 <EditProductDialog product={product} onSave={onUpdateProduct} />
                                 <Button variant="ghost" size="icon" onClick={() => showDeleteConfirm(() => onDeleteProduct(product.id))}>
-                                  <Trash2 className="w-4 h-4 text-destructive" />
+                                    <Trash2 className="w-4 h-4 text-destructive" />
                                 </Button>
                             </div>
-                        </TableCell>
-                      </TableRow>
+                        </Card>
                     ))}
-                  </TableBody>
-                </Table>
+                </div>
+                {/* Desktop view: Table */}
+                <div className="hidden md:block">
+                    <Table>
+                      <TableHeader><TableRow><TableHead>Producto</TableHead><TableHead>Stock</TableHead><TableHead>Categoría</TableHead><TableHead className="text-right">Acciones</TableHead></TableRow></TableHeader>
+                      <TableBody>
+                        {products.map(product => (
+                          <TableRow key={product.id}>
+                            <TableCell><MediaCell item={product} /></TableCell>
+                            <TableCell>{product.stock}</TableCell>
+                            <TableCell>{categories.find(c => c.id === product.categoryId)?.name || 'N/A'}</TableCell>
+                            <TableCell className="text-right">
+                                <div className="flex items-center gap-2 justify-end">
+                                    <EditProductDialog product={product} onSave={onUpdateProduct} />
+                                    <Button variant="ghost" size="icon" onClick={() => showDeleteConfirm(() => onDeleteProduct(product.id))}>
+                                      <Trash2 className="w-4 h-4 text-destructive" />
+                                    </Button>
+                                </div>
+                            </TableCell>
+                          </TableRow>
+                        ))}
+                      </TableBody>
+                    </Table>
+                </div>
               </CardContent>
             </Card>
         );
@@ -661,43 +724,49 @@ export function AdminDashboard({
                   <Input name="name" placeholder="Nombre del perfume" required />
                   <Textarea name="description" placeholder="Descripción del perfume" required />
                   <Input name="stock" type="number" placeholder="Stock disponible" required />
-                  <Input name="imageFile" type="file" accept="image/*" required onChange={(e) => handleFilePreview(e, setPerfumeImagePreview)} />
-                  {perfumeImagePreview && <Image src={perfumeImagePreview} alt="Vista previa" width={100} height={100} />}
+                  <CameraFileInput name="mediaFile" accept="image/*,video/*" required onChange={(e) => handleMediaFilePreview(e, setPerfumePreview)} />
+                  <MediaPreview preview={perfumePreview} onRemove={() => setPerfumePreview(null)} />
                   <Button type="submit">Añadir</Button>
                 </form>
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead>Perfume</TableHead>
-                      <TableHead>Stock</TableHead>
-                      <TableHead className="text-right">Acciones</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
+                {/* Mobile view: Cards */}
+                <div className="grid gap-4 md:hidden">
                     {perfumes.map(perfume => (
-                      <TableRow key={perfume.id}>
-                        <TableCell>
-                            <div className="flex items-center gap-4">
-                                <Image src={perfume.imageUrl} alt={perfume.name} width={40} height={40} className="rounded-md object-cover"/>
-                                <div>
-                                    <p className="font-bold">{perfume.name}</p>
-                                    <p className="text-sm text-muted-foreground">{perfume.description}</p>
+                        <Card key={perfume.id} className="p-4 space-y-3">
+                            <MediaCell item={perfume} />
+                            <div className="flex items-center justify-between">
+                                <span className="text-sm font-medium">Stock: {perfume.stock}</span>
+                                <div className="flex items-center justify-end gap-2">
+                                    <EditPerfumeDialog perfume={perfume} onSave={onUpdatePerfume} />
+                                    <Button variant="ghost" size="icon" onClick={() => showDeleteConfirm(() => onDeletePerfume(perfume.id))}>
+                                        <Trash2 className="w-4 h-4 text-destructive" />
+                                    </Button>
                                 </div>
                             </div>
-                        </TableCell>
-                        <TableCell>{perfume.stock}</TableCell>
-                        <TableCell className="text-right">
-                            <div className="flex items-center gap-2 justify-end">
-                                <EditPerfumeDialog perfume={perfume} onSave={onUpdatePerfume} />
-                                <Button variant="ghost" size="icon" onClick={() => showDeleteConfirm(() => onDeletePerfume(perfume.id))}>
-                                  <Trash2 className="w-4 h-4 text-destructive" />
-                                </Button>
-                            </div>
-                        </TableCell>
-                      </TableRow>
+                        </Card>
                     ))}
-                  </TableBody>
-                </Table>
+                </div>
+                {/* Desktop view: Table */}
+                <div className="hidden md:block">
+                    <Table>
+                      <TableHeader><TableRow><TableHead>Perfume</TableHead><TableHead>Stock</TableHead><TableHead className="text-right">Acciones</TableHead></TableRow></TableHeader>
+                      <TableBody>
+                        {perfumes.map(perfume => (
+                          <TableRow key={perfume.id}>
+                            <TableCell><MediaCell item={perfume} /></TableCell>
+                            <TableCell>{perfume.stock}</TableCell>
+                            <TableCell className="text-right">
+                                <div className="flex items-center gap-2 justify-end">
+                                    <EditPerfumeDialog perfume={perfume} onSave={onUpdatePerfume} />
+                                    <Button variant="ghost" size="icon" onClick={() => showDeleteConfirm(() => onDeletePerfume(perfume.id))}>
+                                      <Trash2 className="w-4 h-4 text-destructive" />
+                                    </Button>
+                                </div>
+                            </TableCell>
+                          </TableRow>
+                        ))}
+                      </TableBody>
+                    </Table>
+                </div>
               </CardContent>
             </Card>
         );
@@ -708,53 +777,59 @@ export function AdminDashboard({
               <CardContent className="space-y-6">
                 <form onSubmit={handleAddGalleryItem} className="bg-muted p-4 rounded-lg space-y-4">
                   <h3 className="font-semibold">Añadir Nuevo Elemento</h3>
-                  <Input name="mediaFile" type="file" accept="image/*,video/*" required onChange={(e) => handleMediaFilePreview(e, setGalleryMediaPreview)} />
-                  {galleryMediaPreview && (galleryMediaPreview.type === 'image' ? <Image src={galleryMediaPreview.url} alt="Vista previa" width={100} height={100} /> : <video src={galleryMediaPreview.url} width={160} controls />)}
+                  <CameraFileInput name="mediaFile" accept="image/*,video/*" required onChange={(e) => handleMediaFilePreview(e, setGalleryMediaPreview)} />
+                  <MediaPreview preview={galleryMediaPreview} onRemove={() => setGalleryMediaPreview(null)} />
                   <Input name="title" placeholder="Título" required />
                   <Textarea name="description" placeholder="Descripción" required />
                   <Button type="submit">Añadir</Button>
                 </form>
-                 <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead>Elemento</TableHead>
-                      <TableHead>Tipo</TableHead>
-                      <TableHead className="text-right">Acciones</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
+                {/* Mobile view: Cards */}
+                <div className="grid gap-4 md:hidden">
                     {galleryItems.map(item => (
-                      <TableRow key={item.id}>
-                        <TableCell>
-                          <div className="flex items-center gap-4">
-                            {item.type === 'image' ? 
-                                <Image src={item.url} alt={item.title} width={40} height={40} className="rounded-md object-cover"/> :
-                                <div className="w-10 h-10 bg-muted rounded-md flex items-center justify-center"><Video className="w-5 h-5"/></div>
-                            }
-                            <div>
-                                <p className="font-bold">{item.title}</p>
-                                <p className="text-sm text-muted-foreground">{item.description}</p>
+                        <Card key={item.id} className="p-4 space-y-3">
+                            <MediaCell item={item} />
+                            <div className="flex items-center justify-between">
+                                <Badge variant="outline">
+                                    {item.type === 'image' ? <ImageIcon className="w-4 h-4 mr-2" /> : <Video className="w-4 h-4 mr-2" />}
+                                    {item.type}
+                                </Badge>
+                                <div className="flex items-center justify-end gap-2">
+                                    <EditGalleryItemDialog item={item} onSave={onUpdateGalleryItem} />
+                                    <Button variant="ghost" size="icon" onClick={() => showDeleteConfirm(() => onDeleteGalleryItem(item.id))}>
+                                        <Trash2 className="w-4 h-4 text-destructive" />
+                                    </Button>
+                                </div>
                             </div>
-                          </div>
-                        </TableCell>
-                        <TableCell>
-                            <Badge variant="outline">
-                                {item.type === 'image' ? <ImageIcon className="w-4 h-4 mr-2" /> : <Video className="w-4 h-4 mr-2" />}
-                                {item.type}
-                            </Badge>
-                        </TableCell>
-                        <TableCell className="text-right">
-                          <div className="flex items-center gap-2 justify-end">
-                            <EditGalleryItemDialog item={item} onSave={onUpdateGalleryItem} />
-                            <Button variant="ghost" size="icon" onClick={() => showDeleteConfirm(() => onDeleteGalleryItem(item.id))}>
-                              <Trash2 className="w-4 h-4 text-destructive" />
-                            </Button>
-                          </div>
-                        </TableCell>
-                      </TableRow>
+                        </Card>
                     ))}
-                  </TableBody>
-                </Table>
+                </div>
+                {/* Desktop view: Table */}
+                <div className="hidden md:block">
+                    <Table>
+                      <TableHeader><TableRow><TableHead>Elemento</TableHead><TableHead>Tipo</TableHead><TableHead className="text-right">Acciones</TableHead></TableRow></TableHeader>
+                      <TableBody>
+                        {galleryItems.map(item => (
+                          <TableRow key={item.id}>
+                            <TableCell><MediaCell item={item} /></TableCell>
+                            <TableCell>
+                                <Badge variant="outline">
+                                    {item.type === 'image' ? <ImageIcon className="w-4 h-4 mr-2" /> : <Video className="w-4 h-4 mr-2" />}
+                                    {item.type}
+                                </Badge>
+                            </TableCell>
+                            <TableCell className="text-right">
+                              <div className="flex items-center gap-2 justify-end">
+                                <EditGalleryItemDialog item={item} onSave={onUpdateGalleryItem} />
+                                <Button variant="ghost" size="icon" onClick={() => showDeleteConfirm(() => onDeleteGalleryItem(item.id))}>
+                                  <Trash2 className="w-4 h-4 text-destructive" />
+                                </Button>
+                              </div>
+                            </TableCell>
+                          </TableRow>
+                        ))}
+                      </TableBody>
+                    </Table>
+                </div>
               </CardContent>
             </Card>
         );

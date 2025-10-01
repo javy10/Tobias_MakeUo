@@ -1,6 +1,7 @@
 'use server';
 
 import { generateContentIdeas, type ContentIdeasInput } from '@/ai/flows/generate-content-ideas';
+import { revalidatePath } from 'next/cache';
 
 export async function generateIdeasAction(input: ContentIdeasInput) {
   try {
@@ -8,6 +9,7 @@ export async function generateIdeasAction(input: ContentIdeasInput) {
     if (!result || !result.ideas) {
       return { success: false, error: 'No ideas were generated.' };
     }
+    revalidatePath('/admin');
     return { success: true, data: result.ideas };
   } catch (error) {
     console.error('Error generating content ideas:', error);

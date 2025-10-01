@@ -1,7 +1,7 @@
 
 'use client';
 
-import { useState, useActionState } from 'react';
+import { useState, useOptimistic } from 'react';
 import { useFormStatus } from 'react-dom';
 import { generateIdeasAction } from '@/app/actions';
 import { Button } from '@/components/ui/button';
@@ -11,11 +11,20 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Wand2, Loader2 } from 'lucide-react';
 import { Alert, AlertDescription, AlertTitle } from '../ui/alert';
+import { useRouter } from 'next/navigation';
 
-const initialState = {
+type Section = 'hero' | 'services' | 'gallery' | 'testimonials';
+
+interface IdeaState {
+  success: boolean;
+  data: string[];
+  error: string | null;
+}
+
+const initialState: IdeaState = {
   success: false,
-  data: [] as string[],
-  error: null as string | null,
+  data: [],
+  error: null,
 };
 
 function SubmitButton() {
@@ -29,11 +38,32 @@ function SubmitButton() {
 }
 
 export function AIContentGenerator() {
-  const [state, formAction] = useActionState(generateIdeasAction, initialState);
-  const [key, setKey] = useState(0); // Add key to reset form state if needed
+  const router = useRouter();
+  const [optimisticState, addOptimisticState] = useOptimistic<IdeaState, Partial<IdeaState>>(
+    initialState,
+    (currentState, newData) => ({ ...currentState, ...newData })
+  );
+  const [key, setKey] = useState(0);
 
   const handleReset = () => {
     setKey(prevKey => prevKey + 1);
+  };
+
+  async function handleSubmit(formData: FormData) {
+    addOptimisticState({ success: false, data: [], error: null });
+    const section = formData.get('section');
+    const topic = formData.get('topic');
+    
+    const result = await generateIdeasAction({
+      topic: topic?.toString() || '',
+      section: (section?.toString() || 'hero') as Section,
+    });
+    if (result.success) {
+      addOptimisticState({ success: true, data: result.data, error: null });
+      router.refresh();
+    } else {
+      addOptimisticState({ success: false, data: [], error: result.error });
+    }
   };
   
   return (
@@ -45,7 +75,7 @@ export function AIContentGenerator() {
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-6">
-        <form action={formAction} className="space-y-4">
+        <form action={handleSubmit} className="space-y-4">
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div className="space-y-2">
               <Label htmlFor="section">Sección del Sitio</Label>
@@ -72,7 +102,7 @@ export function AIContentGenerator() {
           </div>
           <div className="flex flex-col sm:flex-row gap-2">
             <SubmitButton />
-             {(state.data.length > 0 || state.error) && (
+             {(optimisticState.data.length > 0 || optimisticState.error) && (
               <Button type="button" variant="outline" onClick={handleReset} className="rounded-full w-full sm:w-auto">
                 Empezar de Nuevo
               </Button>
@@ -80,18 +110,18 @@ export function AIContentGenerator() {
           </div>
         </form>
 
-        {state.error && (
+        {optimisticState.error && (
           <Alert variant="destructive">
             <AlertTitle>Error</AlertTitle>
-            <AlertDescription>{state.error}</AlertDescription>
+            <AlertDescription>{optimisticState.error}</AlertDescription>
           </Alert>
         )}
 
-        {state.success && state.data.length > 0 && (
+        {optimisticState.success && optimisticState.data.length > 0 && (
           <div>
             <h3 className="font-semibold mb-2 text-lg">Ideas Generadas:</h3>
             <ul className="list-disc list-inside space-y-2 bg-muted p-4 rounded-md">
-              {state.data.map((idea, index) => (
+              {optimisticState.data.map((idea: string, index: number) => (
                 <li key={index}>{idea}</li>
               ))}
             </ul>

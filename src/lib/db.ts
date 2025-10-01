@@ -95,8 +95,16 @@ export const getAllItemsFromDB = async <T>(storeName: string): Promise<T[]> => {
 
     request.onsuccess = () => {
         const items = request.result.map((item: any) => {
+            // If it has a file, it's the new format (or being loaded from a save)
             if (item.file) {
-                return { ...item, imageUrl: URL.createObjectURL(item.file) };
+                const type = item.type || (item.file.type.startsWith('image/') ? 'image' : 'video');
+                return { ...item, url: URL.createObjectURL(item.file), type: type };
+            }
+            // If it has imageUrl, it's the old format that needs migration
+            if (item.imageUrl) {
+                const newItem = { ...item, url: item.imageUrl, type: 'image' as const };
+                delete newItem.imageUrl;
+                return newItem;
             }
             return item;
         });

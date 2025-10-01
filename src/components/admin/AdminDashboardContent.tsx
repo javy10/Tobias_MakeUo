@@ -11,16 +11,6 @@ import { PieChart3D } from './PieChart3D';
 
 interface AdminDashboardContentProps {
   appState: AppState;
-  setHeroContent: React.Dispatch<React.SetStateAction<HeroContent>>;
-  setServices: React.Dispatch<React.SetStateAction<Service[]>>;
-  setProducts: React.Dispatch<React.SetStateAction<Product[]>>;
-  setPerfumes: React.Dispatch<React.SetStateAction<Perfume[]>>;
-  setGalleryItems: React.Dispatch<React.SetStateAction<GalleryItem[]>>;
-  setTestimonials: React.Dispatch<React.SetStateAction<Testimonial[]>>;
-  setAboutMeContent: React.Dispatch<React.SetStateAction<AboutMeContent>>;
-  setUsers: React.Dispatch<React.SetStateAction<User[]>>;
-  setCategories: React.Dispatch<React.SetStateAction<Category[]>>;
-  loggedInUser: User;
 }
 
 const ServicesSummaryCard = ({ services }: { services: Service[] }) => (
