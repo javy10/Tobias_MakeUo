@@ -79,3 +79,4 @@ export function useVisibleSectionsOnly(appState: AppState): SectionConfig[] {
   return allSections.filter(section => section.hasData);
 }
 
+

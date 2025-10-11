@@ -11,7 +11,7 @@ interface BeautyCoursesProps {
 
 export function BeautyCourses({ courses }: BeautyCoursesProps) {
   return (
-    <section id="cursos" className="container mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16 md:py-20 lg:py-24 bg-gradient-to-b from-background-light to-background-light/50 dark:from-background-dark dark:to-background-dark/50 rounded-3xl">
+    <section id="cursos" className="container mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16 md:py-20 lg:py-24">
       <div className="text-center mb-12">
         <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold font-headline text-primary mb-4">
           Cursos de Belleza
