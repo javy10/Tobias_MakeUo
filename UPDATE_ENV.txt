@@ -1,0 +1,16 @@
+INSTRUCCIONES PARA CONFIGURAR .env.local
+
+1. Abre el archivo .env.local en la raíz del proyecto
+
+2. ELIMINA todo el contenido actual (si hay variables de configuración anteriores)
+
+3. COPIA Y PEGA exactamente esto:
+
+NEXT_PUBLIC_SUPABASE_URL=https://prlxicaxkpctkksmlnax.supabase.co
+NEXT_PUBLIC_SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBybHhpY2F4a3BjdGtrc21sbmF4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTk0MTg2MjAsImV4cCI6MjA3NDk5NDYyMH0.gT1P_5lfOkYtTCpqhnEGjKm8LJd_Tx1cUCMl9TjW0LQ
+
+4. Guarda el archivo
+
+5. Reinicia el servidor (Ctrl + C y luego npm run dev)
+
+NOTA: El archivo .env.local debe tener SOLO estas 2 líneas, nada más.

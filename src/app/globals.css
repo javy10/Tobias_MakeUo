@@ -1,7 +1,22 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
 
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* Ocultar ícono circular con "N" en el sidebar del admin */
+.admin-sidebar .n-icon,
+.admin-sidebar [class*="rounded-full"]:last-child,
+.admin-sidebar > div:last-child > div:last-child {
+  display: none !important;
+}
+
+/* Ocultar cualquier elemento que contenga solo la letra "N" en el sidebar */
+aside[class*="fixed"][class*="left-0"] span:only-child:contains("N"),
+aside[class*="fixed"][class*="left-0"] div:only-child:contains("N") {
+  display: none !important;
+}
+
 
 body {
   font-family: 'Inter', sans-serif;

@@ -61,6 +61,15 @@ export interface Perfume {
   file?: File;
 }
 
+export interface Course {
+  id: string;
+  name: string;
+  description: string;
+  url: string;
+  type: 'image' | 'video';
+  file?: File;
+}
+
 export interface AboutMeContent {
   id?: 'singleton';
   text: string;
@@ -85,6 +94,7 @@ export interface AppState {
   services: Service[];
   products: Product[];
   perfumes: Perfume[];
+  courses: Course[];
   galleryItems: GalleryItem[];
   testimonials: Testimonial[];
   aboutMeContent: AboutMeContent;

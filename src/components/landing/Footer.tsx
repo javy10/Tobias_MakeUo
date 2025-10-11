@@ -1,6 +1,8 @@
 import { Facebook, Instagram } from 'lucide-react';
 import { Logo } from '../shared/Logo';
 import Link from 'next/link';
+import { useAppContext } from '@/app/layout';
+import { useVisibleSectionsOnly } from '@/hooks/use-visible-sections';
 
 const TikTokIcon = (props: React.SVGProps<SVGSVGElement>) => (
   <svg
@@ -21,6 +23,9 @@ const TikTokIcon = (props: React.SVGProps<SVGSVGElement>) => (
 
 
 export function Footer() {
+  const { appState } = useAppContext();
+  const visibleSections = useVisibleSectionsOnly(appState);
+  
   return (
     <footer className="bg-foreground text-background/80 py-12 mt-16 text-center">
       <div className="container mx-auto px-4">
@@ -34,12 +39,13 @@ export function Footer() {
           <div className="flex flex-col items-center">
             <h3 className="font-headline text-lg font-semibold mb-4 text-background">Navegación</h3>
             <ul className="space-y-2 text-sm">
-              <li><Link href="/#inicio" className="hover:text-primary transition-colors">Inicio</Link></li>
-              <li><Link href="/#servicios" className="hover:text-primary transition-colors">Servicios</Link></li>
-              <li><Link href="/#sobre-mi" className="hover:text-primary transition-colors">Sobre Mí</Link></li>
-              <li><Link href="/#productos-de-belleza" className="hover:text-primary transition-colors">Productos de Belleza</Link></li>
-              <li><Link href="/#perfumes" className="hover:text-primary transition-colors">Perfumes</Link></li>
-              <li><Link href="/#mis-trabajos" className="hover:text-primary transition-colors">Mis Trabajos</Link></li>
+              {visibleSections.map((section) => (
+                <li key={section.href}>
+                  <Link href={section.href} className="hover:text-primary transition-colors">
+                    {section.label}
+                  </Link>
+                </li>
+              ))}
             </ul>
           </div>
            <div className="flex flex-col items-center">

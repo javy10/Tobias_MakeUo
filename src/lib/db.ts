@@ -4,7 +4,7 @@
 import type { GalleryItem } from './types';
 
 const DB_NAME = 'TobiasMakeUpDB';
-const DB_VERSION = 2; // Incremented version to trigger onupgradeneeded
+const DB_VERSION = 3; // Incremented version to trigger onupgradeneeded
 
 const STORE_NAMES = {
   galleryItems: 'galleryItems',
@@ -12,6 +12,7 @@ const STORE_NAMES = {
   services: 'services',
   products: 'products',
   perfumes: 'perfumes',
+  courses: 'courses',
   aboutMeContent: 'aboutMeContent'
 };
 
@@ -117,10 +118,4 @@ export const getAllItemsFromDB = async <T>(storeName: string): Promise<T[]> => {
   });
 };
 
-// Helper to convert a file to a serializable format for IndexedDB
-export const fileToStorable = async (file: File): Promise<{ file: File; type: 'image' | 'video' }> => {
-    return {
-        file, // Store the actual file/blob object
-        type: file.type.startsWith('image/') ? 'image' : 'video',
-    };
-};
+

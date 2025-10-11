@@ -35,7 +35,7 @@ export function Sidebar({ activeSection, setActiveSection }: SidebarProps) {
       />
       <aside
         className={cn(
-          'fixed top-0 left-0 z-50 h-full w-64 -translate-x-full transform bg-background shadow-lg transition-transform duration-300 md:translate-x-0',
+          'admin-sidebar fixed top-0 left-0 z-50 h-full w-64 -translate-x-full transform bg-background shadow-lg transition-transform duration-300 md:translate-x-0',
           isSidebarOpen && 'translate-x-0'
         )}
       >
@@ -74,6 +74,13 @@ export function Sidebar({ activeSection, setActiveSection }: SidebarProps) {
                  <Button asChild className="w-full">
                     <Link href="/">Volver al Sitio</Link>
                 </Button>
+            </div>
+            
+            {/* Elemento oculto para prevenir que aparezca el ícono con "N" */}
+            <div className="hidden n-icon" style={{ display: 'none !important' }}>
+                <div className="w-8 h-8 bg-gray-600 rounded-full flex items-center justify-center">
+                    <span className="text-white font-bold text-sm">N</span>
+                </div>
             </div>
         </div>
       </aside>

@@ -6,6 +6,7 @@ import { Sidebar } from './Sidebar';
 import { AdminHeader } from './AdminHeader';
 import type { User, AppState, Testimonial } from '@/lib/types';
 import { pageConfig } from './pageConfig';
+import { ThemeProvider } from '@/hooks/use-theme';
 
 interface SidebarContextType {
     isSidebarOpen: boolean;
@@ -40,26 +41,28 @@ export function AdminLayout({ children, loggedInUser, onLogout, appState, active
     const currentPage = pageConfig.find(p => p.id === activeSection) || pageConfig[0];
 
   return (
-    <SidebarContext.Provider value={{ isSidebarOpen, toggleSidebar }}>
-        <div className="flex min-h-screen w-full bg-secondary">
-            <Sidebar 
-                activeSection={activeSection}
-                setActiveSection={setActiveSection}
-            />
-            <div className="flex flex-1 flex-col transition-all duration-300 md:ml-64">
-                <AdminHeader 
-                    pageName={currentPage.title}
-                    onLogout={onLogout}
-                    loggedInUser={loggedInUser}
-                    testimonials={appState.testimonials}
-                    setActiveSection={setActiveSection}
-                    setTestimonials={setTestimonials}
-                />
-                <main className="flex-1 p-6">
-                    {children}
-                </main>
-            </div>
-        </div>
-    </SidebarContext.Provider>
+    <ThemeProvider>
+      <SidebarContext.Provider value={{ isSidebarOpen, toggleSidebar }}>
+          <div className="flex min-h-screen w-full bg-secondary">
+              <Sidebar 
+                  activeSection={activeSection}
+                  setActiveSection={setActiveSection}
+              />
+              <div className="flex flex-1 flex-col transition-all duration-300 md:ml-64">
+                  <AdminHeader 
+                      pageName={currentPage.title}
+                      onLogout={onLogout}
+                      loggedInUser={loggedInUser}
+                      testimonials={appState.testimonials}
+                      setActiveSection={setActiveSection}
+                      setTestimonials={setTestimonials}
+                  />
+                  <main className="flex-1 p-6">
+                      {children}
+                  </main>
+              </div>
+          </div>
+      </SidebarContext.Provider>
+    </ThemeProvider>
   );
 }

@@ -1,4 +1,4 @@
-import type { HeroContent, Service, GalleryItem, Testimonial, Product, AboutMeContent, User, Category, Perfume } from './types';
+import type { HeroContent, Service, GalleryItem, Testimonial, Product, AboutMeContent, User, Category, Perfume, Course } from './types';
 import { PlaceHolderImages } from './placeholder-images';
 
 const heroImage = PlaceHolderImages.find(img => img.id === 'hero-background');
@@ -160,5 +160,22 @@ export const initialUsers: User[] = [
     name: 'Test User',
     email: 'prueba@gmail.com',
     password: 'temporal123',
+  }
+];
+
+export const initialCourses: Course[] = [
+  {
+    id: '1',
+    name: "Curso de Maquillaje Profesional",
+    description: "Aprende las técnicas más avanzadas del maquillaje profesional, desde social hasta editorial.",
+    url: "https://picsum.photos/seed/course1/600/400",
+    type: 'image',
+  },
+  {
+    id: '2',
+    name: "Curso de Peinados para Eventos",
+    description: "Domina el arte de los peinados para bodas, graduaciones y otros eventos especiales.",
+    url: "https://picsum.photos/seed/course2/600/400",
+    type: 'image',
   }
 ];

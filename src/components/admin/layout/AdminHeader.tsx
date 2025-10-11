@@ -1,9 +1,10 @@
 
 'use client';
 
-import { Bell, FileText, LogOut, Menu, Settings, User } from 'lucide-react';
+import { Bell, FileText, LogOut, Menu, Settings, User, Sun, Moon } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useSidebarContext } from './AdminLayout';
+import { useTheme } from '@/hooks/use-theme';
 import Link from 'next/link';
 import {
   DropdownMenu,
@@ -33,6 +34,7 @@ export function AdminHeader({
   setTestimonials
 }: AdminHeaderProps) {
     const { toggleSidebar } = useSidebarContext();
+    const { theme, toggleTheme } = useTheme();
     const unseenPendingTestimonials = testimonials.filter(t => t.status === 'pending' && !t.seen);
 
     const handleNotificationClick = (testimonialId: string) => {
@@ -55,10 +57,26 @@ export function AdminHeader({
       </div>
 
       <div className="ml-auto flex items-center gap-2 md:gap-4">
+        {/* Theme Toggle */}
+        <Button 
+          variant="ghost" 
+          size="icon" 
+          onClick={toggleTheme}
+          className="hover:bg-gray-100 dark:hover:bg-gray-800"
+          title={theme === 'dark' ? 'Cambiar a modo claro' : 'Cambiar a modo oscuro'}
+        >
+          {theme === 'dark' ? (
+            <Sun className="h-5 w-5" />
+          ) : (
+            <Moon className="h-5 w-5" />
+          )}
+          <span className="sr-only">Toggle theme</span>
+        </Button>
+
         <DropdownMenu>
             <DropdownMenuTrigger asChild>
                 <Button variant="ghost" className="flex items-center gap-2">
-                    <User className="h-5 w-5" />
+                    {/* <User className="h-5 w-5" /> */} {/* OCULTO */}
                     <span className="hidden md:inline">{loggedInUser.name}</span>
                 </Button>
             </DropdownMenuTrigger>

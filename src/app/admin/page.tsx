@@ -1,7 +1,6 @@
-
 'use client';
 import { useState, useEffect } from 'react';
-import type { User, Perfume, Service, Product, HeroContent, AboutMeContent, GalleryItem, Testimonial } from '@/lib/types';
+import type { User, Perfume, Service, Product, HeroContent, AboutMeContent, GalleryItem, Testimonial, Course } from '@/lib/types';
 import { useRouter } from 'next/navigation';
 import { useAppContext } from '../layout';
 import { AdminLayout } from '@/components/admin/layout/AdminLayout';
@@ -11,8 +10,15 @@ import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { AdminDashboard } from '@/components/admin/AdminDashboard';
-import { fileToStorable, saveItemToDB, deleteItemFromDB } from '@/lib/db';
 import { showSuccessAlert, showErrorAlert } from '@/lib/alerts';
+// Importar hooks con sincronización en tiempo real
+import { 
+  useRealtimeCrud, 
+  useRealtimeSingleton
+} from '@/hooks/use-realtime-crud';
+import { optimizeFile } from '@/lib/file-optimization';
+import { updateItemOptimistic, deleteItemOptimistic } from '@/lib/optimized-db';
+import { supabase } from '@/lib/supabase';
 
 
 export default function AdminPage() {
@@ -22,6 +28,7 @@ export default function AdminPage() {
     setServices,
     setProducts,
     setPerfumes,
+    setCourses,
     setGalleryItems,
     setTestimonials,
     setAboutMeContent,
@@ -38,6 +45,53 @@ export default function AdminPage() {
   const router = useRouter();
 
   const [activeSection, setActiveSection] = useState('dashboard');
+
+  // Hooks con sincronización en tiempo real para operaciones CRUD
+  const servicesCrud = useRealtimeCrud({
+    tableName: 'services',
+    setState: setServices,
+    currentItems: appState.services
+  });
+
+  const productsCrud = useRealtimeCrud({
+    tableName: 'products',
+    setState: setProducts,
+    currentItems: appState.products,
+    silent: true // Silenciar mensajes automáticos para usar el sistema de loading global
+  });
+
+  const perfumesCrud = useRealtimeCrud({
+    tableName: 'perfumes',
+    setState: setPerfumes,
+    currentItems: appState.perfumes,
+    silent: true // Silenciar mensajes automáticos para usar el sistema de loading global
+  });
+
+  const coursesCrud = useRealtimeCrud({
+    tableName: 'courses',
+    setState: setCourses,
+    currentItems: appState.courses,
+    silent: true // Silenciar mensajes automáticos para usar el sistema de loading global
+  });
+
+  const galleryCrud = useRealtimeCrud({
+    tableName: 'gallery_items',
+    setState: setGalleryItems,
+    currentItems: appState.galleryItems,
+    silent: true
+  });
+
+  const heroCrud = useRealtimeSingleton({
+    tableName: 'hero_content',
+    setState: setHeroContent,
+    currentItem: appState.heroContent
+  });
+
+  const aboutMeCrud = useRealtimeSingleton({
+    tableName: 'about_me_content',
+    setState: setAboutMeContent,
+    currentItem: appState.aboutMeContent
+  });
 
   useEffect(() => {
     try {
@@ -72,20 +126,17 @@ export default function AdminPage() {
     router.push('/');
   };
   
+  // Funciones optimizadas para perfumes
   const handleAddPerfume = async (newPerfumeData: Omit<Perfume, 'id' | 'url' | 'type' | 'file'>, mediaFile: File) => {
     try {
-      const { file, type } = await fileToStorable(mediaFile);
-      const newPerfume: Perfume = {
-        id: crypto.randomUUID(),
-        ...newPerfumeData,
-        url: URL.createObjectURL(file),
-        type: type,
-        file: file,
-      };
-      await saveItemToDB(newPerfume, 'perfumes');
-      setPerfumes(prev => [...prev, newPerfume]);
-      showSuccessAlert('Perfume añadido', 'El nuevo perfume se ha guardado correctamente.');
-      return true;
+      // Para imágenes pequeñas (< 2MB), usar directamente sin optimización
+      if (mediaFile.size < 2 * 1024 * 1024) {
+        return await perfumesCrud.addItem(newPerfumeData, mediaFile);
+      }
+      
+      // Para archivos grandes, optimizar en segundo plano
+      const optimizedFile = await optimizeFile(mediaFile);
+      return await perfumesCrud.addItem(newPerfumeData, optimizedFile);
     } catch (error) {
       console.error("Error adding perfume:", error);
       showErrorAlert('Error al añadir', 'No se pudo añadir el perfume.');
@@ -95,235 +146,457 @@ export default function AdminPage() {
 
   const handleDeletePerfume = async (id: string) => {
     try {
-      await deleteItemFromDB(id, 'perfumes');
-      setPerfumes(prev => prev.filter(p => p.id !== id));
-      showSuccessAlert('Perfume eliminado', 'El perfume ha sido eliminado.');
+      // Eliminación optimista: mostrar mensaje inmediatamente
+      showSuccessAlert('¡Perfume eliminado!', 'El perfume ha sido eliminado exitosamente.');
+      
+      // Ejecutar eliminación en segundo plano (sin await)
+      perfumesCrud.deleteItem(id).catch(error => {
+        console.error("Error deleting perfume:", error);
+        showErrorAlert('Error al eliminar', 'No se pudo eliminar el perfume.');
+      });
     } catch (error) {
-       console.error("Error deleting perfume:", error);
-       showErrorAlert('Error al eliminar', 'No se pudo eliminar el perfume.');
+      console.error("Error deleting perfume:", error);
+      showErrorAlert('Error al eliminar', 'No se pudo eliminar el perfume.');
     }
   };
 
   const handleUpdatePerfume = async (id: string, updatedData: Omit<Perfume, 'id' | 'url' | 'type' | 'file'>, newMediaFile?: File) => {
-    const currentPerfume = appState.perfumes.find(p => p.id === id);
-    if (!currentPerfume) return;
-    let updatedPerfume: Perfume = { ...currentPerfume, ...updatedData };
-    if (newMediaFile) {
-        try {
-            const { file, type } = await fileToStorable(newMediaFile);
-            updatedPerfume = { ...updatedPerfume, url: URL.createObjectURL(file), type, file };
-        } catch {
-            showErrorAlert('Error de archivo', 'No se pudo cargar el nuevo archivo.');
-            return;
-        }
+    try {
+      const optimizedFile = newMediaFile ? await optimizeFile(newMediaFile) : undefined;
+      await perfumesCrud.updateItem(id, updatedData, optimizedFile);
+    } catch (error) {
+      console.error("Error updating perfume:", error);
+      showErrorAlert('Error al actualizar', 'No se pudo actualizar el perfume.');
     }
-    await saveItemToDB(updatedPerfume, 'perfumes');
-    setPerfumes(prev => prev.map(p => p.id === id ? updatedPerfume : p));
-    showSuccessAlert('Perfume actualizado', 'Los datos del perfume se han actualizado.');
   };
 
 
+  // Funciones optimizadas para servicios
   const handleAddService = async (newServiceData: Omit<Service, 'id' | 'url' | 'type' | 'file'>, mediaFile: File) => {
     try {
-        const { file, type } = await fileToStorable(mediaFile);
-        const newService: Service = {
-            id: crypto.randomUUID(),
-            ...newServiceData,
-            url: URL.createObjectURL(file),
-            type: type,
-            file: file,
-        };
-        await saveItemToDB(newService, 'services');
-        setServices(prev => [...prev, newService]);
-        showSuccessAlert('Servicio añadido', 'El nuevo servicio se ha guardado correctamente.');
-        return true;
+      const optimizedFile = await optimizeFile(mediaFile);
+      return await servicesCrud.addItem(newServiceData, optimizedFile);
     } catch (error) {
-        console.error("Error adding service:", error);
-        showErrorAlert('Error al añadir', 'No se pudo añadir el servicio.');
-        return false;
+      console.error("Error adding service:", error);
+      showErrorAlert('Error al añadir', 'No se pudo añadir el servicio.');
+      return false;
     }
   };
 
   const handleDeleteService = async (id: string) => {
-      try {
-        await deleteItemFromDB(id, 'services');
-        setServices(prev => prev.filter(s => s.id !== id));
-        showSuccessAlert('Servicio eliminado', 'El servicio ha sido eliminado.');
-      } catch (error) {
-        console.error("Error deleting service:", error);
-        showErrorAlert('Error al eliminar', 'No se pudo eliminar el servicio.');
-      }
+    try {
+      await servicesCrud.deleteItem(id);
+      showSuccessAlert('¡Servicio eliminado!', 'El servicio ha sido eliminado exitosamente.');
+    } catch (error) {
+      console.error("Error deleting service:", error);
+      showErrorAlert('Error al eliminar', 'No se pudo eliminar el servicio.');
+    }
   };
 
   const handleUpdateService = async (id: string, updatedData: Omit<Service, 'id' | 'url' | 'type' | 'file'>, newMediaFile?: File) => {
-      const currentService = appState.services.find(s => s.id === id);
-      if (!currentService) return;
-      let updatedService: Service = { ...currentService, ...updatedData };
-      if (newMediaFile) {
-          try {
-              const { file, type } = await fileToStorable(newMediaFile);
-              updatedService = { ...updatedService, url: URL.createObjectURL(file), type, file };
-          } catch {
-              showErrorAlert('Error de archivo', 'No se pudo cargar el nuevo archivo.');
-              return;
-          }
-      }
-      await saveItemToDB(updatedService, 'services');
-      setServices(prev => prev.map(s => s.id === id ? updatedService : s));
-      showSuccessAlert('Servicio actualizado', 'Los datos del servicio se han actualizado.');
+    try {
+      const optimizedFile = newMediaFile ? await optimizeFile(newMediaFile) : undefined;
+      await servicesCrud.updateItem(id, updatedData, optimizedFile);
+      showSuccessAlert('¡Servicio actualizado!', 'El servicio ha sido actualizado exitosamente.');
+    } catch (error) {
+      console.error("Error updating service:", error);
+      showErrorAlert('Error al actualizar', 'No se pudo actualizar el servicio.');
+    }
   };
 
+  // Funciones optimizadas para cursos
+  const handleAddCourse = async (newCourseData: Omit<Course, 'id' | 'url' | 'type' | 'file'>, mediaFile: File) => {
+    try {
+      // Para imágenes pequeñas (< 2MB), usar directamente sin optimización
+      if (mediaFile.size < 2 * 1024 * 1024) {
+        return await coursesCrud.addItem(newCourseData, mediaFile);
+      }
+      
+      // Para archivos grandes, optimizar en segundo plano
+      const optimizedFile = await optimizeFile(mediaFile);
+      return await coursesCrud.addItem(newCourseData, optimizedFile);
+    } catch (error) {
+      console.error("Error adding course:", error);
+      showErrorAlert('Error al añadir', `No se pudo añadir el curso: ${error instanceof Error ? error.message : 'Error desconocido'}`);
+      return false;
+    }
+  };
+
+  const handleDeleteCourse = async (id: string) => {
+    try {
+      // Eliminación optimista: mostrar mensaje inmediatamente
+      showSuccessAlert('¡Curso eliminado!', 'El curso ha sido eliminado exitosamente.');
+      
+      // Ejecutar eliminación en segundo plano (sin await)
+      coursesCrud.deleteItem(id).catch(error => {
+        console.error("Error deleting course:", error);
+        showErrorAlert('Error al eliminar', 'No se pudo eliminar el curso.');
+      });
+    } catch (error) {
+      console.error("Error deleting course:", error);
+      showErrorAlert('Error al eliminar', 'No se pudo eliminar el curso.');
+    }
+  };
+
+  const handleUpdateCourse = async (id: string, updatedData: Omit<Course, 'id' | 'url' | 'type' | 'file'>, newMediaFile?: File) => {
+    try {
+      const optimizedFile = newMediaFile ? await optimizeFile(newMediaFile) : undefined;
+      await coursesCrud.updateItem(id, updatedData, optimizedFile);
+    } catch (error) {
+      console.error("Error updating course:", error);
+      showErrorAlert('Error al actualizar', 'No se pudo actualizar el curso.');
+    }
+  };
+
+  // Funciones optimizadas para productos
   const handleAddProduct = async (newProductData: Omit<Product, 'id' | 'url' | 'type' | 'file'>, mediaFile: File) => {
     try {
-        const { file, type } = await fileToStorable(mediaFile);
-        const newProduct: Product = {
-            id: crypto.randomUUID(),
-            ...newProductData,
-            url: URL.createObjectURL(file),
-            type: type,
-            file: file,
-        };
-        await saveItemToDB(newProduct, 'products');
-        setProducts(prev => [...prev, newProduct]);
-        showSuccessAlert('Producto añadido', 'El nuevo producto se ha guardado correctamente.');
-        return true;
+      // Para imágenes pequeñas (< 2MB), usar directamente sin optimización
+      if (mediaFile.size < 2 * 1024 * 1024) {
+        return await productsCrud.addItem(newProductData, mediaFile);
+      }
+      
+      // Para archivos grandes, optimizar en segundo plano
+      const optimizedFile = await optimizeFile(mediaFile);
+      return await productsCrud.addItem(newProductData, optimizedFile);
     } catch (error) {
-        console.error("Error adding product:", error);
-        showErrorAlert('Error al añadir', 'No se pudo añadir el producto.');
-        return false;
+      console.error("Error adding product:", error);
+      showErrorAlert('Error al añadir', 'No se pudo añadir el producto.');
+      return false;
     }
   };
 
   const handleDeleteProduct = async (id: string) => {
-      try {
-        await deleteItemFromDB(id, 'products');
-        setProducts(prev => prev.filter(p => p.id !== id));
-        showSuccessAlert('Producto eliminado', 'El producto ha sido eliminado.');
-      } catch (error) {
+    try {
+      // Eliminación optimista: mostrar mensaje inmediatamente
+      showSuccessAlert('¡Producto eliminado!', 'El producto ha sido eliminado exitosamente.');
+      
+      // Ejecutar eliminación en segundo plano (sin await)
+      productsCrud.deleteItem(id).catch(error => {
         console.error("Error deleting product:", error);
         showErrorAlert('Error al eliminar', 'No se pudo eliminar el producto.');
-      }
+      });
+    } catch (error) {
+      console.error("Error deleting product:", error);
+      showErrorAlert('Error al eliminar', 'No se pudo eliminar el producto.');
+    }
   };
 
   const handleUpdateProduct = async (id: string, updatedData: Omit<Product, 'id' | 'url' | 'type' | 'file'>, newMediaFile?: File) => {
-      const currentProduct = appState.products.find(p => p.id === id);
-      if (!currentProduct) return;
-      let updatedProduct: Product = { ...currentProduct, ...updatedData };
-      if (newMediaFile) {
-          try {
-              const { file, type } = await fileToStorable(newMediaFile);
-              updatedProduct = { ...updatedProduct, url: URL.createObjectURL(file), type, file };
-          } catch {
-              showErrorAlert('Error de archivo', 'No se pudo cargar el nuevo archivo.');
-              return;
-          }
-      }
-      await saveItemToDB(updatedProduct, 'products');
-      setProducts(prev => prev.map(p => p.id === id ? updatedProduct : p));
-      showSuccessAlert('Producto actualizado', 'Los datos del producto se han actualizado.');
+    try {
+      const optimizedFile = newMediaFile ? await optimizeFile(newMediaFile) : undefined;
+      await productsCrud.updateItem(id, updatedData, optimizedFile);
+    } catch (error) {
+      console.error("Error updating product:", error);
+      showErrorAlert('Error al actualizar', 'No se pudo actualizar el producto.');
+    }
   };
   
-    const handleHeroUpdate = async (updatedData: Omit<HeroContent, 'id' | 'url' | 'type' | 'file'>, mediaFile?: File) => {
-        let updatedHeroContent: HeroContent = { ...appState.heroContent, ...updatedData };
-        if (mediaFile) {
-            try {
-                const { file, type } = await fileToStorable(mediaFile);
-                updatedHeroContent = { ...updatedHeroContent, url: URL.createObjectURL(file), type, file };
-            } catch {
-                showErrorAlert('Error de archivo', 'No se pudo cargar el archivo.');
-                return;
-            }
-        }
-        await saveItemToDB(updatedHeroContent, 'heroContent');
-        setHeroContent(updatedHeroContent);
-        showSuccessAlert('Sección actualizada', 'El contenido de la sección inicial ha sido actualizado.');
-    };
+  // Funciones optimizadas para contenido singleton
+  const handleHeroUpdate = async (updatedData: Omit<HeroContent, 'id' | 'url' | 'type' | 'file'>, mediaFile?: File) => {
+    try {
+      const optimizedFile = mediaFile ? await optimizeFile(mediaFile) : undefined;
+      await heroCrud.updateItem(updatedData, optimizedFile);
+    } catch (error) {
+      console.error('Error updating hero content:', error);
+      showErrorAlert('Error al actualizar', 'No se pudo actualizar el contenido de la sección inicial.');
+    }
+  };
 
-    const handleAboutMeUpdate = async (updatedData: Omit<AboutMeContent, 'id' | 'url' | 'type' | 'file'>, mediaFile?: File) => {
-        let updatedAboutMeContent: AboutMeContent = { ...appState.aboutMeContent, ...updatedData };
-        if (mediaFile) {
-            try {
-                const { file, type } = await fileToStorable(mediaFile);
-                updatedAboutMeContent = { ...updatedAboutMeContent, url: URL.createObjectURL(file), type, file };
-            } catch {
-                showErrorAlert('Error de archivo', 'No se pudo cargar el archivo.');
-                return;
-            }
-        }
-        await saveItemToDB(updatedAboutMeContent, 'aboutMeContent');
-        setAboutMeContent(updatedAboutMeContent);
-        showSuccessAlert('Sección actualizada', "La sección 'Sobre Mí' ha sido actualizada.");
-    };
+  const handleAboutMeUpdate = async (updatedData: Omit<AboutMeContent, 'id' | 'url' | 'type' | 'file'>, mediaFile?: File) => {
+    try {
+      const optimizedFile = mediaFile ? await optimizeFile(mediaFile) : undefined;
+      await aboutMeCrud.updateItem(updatedData, optimizedFile);
+    } catch (error) {
+      console.error('Error updating about me content:', error);
+      showErrorAlert('Error al actualizar', "No se pudo actualizar la sección 'Sobre Mí'.");
+    }
+  };
 
-    const handleAddGalleryItem = async (newItemData: Omit<GalleryItem, 'id' | 'url' | 'file' | 'type' | 'alt'>, mediaFile: File) => {
-      try {
-        const { file, type } = await fileToStorable(mediaFile);
-        const newGalleryItem: GalleryItem = {
-          id: crypto.randomUUID(),
-          ...newItemData,
-          alt: newItemData.title,
-          url: URL.createObjectURL(file),
-          type: type,
-          file: file,
-        };
-        await saveItemToDB(newGalleryItem, 'galleryItems');
-        setGalleryItems(prev => [...prev, newGalleryItem]);
-        showSuccessAlert('Elemento añadido', 'El nuevo elemento se ha guardado en la galería.');
-        return true;
-      } catch (error) {
-        console.error("Error adding gallery item:", error);
-        showErrorAlert('Error al añadir', 'No se pudo añadir el elemento a la galería.');
-        return false;
+  // Funciones optimizadas para galería
+  const handleAddGalleryItem = async (newItemData: Omit<GalleryItem, 'id' | 'url' | 'file' | 'type' | 'alt'>, mediaFile: File) => {
+    try {
+      const optimizedFile = await optimizeFile(mediaFile);
+      const itemDataWithAlt = { ...newItemData, alt: newItemData.title };
+      return await galleryCrud.addItem(itemDataWithAlt, optimizedFile);
+    } catch (error) {
+      console.error("Error adding gallery item:", error);
+      showErrorAlert('Error al añadir', 'No se pudo añadir el elemento a la galería.');
+      return false;
+    }
+  };
+
+  const handleDeleteGalleryItem = async (id: string) => {
+    // Mostrar mensaje de confirmación al instante
+    showSuccessAlert('¡Éxito!', 'Elemento de galería eliminado exitosamente');
+    
+    // Ejecutar eliminación en segundo plano
+    galleryCrud.deleteItem(id).catch(error => {
+      console.error('Error deleting gallery item:', error);
+      showErrorAlert('Error al eliminar', 'No se pudo eliminar el elemento de la galería.');
+    });
+  };
+
+  const handleUpdateGalleryItem = async (id: string, updatedData: Omit<GalleryItem, 'id' | 'url' | 'type' | 'file' | 'alt'>, newMediaFile?: File) => {
+    try {
+      const optimizedFile = newMediaFile ? await optimizeFile(newMediaFile) : undefined;
+      const itemDataWithAlt = { ...updatedData, alt: updatedData.title };
+      
+      // Mostrar mensaje de confirmación al instante
+      showSuccessAlert('¡Éxito!', 'Elemento de galería actualizado exitosamente');
+      
+      // Ejecutar actualización en segundo plano
+      await galleryCrud.updateItem(id, itemDataWithAlt, optimizedFile);
+    } catch (error) {
+      console.error('Error updating gallery item:', error);
+      showErrorAlert('Error al actualizar', 'No se pudo actualizar el elemento de la galería.');
+    }
+  };
+
+  // Funciones optimizadas para testimonios
+  const handleUpdateTestimonial = async (id: string, data: any) => {
+    try {
+      // Actualización optimista
+      const updatedTestimonials = appState.testimonials.map(t => t.id === id ? { ...t, ...data } : t);
+      setTestimonials(updatedTestimonials);
+      
+      // Operación en background
+      await updateItemOptimistic('testimonials', id, data);
+      
+      showSuccessAlert('Testimonio actualizado', 'El testimonio se ha actualizado exitosamente.');
+    } catch (error) {
+      console.error('Error updating testimonial:', error);
+      showErrorAlert('Error al actualizar', 'No se pudo actualizar el testimonio.');
+    }
+  };
+
+  const handleUpdateTestimonialStatus = async (id: string, status: 'approved' | 'rejected') => {
+    try {
+      // Actualización optimista
+      const updatedTestimonials = appState.testimonials.map(t => t.id === id ? { ...t, status } : t);
+      setTestimonials(updatedTestimonials);
+      
+      // Operación en background
+      const testimonial = appState.testimonials.find(t => t.id === id);
+      if (testimonial) {
+        await updateItemOptimistic('testimonials', id, { ...testimonial, status });
       }
-    };
+      
+      const statusText = status === 'approved' ? 'aprobado' : 'rechazado';
+      showSuccessAlert('Estado actualizado', `El testimonio ha sido ${statusText}.`);
+    } catch (error) {
+      console.error('Error updating testimonial status:', error);
+      showErrorAlert('Error al actualizar', 'No se pudo actualizar el estado del testimonio.');
+    }
+  };
 
-    const handleDeleteGalleryItem = async (id: string) => {
-        try {
-            await deleteItemFromDB(id, 'galleryItems');
-            setGalleryItems(prev => prev.filter(g => g.id !== id));
-            showSuccessAlert('Elemento eliminado', 'El elemento ha sido eliminado de la galería.');
-        } catch (error) {
-            console.error('Failed to delete gallery item:', error);
-            showErrorAlert('Error al eliminar', 'No se pudo eliminar el elemento de la galería.');
-        }
-    };
+  const handleDeleteTestimonial = async (id: string) => {
+    try {
+      // Actualización optimista
+      const updatedTestimonials = appState.testimonials.filter(t => t.id !== id);
+      setTestimonials(updatedTestimonials);
+      
+      // Operación en background
+      const testimonial = appState.testimonials.find(t => t.id === id);
+      if (testimonial) {
+        await deleteItemOptimistic('testimonials', id, testimonial);
+      }
+      
+      showSuccessAlert('Testimonio eliminado', 'El testimonio ha sido eliminado.');
+    } catch (error) {
+      console.error('Error deleting testimonial:', error);
+      showErrorAlert('Error al eliminar', 'No se pudo eliminar el testimonio.');
+    }
+  };
 
-    const handleUpdateGalleryItem = async (id: string, updatedData: Omit<GalleryItem, 'id' | 'url' | 'type' | 'file' | 'alt'>, newMediaFile?: File) => {
-        const currentItem = appState.galleryItems.find(item => item.id === id);
-        if (!currentItem) return;
-        let updatedGalleryItem: GalleryItem = { ...currentItem, ...updatedData, alt: updatedData.title };
-        if (newMediaFile) {
-            try {
-                const { file, type } = await fileToStorable(newMediaFile);
-                updatedGalleryItem = { ...updatedGalleryItem, url: URL.createObjectURL(file), type, file };
-            } catch (error) {
-                showErrorAlert('Error de archivo', 'No se pudo procesar el nuevo archivo.');
-                return;
-            }
-        }
-        await saveItemToDB(updatedGalleryItem, 'galleryItems');
-        setGalleryItems(prev => prev.map(item => item.id === id ? updatedGalleryItem : item));
-        showSuccessAlert('Elemento actualizado', 'El elemento de la galería se ha actualizado.');
-    };
+  // Funciones con sincronización en tiempo real para categorías
+  const handleAddCategory = async (data: { name: string }): Promise<boolean> => {
+    try {
+      const id = crypto.randomUUID();
+      const newCategory = { ...data, id };
+      
+      // Actualización optimista
+      setCategories(prev => [...prev, newCategory]);
+      
+      // Operación real con sincronización
+      const { error } = await supabase.from('categories').insert(newCategory);
+      
+      if (error) throw error;
+      
+      showSuccessAlert('Categoría añadida', 'La nueva categoría se ha guardado y sincronizado correctamente.');
+      return true;
+    } catch (error) {
+      console.error("Error adding category:", error);
+      // Revertir cambios
+      setCategories(prev => prev.filter(c => c.id !== id));
+      showErrorAlert('Error al añadir', 'No se pudo añadir la categoría.');
+      return false;
+    }
+  };
 
-    const handleUpdateTestimonialStatus = (id: string, status: 'approved' | 'rejected') => {
-        const updatedTestimonials = appState.testimonials.map(t => t.id === id ? { ...t, status } : t);
-        setTestimonials(updatedTestimonials);
-        localStorage.setItem('testimonials', JSON.stringify(updatedTestimonials));
-        const statusText = status === 'approved' ? 'aprobado' : 'rechazado';
-        showSuccessAlert('Estado actualizado', `El testimonio ha sido ${statusText}.`);
-    };
+  const handleUpdateCategory = async (id: string, data: { name: string }): Promise<void> => {
+    try {
+      const currentCategory = appState.categories.find(c => c.id === id);
+      if (!currentCategory) throw new Error('Categoría no encontrada');
+      
+      // Actualización optimista
+      setCategories(prev => prev.map(c => c.id === id ? { ...c, ...data } : c));
+      
+      // Operación real con sincronización
+      const { error } = await supabase.from('categories').update(data).eq('id', id);
+      
+      if (error) throw error;
+      
+      showSuccessAlert('Categoría actualizada', 'Los datos de la categoría se han actualizado y sincronizado correctamente.');
+    } catch (error) {
+      console.error("Error updating category:", error);
+      // Revertir cambios
+      setCategories(prev => prev.map(c => c.id === id ? currentCategory : c));
+      showErrorAlert('Error al actualizar', 'No se pudo actualizar la categoría.');
+    }
+  };
 
-    const handleDeleteTestimonial = (id: string) => {
-        const updatedTestimonials = appState.testimonials.filter(t => t.id !== id);
-        setTestimonials(updatedTestimonials);
-        localStorage.setItem('testimonials', JSON.stringify(updatedTestimonials));
-        showSuccessAlert('Testimonio eliminado', 'El testimonio ha sido eliminado.');
-    };
+  const handleDeleteCategory = async (id: string): Promise<void> => {
+    try {
+      const currentCategory = appState.categories.find(c => c.id === id);
+      if (!currentCategory) throw new Error('Categoría no encontrada');
+      
+      // Actualización optimista
+      setCategories(prev => prev.filter(c => c.id !== id));
+      
+      // Operación real con sincronización
+      const { error } = await supabase.from('categories').delete().eq('id', id);
+      
+      if (error) throw error;
+      
+      showSuccessAlert('Categoría eliminada', 'La categoría ha sido eliminada y sincronizada correctamente.');
+    } catch (error) {
+      console.error("Error deleting category:", error);
+      // Revertir cambios
+      if (currentCategory) {
+        setCategories(prev => [...prev, currentCategory]);
+      }
+      showErrorAlert('Error al eliminar', 'No se pudo eliminar la categoría.');
+    }
+  };
+
+  // Función para generar contraseña temporal
+  const generateTemporaryPassword = (): string => {
+    const currentYear = new Date().getFullYear();
+    return `temporal${currentYear}`;
+  };
+
+  // Funciones con sincronización en tiempo real para usuarios
+  const handleAddUser = async (data: { name: string; email: string; password?: string }): Promise<{ success: boolean; temporaryPassword?: string; error?: string }> => {
+    const id = crypto.randomUUID();
+    
+    try {
+      // Generar contraseña temporal automáticamente
+      const temporaryPassword = generateTemporaryPassword();
+      
+      // Preparar datos del usuario
+      const userData: any = {
+        id,
+        name: data.name,
+        email: data.email,
+        password: temporaryPassword
+      };
+      
+      // Validar que los datos no estén vacíos
+      if (!userData.name || !userData.email) {
+        throw new Error('Nombre y email son requeridos');
+      }
+      
+      console.log('Datos del usuario a insertar:', { ...userData, password: '[TEMPORAL]' });
+      
+      // Operación real con sincronización (SIN actualización optimista)
+      const { error } = await supabase.from('users').insert(userData);
+      
+      if (error) throw error;
+      
+      return { success: true, temporaryPassword };
+    } catch (error) {
+      console.error("Error adding user:", error);
+      
+      // Revertir cambios
+      setUsers(prev => prev.filter(u => u.id !== id));
+      
+      // Mostrar mensaje de error específico
+      const errorMessage = error instanceof Error ? error.message : 'Error desconocido';
+      return { success: false, error: errorMessage };
+    }
+  };
+
+  const handleUpdateUser = async (id: string, data: { name: string; email: string; password?: string }): Promise<void> => {
+    try {
+      const currentUser = appState.users.find(u => u.id === id);
+      if (!currentUser) throw new Error('Usuario no encontrado');
+      
+      // Preparar datos de actualización, excluyendo password vacío
+      const updateData: any = {
+        name: data.name,
+        email: data.email
+      };
+      
+      // Solo incluir password si no está vacío
+      if (data.password && data.password.trim() !== '') {
+        updateData.password = data.password;
+      }
+      
+      // Actualización optimista
+      setUsers(prev => prev.map(u => u.id === id ? { ...u, ...updateData } : u));
+      
+      // Operación real con sincronización
+      const { error } = await supabase.from('users').update(updateData).eq('id', id);
+      
+      if (error) throw error;
+      
+      showSuccessAlert('Usuario actualizado', 'Los datos del usuario se han actualizado y sincronizado correctamente.');
+    } catch (error) {
+      console.error("Error updating user:", error);
+      // Revertir cambios
+      setUsers(prev => prev.map(u => u.id === id ? currentUser : u));
+      showErrorAlert('Error al actualizar', 'No se pudo actualizar el usuario.');
+    }
+  };
+
+  const handleDeleteUser = async (id: string): Promise<void> => {
+    try {
+      const currentUser = appState.users.find(u => u.id === id);
+      if (!currentUser) throw new Error('Usuario no encontrado');
+      
+      // Actualización optimista
+      setUsers(prev => prev.filter(u => u.id !== id));
+      
+      // Operación real con sincronización
+      const { error } = await supabase.from('users').delete().eq('id', id);
+      
+      if (error) throw error;
+      
+      showSuccessAlert('Usuario eliminado', 'El usuario ha sido eliminado y sincronizado correctamente.');
+    } catch (error) {
+      console.error("Error deleting user:", error);
+      // Revertir cambios
+      if (currentUser) {
+        setUsers(prev => [...prev, currentUser]);
+      }
+      showErrorAlert('Error al eliminar', 'No se pudo eliminar el usuario.');
+    }
+  };
 
 
   if (isLoadingSession || !isStateLoaded) {
-    return <div className="flex h-screen items-center justify-center">Cargando...</div>;
+    return (
+      <div className="flex h-screen items-center justify-center bg-secondary">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
+          <p className="text-lg text-muted-foreground">Cargando panel administrativo...</p>
+          <p className="text-sm text-muted-foreground mt-2">
+            {!process.env.NEXT_PUBLIC_SUPABASE_URL && "⚠️ Configurando conexión a base de datos..."}
+          </p>
+        </div>
+      </div>
+    );
   }
 
   if (!authenticatedUser) {
@@ -385,6 +658,9 @@ export default function AdminPage() {
         onAddService={handleAddService}
         onUpdateService={handleUpdateService}
         onDeleteService={handleDeleteService}
+        onAddCourse={handleAddCourse}
+        onUpdateCourse={handleUpdateCourse}
+        onDeleteCourse={handleDeleteCourse}
         onAddProduct={handleAddProduct}
         onUpdateProduct={handleUpdateProduct}
         onDeleteProduct={handleDeleteProduct}
@@ -394,6 +670,7 @@ export default function AdminPage() {
         onAddGalleryItem={handleAddGalleryItem}
         onUpdateGalleryItem={handleUpdateGalleryItem}
         onDeleteGalleryItem={handleDeleteGalleryItem}
+        onUpdateTestimonial={handleUpdateTestimonial}
         onUpdateTestimonialStatus={handleUpdateTestimonialStatus}
         onDeleteTestimonial={handleDeleteTestimonial}
         setTestimonials={setTestimonials}
@@ -401,6 +678,12 @@ export default function AdminPage() {
         setUsers={setUsers}
         setCategories={setCategories}
         loggedInUser={authenticatedUser}
+        onAddCategory={handleAddCategory}
+        onUpdateCategory={handleUpdateCategory}
+        onDeleteCategory={handleDeleteCategory}
+        onAddUser={handleAddUser}
+        onUpdateUser={handleUpdateUser}
+        onDeleteUser={handleDeleteUser}
       />
     );
   };

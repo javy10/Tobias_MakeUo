@@ -1,8 +1,9 @@
-// src/lib/firebase.ts
+// src/lib/in-memory-db.ts
 // Este archivo proporciona una implementación temporal en memoria
 // para simular la funcionalidad de almacenamiento de datos
 
 import { 
+    initialCourses,
     initialAboutMeContent, 
     initialCategories, 
     initialGalleryItems, 
@@ -11,7 +12,7 @@ import {
     initialServices, 
     initialTestimonials, 
     initialUsers, 
-    initialPerfumes 
+    initialPerfumes
 } from './data';
 
 // Almacenamiento temporal en memoria
@@ -25,6 +26,7 @@ export const seedDatabase = async (): Promise<void> => {
         memoryDB.set('services', [...initialServices]);
         memoryDB.set('products', [...initialProducts]);
         memoryDB.set('perfumes', [...initialPerfumes]);
+        memoryDB.set('courses', [...initialCourses]);
         memoryDB.set('galleryItems', [...initialGalleryItems]);
         memoryDB.set('testimonials', [...initialTestimonials]);
         memoryDB.set('categories', [...initialCategories]);
@@ -41,8 +43,28 @@ export const seedDatabase = async (): Promise<void> => {
 };
 
 // Obtener todos los items de una colección
-export const getAllItemsFromFirestore = async <T>(collectionName: string): Promise<T[]> => {
+export const getAllItems = async <T>(collectionName: string): Promise<T[]> => {
     try {
+        // Intentar cargar desde localStorage primero
+        if (typeof window !== 'undefined') {
+            const stored = localStorage.getItem(collectionName);
+            if (stored) {
+                try {
+                    const parsed = JSON.parse(stored);
+                    // Para documentos únicos
+                    if (collectionName === 'heroContent' || collectionName === 'aboutMeContent') {
+                        singletonDocs.set(collectionName, parsed);
+                        return [parsed] as T[];
+                    }
+                    // Para colecciones
+                    memoryDB.set(collectionName, parsed);
+                    return parsed as T[];
+                } catch (parseError) {
+                    console.error(`Error al parsear datos de ${collectionName}:`, parseError);
+                }
+            }
+        }
+        
         // Para documentos únicos
         if (singletonDocs.has(collectionName)) {
             return [singletonDocs.get(collectionName)] as T[];
@@ -57,7 +79,7 @@ export const getAllItemsFromFirestore = async <T>(collectionName: string): Promi
 };
 
 // Guardar un item
-export const saveItemToFirestore = async <T extends Record<string, any>>(
+export const saveItem = async <T extends Record<string, any>>(
     collectionName: string,
     item: T,
     id?: string
@@ -65,6 +87,10 @@ export const saveItemToFirestore = async <T extends Record<string, any>>(
     try {
         if (id && (collectionName === 'heroContent' || collectionName === 'aboutMeContent')) {
             singletonDocs.set(collectionName, { ...item });
+            // Guardar en localStorage
+            if (typeof window !== 'undefined') {
+                localStorage.setItem(collectionName, serializeForStorage(item));
+            }
             return id;
         }
 
@@ -82,10 +108,18 @@ export const saveItemToFirestore = async <T extends Record<string, any>>(
             const newId = Date.now().toString();
             collection.push({ ...newItem, id: newId });
             memoryDB.set(collectionName, collection);
+            // Guardar en localStorage
+            if (typeof window !== 'undefined') {
+                localStorage.setItem(collectionName, serializeForStorage(collection));
+            }
             return newId;
         }
         
         memoryDB.set(collectionName, collection);
+        // Guardar en localStorage
+        if (typeof window !== 'undefined') {
+            localStorage.setItem(collectionName, serializeForStorage(collection));
+        }
         return id || collection[collection.length - 1].id;
     } catch (error) {
         console.error(`Error al guardar item en ${collectionName}:`, error);
@@ -94,11 +128,15 @@ export const saveItemToFirestore = async <T extends Record<string, any>>(
 };
 
 // Eliminar un item
-export const deleteItemFromFirestore = async (collectionName: string, id: string): Promise<void> => {
+export const deleteItem = async (collectionName: string, id: string): Promise<void> => {
     try {
         const collection = memoryDB.get(collectionName) || [];
         const filtered = collection.filter(item => item.id !== id);
         memoryDB.set(collectionName, filtered);
+        // Actualizar localStorage
+        if (typeof window !== 'undefined') {
+            localStorage.setItem(collectionName, serializeForStorage(filtered));
+        }
     } catch (error) {
         console.error(`Error al eliminar item de ${collectionName}:`, error);
         throw error;
@@ -106,7 +144,7 @@ export const deleteItemFromFirestore = async (collectionName: string, id: string
 };
 
 // Simulación de subida de archivo
-export const uploadFileToStorage = async (file: File, path: string): Promise<string> => {
+export const uploadFile = async (file: File, path: string): Promise<string> => {
     try {
         // Simplemente devolvemos una URL falsa para simular el almacenamiento
         return `https://fake-storage.com/${path}/${file.name}`;
@@ -114,4 +152,28 @@ export const uploadFileToStorage = async (file: File, path: string): Promise<str
         console.error('Error al subir archivo:', error);
         throw error;
     }
+};
+
+// Helper to convert a file to a serializable format for IndexedDB
+export const fileToStorable = async (file: File): Promise<{ file: File; type: 'image' | 'video' }> => {
+    return {
+        file, // Store the actual file/blob object
+        type: file.type.startsWith('image/') ? 'image' : 'video',
+    };
+};
+
+// Helper para serializar datos antes de guardar en localStorage
+const serializeForStorage = (data: any): string => {
+    // Crear una copia del objeto sin el campo 'file' que no se puede serializar
+    const sanitized = Array.isArray(data) 
+        ? data.map(item => {
+            const { file, ...rest } = item;
+            return rest;
+        })
+        : (() => {
+            const { file, ...rest } = data;
+            return rest;
+        })();
+    
+    return JSON.stringify(sanitized);
 };

@@ -7,6 +7,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../ui
 import { ChartCard } from './ChartCard';
 import { Bar, BarChart, ResponsiveContainer, XAxis, Tooltip, Legend, CartesianGrid, YAxis, AreaChart, Area, Cell } from 'recharts';
 import { PieChart3D } from './PieChart3D';
+import { ErrorTestPanel } from './ErrorTestPanel';
 
 
 interface AdminDashboardContentProps {
@@ -190,6 +191,11 @@ export function AdminDashboardContent({ appState }: AdminDashboardContentProps) 
            <ServicesSummaryCard services={services} />
         </div>
       </div>
+
+      {/* Error Test Panel - OCULTO */}
+      {/* <div className="mt-8">
+        <ErrorTestPanel />
+      </div> */}
     </div>
   );
 }
