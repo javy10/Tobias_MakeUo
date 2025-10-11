@@ -2483,17 +2483,31 @@ export function AdminDashboard({
                             <div className="col-span-8 flex items-center space-x-3">
                               <div className="w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0 overflow-hidden">
                                 {work.url && work.url.trim() !== '' ? (
-                                  <img 
-                                    src={work.url} 
-                                    alt={work.title}
-                                    className="w-full h-full object-cover rounded"
-                                    onError={(e) => {
-                                      const target = e.target as HTMLImageElement;
-                                      target.style.display = 'none';
-                                      const fallback = target.nextElementSibling as HTMLElement;
-                                      if (fallback) fallback.style.display = 'flex';
-                                    }}
-                                  />
+                                  work.type === 'video' ? (
+                                    <video 
+                                      src={work.url} 
+                                      className="w-full h-full object-cover rounded"
+                                      muted
+                                      onError={(e) => {
+                                        const target = e.target as HTMLVideoElement;
+                                        target.style.display = 'none';
+                                        const fallback = target.nextElementSibling as HTMLElement;
+                                        if (fallback) fallback.style.display = 'flex';
+                                      }}
+                                    />
+                                  ) : (
+                                    <img 
+                                      src={work.url} 
+                                      alt={work.title}
+                                      className="w-full h-full object-cover rounded"
+                                      onError={(e) => {
+                                        const target = e.target as HTMLImageElement;
+                                        target.style.display = 'none';
+                                        const fallback = target.nextElementSibling as HTMLElement;
+                                        if (fallback) fallback.style.display = 'flex';
+                                      }}
+                                    />
+                                  )
                                 ) : null}
                                 <div 
                                   className={`w-full h-full rounded flex items-center justify-center ${work.url && work.url.trim() !== '' ? 'hidden' : 'flex'}`}

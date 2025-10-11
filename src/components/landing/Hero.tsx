@@ -1,7 +1,6 @@
 
 'use client';
 import { Button } from '@/components/ui/button';
-import { PlaceHolderImages } from '@/lib/placeholder-images';
 import type { HeroContent } from '@/lib/types';
 import { Media } from '../shared/Media';
 
@@ -10,7 +9,7 @@ interface HeroProps {
 }
 
 export function Hero({ content }: HeroProps) {
-  const heroImageHint = PlaceHolderImages.find(img => img.id === 'hero-background')?.imageHint || 'makeup artistry';
+  const heroImageHint = 'makeup artistry';
 
   return (
     <section id="inicio" className="relative h-[calc(100vh-64px)] min-h-[600px] w-full overflow-hidden">
