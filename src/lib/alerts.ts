@@ -1,43 +1,71 @@
+// src/lib/alerts.ts
+// Sistema de alertas para la aplicación
 
-import Swal from 'sweetalert2';
-import withReactContent from 'sweetalert2-react-content';
+export interface AlertOptions {
+  title?: string;
+  message: string;
+  type?: 'success' | 'error' | 'warning' | 'info';
+  duration?: number;
+  showCloseButton?: boolean;
+}
 
-const MySwal = withReactContent(Swal);
+export class AlertManager {
+  private static instance: AlertManager;
+  private alerts: AlertOptions[] = [];
 
-export const showSuccessAlert = (title: string, text: string) => {
-  MySwal.fire({
-    title,
-    text,
-    icon: 'success',
-    timer: 2000,
-    showConfirmButton: false,
-    toast: true,
-    position: 'top-end',
-  });
-};
-
-export const showErrorAlert = (title: string, text: string) => {
-  MySwal.fire({
-    title,
-    text,
-    icon: 'error',
-    confirmButtonColor: '#d33',
-  });
-};
-
-export const showDeleteConfirm = (onConfirm: () => void) => {
-  MySwal.fire({
-    title: '¿Estás seguro?',
-    text: "¡No podrás revertir esta acción!",
-    icon: 'warning',
-    showCancelButton: true,
-    confirmButtonColor: '#3085d6',
-    cancelButtonColor: '#d33',
-    confirmButtonText: 'Sí, ¡eliminar!',
-    cancelButtonText: 'Cancelar',
-  }).then((result) => {
-    if (result.isConfirmed) {
-      onConfirm();
+  static getInstance(): AlertManager {
+    if (!AlertManager.instance) {
+      AlertManager.instance = new AlertManager();
     }
-  });
-};
+    return AlertManager.instance;
+  }
+
+  show(options: AlertOptions): void {
+    this.alerts.push(options);
+    this.render();
+  }
+
+  success(message: string, title?: string): void {
+    this.show({
+      title: title || 'Éxito',
+      message,
+      type: 'success',
+      duration: 3000
+    });
+  }
+
+  error(message: string, title?: string): void {
+    this.show({
+      title: title || 'Error',
+      message,
+      type: 'error',
+      duration: 5000
+    });
+  }
+
+  warning(message: string, title?: string): void {
+    this.show({
+      title: title || 'Advertencia',
+      message,
+      type: 'warning',
+      duration: 4000
+    });
+  }
+
+  info(message: string, title?: string): void {
+    this.show({
+      title: title || 'Información',
+      message,
+      type: 'info',
+      duration: 3000
+    });
+  }
+
+  private render(): void {
+    // Implementación básica de renderizado
+    console.log('Alert:', this.alerts[this.alerts.length - 1]);
+  }
+}
+
+// Instancia global
+export const alertManager = AlertManager.getInstance();

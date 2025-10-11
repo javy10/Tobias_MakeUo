@@ -17,6 +17,26 @@
 /.next/
 /out/
 
+# Windows/OneDrive specific
+.next/static/development/
+.next/static/chunks/
+.next/cache/
+.next/trace
+.next/turbo/
+
+# OneDrive sync issues
+*.tmp
+*.temp
+~$*
+*.lock
+*.swp
+*.swo
+
+# Local development files
+.local/
+.cache/
+.temp/
+
 # production
 /build
 
