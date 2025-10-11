@@ -9,6 +9,7 @@ import {
   updateSingletonWithRealtimeSync
 } from '@/lib/fast-realtime-sync';
 import { showSuccessAlert, showErrorAlert } from '@/lib/alerts';
+import { optimizeFile } from '@/lib/file-optimization';
 
 interface UseRealtimeCrudOptions<T> {
   tableName: string;

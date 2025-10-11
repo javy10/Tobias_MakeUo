@@ -10,8 +10,29 @@ export interface ErrorInfo {
   error?: any;
 }
 
-export function showErrorAlert(errorInfo: ErrorInfo) {
-  const { title, message, solution, error } = errorInfo;
+// Función sobrecargada para manejar diferentes formatos de llamada
+export function showErrorAlert(errorInfo: ErrorInfo): void;
+export function showErrorAlert(title: string, message: string): void;
+export function showErrorAlert(errorInfoOrTitle: ErrorInfo | string, message?: string): void {
+  let title: string;
+  let messageText: string;
+  let solution: string;
+  let error: any;
+
+  if (typeof errorInfoOrTitle === 'string') {
+    // Llamada con parámetros separados
+    title = errorInfoOrTitle;
+    messageText = message || 'Ha ocurrido un error inesperado';
+    solution = 'Por favor, intenta nuevamente. Si el problema persiste, contacta al administrador.';
+    error = undefined;
+  } else {
+    // Llamada con objeto ErrorInfo
+    const { title: objTitle, message: objMessage, solution: objSolution, error: objError } = errorInfoOrTitle;
+    title = objTitle;
+    messageText = objMessage;
+    solution = objSolution;
+    error = objError;
+  }
   
   // Preparar detalles del error para mostrar
   let errorDetails = '';
@@ -34,7 +55,7 @@ export function showErrorAlert(errorInfo: ErrorInfo) {
       <div style="text-align: left;">
         <div style="margin-bottom: 15px;">
           <strong style="color: #dc2626;">Descripción del Error:</strong><br>
-          <span style="color: #374151;">${message}</span>
+          <span style="color: #374151;">${messageText}</span>
         </div>
         
         ${errorDetails ? `
