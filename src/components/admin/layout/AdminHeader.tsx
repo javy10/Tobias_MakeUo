@@ -47,37 +47,37 @@ export function AdminHeader({
     };
 
   return (
-    <header className="sticky top-0 z-30 flex h-16 items-center gap-4 border-b bg-background/80 backdrop-blur-sm px-6">
-       <Button variant="ghost" size="icon" className="md:hidden" onClick={toggleSidebar}>
+    <header className="sticky top-0 z-30 flex h-16 items-center gap-2 sm:gap-4 border-b bg-background/80 backdrop-blur-sm px-3 sm:px-6">
+       <Button variant="ghost" size="icon" className="md:hidden h-11 w-11 flex-shrink-0" onClick={toggleSidebar}>
           <Menu className="h-5 w-5" />
           <span className="sr-only">Toggle Sidebar</span>
       </Button>
-      <div className="flex items-center gap-4">
-        <h1 className="text-lg font-semibold">{pageName}</h1>
+      <div className="flex items-center gap-2 sm:gap-4 min-w-0 flex-1">
+        <h1 className="text-base sm:text-lg font-semibold truncate">{pageName}</h1>
       </div>
 
-      <div className="ml-auto flex items-center gap-2 md:gap-4">
+      <div className="ml-auto flex items-center gap-1 sm:gap-2 md:gap-4">
         {/* Theme Toggle */}
         <Button 
           variant="ghost" 
           size="icon" 
           onClick={toggleTheme}
-          className="hover:bg-gray-100 dark:hover:bg-gray-800"
+          className="hover:bg-gray-100 dark:hover:bg-gray-800 h-10 w-10 sm:h-11 sm:w-11"
           title={theme === 'dark' ? 'Cambiar a modo claro' : 'Cambiar a modo oscuro'}
         >
           {theme === 'dark' ? (
-            <Sun className="h-5 w-5" />
+            <Sun className="h-4 w-4 sm:h-5 sm:w-5" />
           ) : (
-            <Moon className="h-5 w-5" />
+            <Moon className="h-4 w-4 sm:h-5 sm:w-5" />
           )}
           <span className="sr-only">Toggle theme</span>
         </Button>
 
         <DropdownMenu>
             <DropdownMenuTrigger asChild>
-                <Button variant="ghost" className="flex items-center gap-2">
-                    {/* <User className="h-5 w-5" /> */} {/* OCULTO */}
-                    <span className="hidden md:inline">{loggedInUser.name}</span>
+                <Button variant="ghost" className="flex items-center gap-1 sm:gap-2 h-10 px-2 sm:px-3">
+                    {/* <User className="h-4 w-4 sm:h-5 sm:w-5" /> */} {/* OCULTO */}
+                    <span className="hidden sm:inline text-sm sm:text-base truncate max-w-20 sm:max-w-none">{loggedInUser.name}</span>
                 </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
@@ -92,36 +92,36 @@ export function AdminHeader({
 
         <DropdownMenu>
             <DropdownMenuTrigger asChild>
-                <Button variant="ghost" size="icon" className="relative">
-                    <Bell className="h-5 w-5" />
+                <Button variant="ghost" size="icon" className="relative h-10 w-10 sm:h-11 sm:w-11">
+                    <Bell className="h-4 w-4 sm:h-5 sm:w-5" />
                     {unseenPendingTestimonials.length > 0 && (
-                       <span className="absolute top-0 right-0 inline-flex items-center justify-center px-2 py-1 text-xs font-bold leading-none text-red-100 transform translate-x-1/2 -translate-y-1/2 bg-red-600 rounded-full">
+                       <span className="absolute top-0 right-0 inline-flex items-center justify-center px-1.5 py-0.5 sm:px-2 sm:py-1 text-xs font-bold leading-none text-red-100 transform translate-x-1/2 -translate-y-1/2 bg-red-600 rounded-full min-w-[18px] sm:min-w-[20px]">
                          {unseenPendingTestimonials.length}
                        </span>
                     )}
                     <span className="sr-only">Notificaciones</span>
                 </Button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="w-80">
+            <DropdownMenuContent align="end" className="w-72 sm:w-80 max-w-[calc(100vw-2rem)]">
                 <DropdownMenuLabel>Notificaciones</DropdownMenuLabel>
                 <DropdownMenuSeparator />
                 {unseenPendingTestimonials.length > 0 ? (
                     unseenPendingTestimonials.map(t => (
-                        <DropdownMenuItem key={t.id} onClick={() => handleNotificationClick(t.id)} className="flex flex-col items-start gap-1 whitespace-normal">
-                           <p className="font-semibold">{t.author}</p>
+                        <DropdownMenuItem key={t.id} onClick={() => handleNotificationClick(t.id)} className="flex flex-col items-start gap-1 whitespace-normal p-3">
+                           <p className="font-semibold text-sm">{t.author}</p>
                            <p className="text-xs text-muted-foreground truncate w-full">"{t.text}"</p>
                         </DropdownMenuItem>
                     ))
                 ) : (
-                    <p className="p-2 text-sm text-muted-foreground">No hay notificaciones nuevas.</p>
+                    <p className="p-3 text-sm text-muted-foreground">No hay notificaciones nuevas.</p>
                 )}
             </DropdownMenuContent>
         </DropdownMenu>
 
         <DropdownMenu>
             <DropdownMenuTrigger asChild>
-                <Button variant="ghost" size="icon">
-                    <Settings className="h-5 w-5" />
+                <Button variant="ghost" size="icon" className="h-10 w-10 sm:h-11 sm:w-11">
+                    <Settings className="h-4 w-4 sm:h-5 sm:w-5" />
                     <span className="sr-only">Configuración</span>
                 </Button>
             </DropdownMenuTrigger>

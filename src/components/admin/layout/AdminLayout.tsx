@@ -57,8 +57,10 @@ export function AdminLayout({ children, loggedInUser, onLogout, appState, active
                       setActiveSection={setActiveSection}
                       setTestimonials={setTestimonials}
                   />
-                  <main className="flex-1 p-6">
-                      {children}
+                  <main className="flex-1 p-3 sm:p-4 md:p-6 overflow-x-auto">
+                      <div className="max-w-full">
+                          {children}
+                      </div>
                   </main>
               </div>
           </div>

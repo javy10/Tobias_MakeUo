@@ -161,9 +161,9 @@ export function AdminDashboard({
   };
 
   const getInputClasses = () => {
-    return theme === 'dark'
-      ? 'bg-gray-700 border-gray-600 text-gray-200 placeholder-gray-400 focus:border-teal-400'
-      : 'bg-white border-gray-300 text-gray-900 placeholder-gray-500 focus:border-teal-500';
+    return theme === 'dark' 
+      ? 'bg-gray-700 border-gray-600 text-gray-200 placeholder-gray-400 focus:border-teal-400 h-12 sm:h-11 text-base' 
+      : 'bg-white border-gray-300 text-gray-900 placeholder-gray-500 focus:border-teal-500 h-12 sm:h-11 text-base';
   };
 
   const getTextClasses = () => {
@@ -986,8 +986,8 @@ export function AdminDashboard({
 
     return (
         <Dialog open={open} onOpenChange={setOpen}>
-            <DialogTrigger asChild><Button variant="outline" size="icon"><Pencil className="w-4 h-4" /></Button></DialogTrigger>
-            <DialogContent>
+            <DialogTrigger asChild><Button variant="outline" size="icon" className="h-10 w-10 sm:h-11 sm:w-11"><Pencil className="w-4 h-4" /></Button></DialogTrigger>
+            <DialogContent className="w-[95vw] max-w-md sm:max-w-lg md:max-w-2xl max-h-[90vh] overflow-y-auto">
                 <DialogHeader>
                   <DialogTitle>Editar Producto</DialogTitle>
                   <DialogDescription>Modifica los detalles de este producto.</DialogDescription>
@@ -1004,7 +1004,7 @@ export function AdminDashboard({
                     </Select>
                     <DragDropUpload name="mediaFile" accept="image/*,video/*" onFileSelect={handleFileChange} />
                     <MediaPreview preview={preview} onRemove={() => setPreview(null)} />
-                    <DialogFooter><Button type="submit">Guardar Cambios</Button></DialogFooter>
+                    <DialogFooter><Button type="submit" className="h-12 w-full sm:w-auto sm:px-8">Guardar Cambios</Button></DialogFooter>
                 </form>
             </DialogContent>
         </Dialog>
@@ -1057,8 +1057,8 @@ export function AdminDashboard({
 
     return (
         <Dialog open={open} onOpenChange={setOpen}>
-            <DialogTrigger asChild><Button variant="outline" size="icon"><Pencil className="w-4 h-4" /></Button></DialogTrigger>
-            <DialogContent>
+            <DialogTrigger asChild><Button variant="outline" size="icon" className="h-10 w-10 sm:h-11 sm:w-11"><Pencil className="w-4 h-4" /></Button></DialogTrigger>
+            <DialogContent className="w-[95vw] max-w-md sm:max-w-lg md:max-w-2xl max-h-[90vh] overflow-y-auto">
                 <DialogHeader>
                   <DialogTitle>Editar Perfume</DialogTitle>
                    <DialogDescription>Modifica los detalles de este perfume.</DialogDescription>
@@ -1069,7 +1069,7 @@ export function AdminDashboard({
                     <Input name="stock" type="number" defaultValue={perfume.stock} />
                     <DragDropUpload name="mediaFile" accept="image/*,video/*" onFileSelect={handleFileChange} />
                     <MediaPreview preview={preview} onRemove={() => setPreview(null)} />
-                    <DialogFooter><Button type="submit">Guardar Cambios</Button></DialogFooter>
+                    <DialogFooter><Button type="submit" className="h-12 w-full sm:w-auto sm:px-8">Guardar Cambios</Button></DialogFooter>
                 </form>
             </DialogContent>
         </Dialog>
@@ -1109,8 +1109,8 @@ export function AdminDashboard({
 
     return (
         <Dialog open={open} onOpenChange={setOpen}>
-            <DialogTrigger asChild><Button variant="outline" size="icon"><Pencil className="w-4 h-4" /></Button></DialogTrigger>
-            <DialogContent>
+            <DialogTrigger asChild><Button variant="outline" size="icon" className="h-10 w-10 sm:h-11 sm:w-11"><Pencil className="w-4 h-4" /></Button></DialogTrigger>
+            <DialogContent className="w-[95vw] max-w-md sm:max-w-lg md:max-w-2xl max-h-[90vh] overflow-y-auto">
                 <DialogHeader>
                   <DialogTitle>Editar Elemento de Galería</DialogTitle>
                   <DialogDescription>Modifica los detalles de este elemento.</DialogDescription>
@@ -1120,7 +1120,7 @@ export function AdminDashboard({
                     <Textarea name="description" placeholder="Descripción Breve" defaultValue={item.description} required />
                     <DragDropUpload name="mediaFile" accept="image/*,video/*" onFileSelect={handleFileChange} />
                     <MediaPreview preview={preview} onRemove={() => setPreview(null)} />
-                    <DialogFooter><Button type="submit">Guardar Cambios</Button></DialogFooter>
+                    <DialogFooter><Button type="submit" className="h-12 w-full sm:w-auto sm:px-8">Guardar Cambios</Button></DialogFooter>
                 </form>
             </DialogContent>
         </Dialog>
@@ -1315,7 +1315,7 @@ export function AdminDashboard({
                   </div>
                   <DragDropUpload name="mediaFile" accept="image/*,video/*" onFileSelect={(file) => handleMediaFilePreview(file, setAboutMePreview)} />
                   <MediaPreview preview={aboutMePreview} onRemove={() => setAboutMePreview(null)} />
-                  <Button type="submit" className="flex items-center gap-2 bg-teal-600 hover:bg-teal-700 text-white">
+                  <Button type="submit" className="flex items-center gap-2 bg-teal-600 hover:bg-teal-700 text-white h-12 w-full sm:w-auto sm:px-8">
                     Actualizar 'Sobre Mí'
                   </Button>
                 </form>
@@ -1332,7 +1332,7 @@ export function AdminDashboard({
             </div>
 
             {/* Two Column Layout */}
-            <div className="relative grid grid-cols-1 lg:grid-cols-2 gap-8">
+            <div className="relative grid grid-cols-1 xl:grid-cols-2 gap-6 lg:gap-8">
               {/* Left Panel - Add New Service */}
               <Card className={`shadow-lg ${getCardClasses()}`}>
                 <CardHeader className="pb-4">
@@ -1401,28 +1401,33 @@ export function AdminDashboard({
                   }} />
                     </div>
                     
-                    <Button 
-                      type="submit" 
-                      className={`w-full ${getButtonClasses().primary} font-semibold py-3 rounded-lg flex items-center justify-center space-x-2`}
-                    >
-                      <div className="w-5 h-5 bg-white rounded-full flex items-center justify-center">
-                        <svg className="w-3 h-3 text-teal-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-                        </svg>
-                      </div>
-                      <span>{isEditMode ? 'Actualizar Servicio' : 'Añadir Servicio'}</span>
-                    </Button>
-                    
-                    {isEditMode && (
+                    <div className="flex flex-col sm:flex-row gap-3">
                       <Button 
-                        type="button" 
-                        variant="outline" 
-                        onClick={cancelEdit}
-                        className="w-full border-gray-600 text-gray-300 hover:bg-gray-700"
+                        type="submit" 
+                        className={`w-full sm:flex-1 ${getButtonClasses().primary} font-semibold py-3 sm:py-2.5 rounded-lg flex items-center justify-center space-x-2 h-12 sm:h-11 text-base sm:text-lg`}
                       >
-                        Cancelar Edición
+                        <div className="w-5 h-5 bg-white rounded-full flex items-center justify-center">
+                          <svg className="w-3 h-3 text-teal-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+                          </svg>
+                        </div>
+                        <span>{isEditMode ? 'Actualizar Servicio' : 'Añadir Servicio'}</span>
                       </Button>
-                    )}
+                      
+                      {isEditMode && (
+                        <Button 
+                          type="button" 
+                          variant="outline" 
+                          onClick={cancelEdit}
+                          className="w-full sm:w-auto sm:px-6 border-gray-600 text-gray-300 hover:bg-gray-700 py-3 text-base sm:text-lg rounded-lg flex items-center justify-center space-x-2 h-12 sm:h-11"
+                        >
+                          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                          </svg>
+                          <span>Cancelar Edición</span>
+                        </Button>
+                      )}
+                    </div>
                 </form>
                 </CardContent>
               </Card>
@@ -1434,36 +1439,23 @@ export function AdminDashboard({
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-4">
-                    {/* Table Headers */}
-                    <div className={`grid grid-cols-12 gap-4 pb-2 border-b ${getTableClasses().header}`}>
-                      <div className="col-span-8">
-                        <span className={`text-sm font-medium ${getTextClasses().label}`}>Servicio</span>
-                      </div>
-                      <div className="col-span-4 text-right">
-                        <span className={`text-sm font-medium ${getTextClasses().label}`}>Acciones</span>
-                      </div>
-                    </div>
-                    
-                    {/* Services List */}
-                    <div className="space-y-3">
-                      {services.map((service, index) => (
-                        <div key={service.id} className={`flex items-center space-x-4 py-3 border-b ${getTableClasses().row} last:border-b-0`}>
-                          {/* Service Icon */}
-                          <ServiceImage service={service} />
-                          
-                          {/* Service Info */}
-                          <div className="flex-1 min-w-0">
-                            <h3 className={`font-semibold ${getTextClasses().primary} truncate`}>{service.title}</h3>
-                            <p className={`text-sm ${getTextClasses().secondary} line-clamp-2`}>{service.description}</p>
+                    {/* Mobile view: Cards */}
+                    <div className="grid gap-4 md:hidden">
+                      {services.map((service) => (
+                        <Card key={service.id} className={`p-4 space-y-3 ${getCardClasses()}`}>
+                          <div className="flex items-start gap-3">
+                            <ServiceImage service={service} />
+                            <div className="flex-grow min-w-0">
+                              <h3 className={`font-semibold ${getTextClasses().primary} text-base`}>{service.title}</h3>
+                              <p className={`text-sm ${getTextClasses().secondary} line-clamp-2 mt-1`}>{service.description}</p>
+                            </div>
                           </div>
-                          
-                          {/* Actions */}
-                          <div className="flex items-center space-x-2">
+                          <div className="flex items-center justify-end gap-2 pt-2 border-t border-border">
                             <Button 
                               variant="ghost" 
                               size="icon" 
                               onClick={() => loadServiceForEdit(service)}
-                              className="text-gray-400 hover:text-gray-300 hover:bg-gray-700"
+                              className={`h-10 w-10 text-gray-400 hover:text-gray-300 hover:bg-gray-700`}
                             >
                               <Pencil className="w-4 h-4" />
                             </Button>
@@ -1471,12 +1463,12 @@ export function AdminDashboard({
                               variant="ghost" 
                               size="icon" 
                               onClick={() => showDeleteConfirm(() => onDeleteService(service.id))}
-                              className={getButtonClasses().danger}
+                              className={`h-10 w-10 ${getButtonClasses().danger}`}
                             >
                               <Trash2 className="w-4 h-4" />
                             </Button>
                           </div>
-                        </div>
+                        </Card>
                       ))}
                       
                       {services.length === 0 && (
@@ -1484,6 +1476,61 @@ export function AdminDashboard({
                           <p>No hay servicios activos</p>
                         </div>
                       )}
+                    </div>
+
+                    {/* Desktop view: Table */}
+                    <div className="hidden md:block">
+                      {/* Table Headers */}
+                      <div className={`grid grid-cols-12 gap-4 pb-2 border-b ${getTableClasses().header}`}>
+                        <div className="col-span-8">
+                          <span className={`text-sm font-medium ${getTextClasses().label}`}>Servicio</span>
+                        </div>
+                        <div className="col-span-4 text-right">
+                          <span className={`text-sm font-medium ${getTextClasses().label}`}>Acciones</span>
+                        </div>
+                      </div>
+                      
+                      {/* Services List */}
+                      <div className="space-y-3">
+                        {services.map((service, index) => (
+                          <div key={service.id} className={`flex items-center space-x-4 py-3 border-b ${getTableClasses().row} last:border-b-0`}>
+                            {/* Service Icon */}
+                            <ServiceImage service={service} />
+                            
+                            {/* Service Info */}
+                            <div className="flex-1 min-w-0">
+                              <h3 className={`font-semibold ${getTextClasses().primary} truncate`}>{service.title}</h3>
+                              <p className={`text-sm ${getTextClasses().secondary} line-clamp-2`}>{service.description}</p>
+                            </div>
+                            
+                            {/* Actions */}
+                            <div className="flex items-center space-x-2">
+                              <Button 
+                                variant="ghost" 
+                                size="icon" 
+                                onClick={() => loadServiceForEdit(service)}
+                                className="text-gray-400 hover:text-gray-300 hover:bg-gray-700"
+                              >
+                                <Pencil className="w-4 h-4" />
+                              </Button>
+                              <Button 
+                                variant="ghost" 
+                                size="icon" 
+                                onClick={() => showDeleteConfirm(() => onDeleteService(service.id))}
+                                className={getButtonClasses().danger}
+                              >
+                                <Trash2 className="w-4 h-4" />
+                              </Button>
+                            </div>
+                          </div>
+                        ))}
+                        
+                        {services.length === 0 && (
+                          <div className={`text-center py-8 ${getTextClasses().muted}`}>
+                            <p>No hay servicios activos</p>
+                          </div>
+                        )}
+                      </div>
                     </div>
                   </div>
               </CardContent>
@@ -1502,7 +1549,7 @@ export function AdminDashboard({
             </div>
 
             {/* Two Column Layout */}
-            <div className="relative grid grid-cols-1 lg:grid-cols-2 gap-8">
+            <div className="relative grid grid-cols-1 xl:grid-cols-2 gap-6 lg:gap-8">
               {/* Left Panel - Add Course Form */}
               <Card className={`shadow-lg ${getCardClasses()}`}>
                 <CardHeader className="pb-4">
@@ -1575,10 +1622,10 @@ export function AdminDashboard({
                       )}
                     </div>
 
-                    <div className="flex gap-3">
+                    <div className="flex flex-col sm:flex-row gap-3">
                       <Button 
                         type="submit" 
-                        className={`w-full bg-teal-600 hover:bg-teal-700 text-white font-semibold py-4 text-lg rounded-lg flex items-center justify-center space-x-2`}
+                        className={`w-full sm:flex-1 bg-teal-600 hover:bg-teal-700 text-white font-semibold py-4 sm:py-3 text-base sm:text-lg rounded-lg flex items-center justify-center space-x-2 h-12 sm:h-11`}
                       >
                         <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
@@ -1592,7 +1639,7 @@ export function AdminDashboard({
                           setCoursePreview(null);
                           setCourseMediaFile(null);
                         }}
-                        className={`flex-1 py-4 text-lg ${getButtonClasses().secondary}`}
+                        className={`w-full sm:w-auto sm:px-6 py-4 sm:py-3 text-base sm:text-lg h-12 sm:h-11 ${getButtonClasses().secondary}`}
                       >
                         <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
@@ -1611,81 +1658,145 @@ export function AdminDashboard({
                   <p className={`text-sm ${getTextClasses().secondary}`}>Lista de todos los cursos disponibles.</p>
                 </CardHeader>
                 <CardContent>
-                  <div className="space-y-0">
-                    {/* Table Headers */}
-                    <div className={`grid grid-cols-12 gap-4 pb-3 border-b ${getTableClasses().header}`}>
-                      <div className="col-span-8">
-                        <span className={`text-sm font-medium ${getTextClasses().label}`}>CURSO</span>
-                      </div>
-                      <div className="col-span-4 text-right">
-                        <span className={`text-sm font-medium ${getTextClasses().label}`}>ACCIONES</span>
-                      </div>
-                    </div>
-                    
-                    {/* Courses List */}
-                    <div className="space-y-0">
-                      {courses.map((course, index) => {
-                        return (
-                          <div key={course.id} className={`grid grid-cols-12 gap-4 items-center py-4 ${index < courses.length - 1 ? `border-b ${getTableClasses().row}` : ''}`}>
-                            {/* Course Info */}
-                            <div className="col-span-8 flex items-center space-x-3">
-                              <div className="w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0 overflow-hidden">
-                                {course.url && course.url.trim() !== '' ? (
-                                  <img 
-                                    src={course.url} 
-                                    alt={course.name}
-                                    className="w-full h-full object-cover rounded"
-                                    onError={(e) => {
-                                      const target = e.target as HTMLImageElement;
-                                      target.style.display = 'none';
-                                      const fallback = target.nextElementSibling as HTMLElement;
-                                      if (fallback) fallback.style.display = 'flex';
-                                    }}
-                                  />
-                                ) : null}
-                                <div 
-                                  className={`w-full h-full rounded flex items-center justify-center ${course.url && course.url.trim() !== '' ? 'hidden' : 'flex'}`}
-                                  style={{ backgroundColor: '#10b981' }}
-                                >
-                                  <span className="text-xs font-semibold text-white">
-                                    {course.name.charAt(0).toUpperCase()}
-                                  </span>
-                                </div>
-                              </div>
-                              <div className="flex-1 min-w-0">
-                                <h3 className={`font-semibold ${getTextClasses().primary} truncate`}>{course.name}</h3>
-                                <p className={`text-xs ${getTextClasses().muted} truncate`}>{course.description}</p>
+                  <div className="space-y-4">
+                    {/* Mobile view: Cards */}
+                    <div className="grid gap-4 md:hidden">
+                      {courses.map((course) => (
+                        <Card key={course.id} className={`p-4 space-y-3 ${getCardClasses()}`}>
+                          <div className="flex items-start gap-3">
+                            <div className="w-12 h-12 rounded-lg flex items-center justify-center flex-shrink-0 overflow-hidden">
+                              {course.url && course.url.trim() !== '' ? (
+                                <img 
+                                  src={course.url} 
+                                  alt={course.name}
+                                  className="w-full h-full object-cover rounded"
+                                  onError={(e) => {
+                                    const target = e.target as HTMLImageElement;
+                                    target.style.display = 'none';
+                                    const fallback = target.nextElementSibling as HTMLElement;
+                                    if (fallback) fallback.style.display = 'flex';
+                                  }}
+                                />
+                              ) : null}
+                              <div 
+                                className={`w-full h-full rounded flex items-center justify-center ${course.url && course.url.trim() !== '' ? 'hidden' : 'flex'}`}
+                                style={{ backgroundColor: '#10b981' }}
+                              >
+                                <span className="text-sm font-semibold text-white">
+                                  {course.name.charAt(0).toUpperCase()}
+                                </span>
                               </div>
                             </div>
-                            
-                            {/* Actions */}
-                            <div className="col-span-4 flex items-center justify-end space-x-2">
-                              <Button 
-                                variant="ghost" 
-                                size="icon" 
-                                onClick={() => setEditingCourse(course)}
-                                className={getButtonClasses().primary}
-                              >
-                                <Pencil className="w-4 h-4" />
-                              </Button>
-                              <Button 
-                                variant="ghost" 
-                                size="icon" 
-                                onClick={() => showDeleteConfirm(() => onDeleteCourse(course.id))}
-                                className={getButtonClasses().danger}
-                              >
-                                <Trash2 className="w-4 h-4" />
-                              </Button>
+                            <div className="flex-grow min-w-0">
+                              <h3 className={`font-semibold ${getTextClasses().primary} text-base`}>{course.name}</h3>
+                              <p className={`text-sm ${getTextClasses().secondary} line-clamp-2 mt-1`}>{course.description}</p>
                             </div>
                           </div>
-                        );
-                      })}
+                          <div className="flex items-center justify-end gap-2 pt-2 border-t border-border">
+                            <Button 
+                              variant="ghost" 
+                              size="icon" 
+                              onClick={() => setEditingCourse(course)}
+                              className={`h-10 w-10 ${getButtonClasses().primary}`}
+                            >
+                              <Pencil className="w-4 h-4" />
+                            </Button>
+                            <Button 
+                              variant="ghost" 
+                              size="icon" 
+                              onClick={() => showDeleteConfirm(() => onDeleteCourse(course.id))}
+                              className={`h-10 w-10 ${getButtonClasses().danger}`}
+                            >
+                              <Trash2 className="w-4 h-4" />
+                            </Button>
+                          </div>
+                        </Card>
+                      ))}
                       
                       {courses.length === 0 && (
                         <div className={`text-center py-8 ${getTextClasses().muted}`}>
                           <p>No hay cursos en el inventario</p>
                         </div>
                       )}
+                    </div>
+
+                    {/* Desktop view: Table */}
+                    <div className="hidden md:block">
+                      {/* Table Headers */}
+                      <div className={`grid grid-cols-12 gap-4 pb-3 border-b ${getTableClasses().header}`}>
+                        <div className="col-span-8">
+                          <span className={`text-sm font-medium ${getTextClasses().label}`}>CURSO</span>
+                        </div>
+                        <div className="col-span-4 text-right">
+                          <span className={`text-sm font-medium ${getTextClasses().label}`}>ACCIONES</span>
+                        </div>
+                      </div>
+                      
+                      {/* Courses List */}
+                      <div className="space-y-0">
+                        {courses.map((course, index) => {
+                          return (
+                            <div key={course.id} className={`grid grid-cols-12 gap-4 items-center py-4 ${index < courses.length - 1 ? `border-b ${getTableClasses().row}` : ''}`}>
+                              {/* Course Info */}
+                              <div className="col-span-8 flex items-center space-x-3">
+                                <div className="w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0 overflow-hidden">
+                                  {course.url && course.url.trim() !== '' ? (
+                                    <img 
+                                      src={course.url} 
+                                      alt={course.name}
+                                      className="w-full h-full object-cover rounded"
+                                      onError={(e) => {
+                                        const target = e.target as HTMLImageElement;
+                                        target.style.display = 'none';
+                                        const fallback = target.nextElementSibling as HTMLElement;
+                                        if (fallback) fallback.style.display = 'flex';
+                                      }}
+                                    />
+                                  ) : null}
+                                  <div 
+                                    className={`w-full h-full rounded flex items-center justify-center ${course.url && course.url.trim() !== '' ? 'hidden' : 'flex'}`}
+                                    style={{ backgroundColor: '#10b981' }}
+                                  >
+                                    <span className="text-xs font-semibold text-white">
+                                      {course.name.charAt(0).toUpperCase()}
+                                    </span>
+                                  </div>
+                                </div>
+                                <div className="flex-1 min-w-0">
+                                  <h3 className={`font-semibold ${getTextClasses().primary} truncate`}>{course.name}</h3>
+                                  <p className={`text-xs ${getTextClasses().muted} truncate`}>{course.description}</p>
+                                </div>
+                              </div>
+                              
+                              {/* Actions */}
+                              <div className="col-span-4 flex items-center justify-end space-x-2">
+                                <Button 
+                                  variant="ghost" 
+                                  size="icon" 
+                                  onClick={() => setEditingCourse(course)}
+                                  className={getButtonClasses().primary}
+                                >
+                                  <Pencil className="w-4 h-4" />
+                                </Button>
+                                <Button 
+                                  variant="ghost" 
+                                  size="icon" 
+                                  onClick={() => showDeleteConfirm(() => onDeleteCourse(course.id))}
+                                  className={getButtonClasses().danger}
+                                >
+                                  <Trash2 className="w-4 h-4" />
+                                </Button>
+                              </div>
+                            </div>
+                          );
+                        })}
+                        
+                        {courses.length === 0 && (
+                          <div className={`text-center py-8 ${getTextClasses().muted}`}>
+                            <p>No hay cursos en el inventario</p>
+                          </div>
+                        )}
+                      </div>
                     </div>
                   </div>
                 </CardContent>
@@ -1761,7 +1872,7 @@ export function AdminDashboard({
                       </div>
                   </CardContent>
                   <Dialog open={openCategoryDialog} onOpenChange={setOpenCategoryDialog}>
-                      <DialogContent className={`${getCardClasses()}`}>
+                      <DialogContent className={`w-[95vw] max-w-md sm:max-w-lg md:max-w-2xl max-h-[90vh] overflow-y-auto ${getCardClasses()}`}>
                           <DialogHeader>
                             <DialogTitle className={getTextClasses().primary}>{isEditingCategory ? 'Editar' : 'Añadir'} Categoría</DialogTitle>
                             <DialogDescription className={getTextClasses().secondary}>
@@ -1798,7 +1909,7 @@ export function AdminDashboard({
             </div>
 
             {/* Two Column Layout */}
-            <div className="relative grid grid-cols-1 lg:grid-cols-2 gap-8">
+            <div className="relative grid grid-cols-1 xl:grid-cols-2 gap-6 lg:gap-8">
               {/* Left Panel - Add New Product */}
               <Card className={`shadow-lg ${getCardClasses()}`}>
                 <CardHeader className="pb-4">
@@ -1871,7 +1982,7 @@ export function AdminDashboard({
                     
                     <Button 
                       type="submit" 
-                      className={`w-full bg-green-600 hover:bg-green-700 text-white font-semibold py-3 rounded-lg flex items-center justify-center space-x-2`}
+                      className={`w-full bg-green-600 hover:bg-green-700 text-white font-semibold py-3 sm:py-2.5 rounded-lg flex items-center justify-center space-x-2 h-12 sm:h-11 text-base sm:text-lg`}
                     >
                       <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
@@ -1888,43 +1999,25 @@ export function AdminDashboard({
                   <CardTitle className={`text-xl font-semibold ${getTextClasses().primary}`}>Productos Activos</CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <div className="space-y-0">
-                    {/* Table Headers */}
-                    <div className={`grid grid-cols-12 gap-4 pb-3 border-b ${getTableClasses().header}`}>
-                      <div className="col-span-5">
-                        <span className={`text-sm font-medium ${getTextClasses().label}`}>PRODUCTO</span>
-                      </div>
-                      <div className="col-span-2">
-                        <span className={`text-sm font-medium ${getTextClasses().label}`}>STOCK</span>
-                      </div>
-                      <div className="col-span-3">
-                        <span className={`text-sm font-medium ${getTextClasses().label}`}>CATEGORÍA</span>
-                      </div>
-                      <div className="col-span-2 text-right">
-                        <span className={`text-sm font-medium ${getTextClasses().label}`}>ACCIONES</span>
-                      </div>
-                    </div>
-                    
-                    {/* Products List */}
-                    <div className="space-y-0">
-                      {products.map((product, index) => {
+                  <div className="space-y-4">
+                    {/* Mobile view: Cards */}
+                    <div className="grid gap-4 md:hidden">
+                      {products.map((product) => {
                         const category = categories.find(cat => cat.id === product.categoryId);
                         const stockLevel = product.stock >= 6 ? 'high' : 'low';
                         const stockColor = stockLevel === 'high' ? 'bg-green-100 text-green-800' : 
                                          'bg-red-100 text-red-800';
                         
                         return (
-                          <div key={product.id} className={`grid grid-cols-12 gap-4 items-center py-4 ${index < products.length - 1 ? `border-b ${getTableClasses().row}` : ''}`}>
-                            {/* Product Info */}
-                            <div className="col-span-5 flex items-center space-x-3">
-                              <div className="w-10 h-10 bg-teal-600 rounded-lg flex items-center justify-center flex-shrink-0">
+                          <Card key={product.id} className={`p-4 space-y-3 ${getCardClasses()}`}>
+                            <div className="flex items-start gap-3">
+                              <div className="w-12 h-12 bg-teal-600 rounded-lg flex items-center justify-center flex-shrink-0">
                                 {product.url && product.url.trim() !== '' ? (
                                   <img 
                                     src={product.url} 
                                     alt={product.name}
-                                    className="w-8 h-8 rounded object-cover"
+                                    className="w-10 h-10 rounded object-cover"
                                     onError={(e) => {
-                                      // Si falla la imagen, mostrar fallback
                                       const target = e.target as HTMLImageElement;
                                       target.style.display = 'none';
                                       const fallback = target.nextElementSibling as HTMLElement;
@@ -1933,47 +2026,39 @@ export function AdminDashboard({
                                   />
                                 ) : null}
                                 <div 
-                                  className="w-6 h-6 bg-teal-500 rounded flex items-center justify-center"
+                                  className="w-8 h-8 bg-teal-500 rounded flex items-center justify-center"
                                   style={{ display: product.url && product.url.trim() !== '' ? 'none' : 'flex' }}
                                 >
-                                  <span className="text-xs font-semibold text-white">
+                                  <span className="text-sm font-semibold text-white">
                                     {product.name.charAt(0).toUpperCase()}
                                   </span>
                                 </div>
                               </div>
-                              <div className="flex-1 min-w-0">
-                                <h3 className={`font-semibold ${getTextClasses().primary} truncate`}>{product.name}</h3>
-                                <p className={`text-xs ${getTextClasses().muted}`}>#{product.id.slice(-6).toUpperCase()}</p>
+                              <div className="flex-grow min-w-0">
+                                <h3 className={`font-semibold ${getTextClasses().primary} text-base`}>{product.name}</h3>
+                                <p className={`text-xs ${getTextClasses().muted} mt-1`}>#{product.id.slice(-6).toUpperCase()}</p>
+                                <div className="flex items-center gap-2 mt-2">
+                                  <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${stockColor}`}>
+                                    {product.stock} Unidades
+                                  </span>
+                                  <span className={`text-xs ${getTextClasses().secondary}`}>
+                                    {category?.name || 'Sin categoría'}
+                                  </span>
+                                </div>
                               </div>
                             </div>
-                            
-                            {/* Stock */}
-                            <div className="col-span-2">
-                              <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${stockColor}`}>
-                                {product.stock} Unidades
-                              </span>
-                            </div>
-                            
-                            {/* Category */}
-                            <div className="col-span-3">
-                              <span className={`text-sm ${getTextClasses().secondary}`}>
-                                {category?.name || 'Sin categoría'}
-                              </span>
-                            </div>
-                            
-                            {/* Actions */}
-                            <div className="col-span-2 flex items-center justify-end space-x-2">
-                                    <EditProductDialog product={product} onSave={onUpdateProduct} />
+                            <div className="flex items-center justify-end gap-2 pt-2 border-t border-border">
+                              <EditProductDialog product={product} onSave={onUpdateProduct} />
                               <Button 
                                 variant="ghost" 
                                 size="icon" 
                                 onClick={() => showDeleteConfirm(() => onDeleteProduct(product.id))}
-                                className={getButtonClasses().danger}
+                                className={`h-10 w-10 ${getButtonClasses().danger}`}
                               >
                                 <Trash2 className="w-4 h-4" />
-                                    </Button>
-                                </div>
-                          </div>
+                              </Button>
+                            </div>
+                          </Card>
                         );
                       })}
                       
@@ -1982,6 +2067,104 @@ export function AdminDashboard({
                           <p>No hay productos activos</p>
                         </div>
                       )}
+                    </div>
+
+                    {/* Desktop view: Table */}
+                    <div className="hidden md:block">
+                      {/* Table Headers */}
+                      <div className={`grid grid-cols-12 gap-4 pb-3 border-b ${getTableClasses().header}`}>
+                        <div className="col-span-5">
+                          <span className={`text-sm font-medium ${getTextClasses().label}`}>PRODUCTO</span>
+                        </div>
+                        <div className="col-span-2">
+                          <span className={`text-sm font-medium ${getTextClasses().label}`}>STOCK</span>
+                        </div>
+                        <div className="col-span-3">
+                          <span className={`text-sm font-medium ${getTextClasses().label}`}>CATEGORÍA</span>
+                        </div>
+                        <div className="col-span-2 text-right">
+                          <span className={`text-sm font-medium ${getTextClasses().label}`}>ACCIONES</span>
+                        </div>
+                      </div>
+                      
+                      {/* Products List */}
+                      <div className="space-y-0">
+                        {products.map((product, index) => {
+                          const category = categories.find(cat => cat.id === product.categoryId);
+                          const stockLevel = product.stock >= 6 ? 'high' : 'low';
+                          const stockColor = stockLevel === 'high' ? 'bg-green-100 text-green-800' : 
+                                           'bg-red-100 text-red-800';
+                          
+                          return (
+                            <div key={product.id} className={`grid grid-cols-12 gap-4 items-center py-4 ${index < products.length - 1 ? `border-b ${getTableClasses().row}` : ''}`}>
+                              {/* Product Info */}
+                              <div className="col-span-5 flex items-center space-x-3">
+                                <div className="w-10 h-10 bg-teal-600 rounded-lg flex items-center justify-center flex-shrink-0">
+                                  {product.url && product.url.trim() !== '' ? (
+                                    <img 
+                                      src={product.url} 
+                                      alt={product.name}
+                                      className="w-8 h-8 rounded object-cover"
+                                      onError={(e) => {
+                                        // Si falla la imagen, mostrar fallback
+                                        const target = e.target as HTMLImageElement;
+                                        target.style.display = 'none';
+                                        const fallback = target.nextElementSibling as HTMLElement;
+                                        if (fallback) fallback.style.display = 'flex';
+                                      }}
+                                    />
+                                  ) : null}
+                                  <div 
+                                    className="w-6 h-6 bg-teal-500 rounded flex items-center justify-center"
+                                    style={{ display: product.url && product.url.trim() !== '' ? 'none' : 'flex' }}
+                                  >
+                                    <span className="text-xs font-semibold text-white">
+                                      {product.name.charAt(0).toUpperCase()}
+                                    </span>
+                                  </div>
+                                </div>
+                                <div className="flex-1 min-w-0">
+                                  <h3 className={`font-semibold ${getTextClasses().primary} truncate`}>{product.name}</h3>
+                                  <p className={`text-xs ${getTextClasses().muted}`}>#{product.id.slice(-6).toUpperCase()}</p>
+                                </div>
+                              </div>
+                              
+                              {/* Stock */}
+                              <div className="col-span-2">
+                                <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${stockColor}`}>
+                                  {product.stock} Unidades
+                                </span>
+                              </div>
+                              
+                              {/* Category */}
+                              <div className="col-span-3">
+                                <span className={`text-sm ${getTextClasses().secondary}`}>
+                                  {category?.name || 'Sin categoría'}
+                                </span>
+                              </div>
+                              
+                              {/* Actions */}
+                              <div className="col-span-2 flex items-center justify-end space-x-2">
+                                      <EditProductDialog product={product} onSave={onUpdateProduct} />
+                                <Button 
+                                  variant="ghost" 
+                                  size="icon" 
+                                  onClick={() => showDeleteConfirm(() => onDeleteProduct(product.id))}
+                                  className={getButtonClasses().danger}
+                                >
+                                  <Trash2 className="w-4 h-4" />
+                                </Button>
+                              </div>
+                            </div>
+                          );
+                        })}
+                        
+                        {products.length === 0 && (
+                          <div className={`text-center py-8 ${getTextClasses().muted}`}>
+                            <p>No hay productos activos</p>
+                          </div>
+                        )}
+                      </div>
                     </div>
                 </div>
               </CardContent>
@@ -2000,7 +2183,7 @@ export function AdminDashboard({
             </div>
 
             {/* Two Column Layout */}
-            <div className="relative grid grid-cols-1 lg:grid-cols-2 gap-8">
+            <div className="relative grid grid-cols-1 xl:grid-cols-2 gap-6 lg:gap-8">
               {/* Left Panel - Add New Perfume */}
               <Card className={`shadow-lg ${getCardClasses()}`}>
                 <CardHeader className="pb-4">
@@ -2069,10 +2252,10 @@ export function AdminDashboard({
                   <MediaPreview preview={perfumePreview} onRemove={() => setPerfumePreview(null)} />
                     </div>
                     
-                    <div className="flex gap-3">
+                    <div className="flex flex-col sm:flex-row gap-3">
                       <Button 
                         type="submit" 
-                        className={`flex-1 bg-pink-500 hover:bg-pink-600 text-white font-semibold py-4 text-lg rounded-lg flex items-center justify-center space-x-2`}
+                        className={`w-full sm:flex-1 bg-pink-500 hover:bg-pink-600 text-white font-semibold py-4 sm:py-3 text-base sm:text-lg rounded-lg flex items-center justify-center space-x-2 h-12 sm:h-11`}
                       >
                         <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" />
@@ -2087,7 +2270,7 @@ export function AdminDashboard({
                           if (form) form.reset();
                           setPerfumePreview(null);
                         }}
-                        className={`px-6 py-4 text-lg rounded-lg flex items-center justify-center space-x-2 border-pink-300 text-pink-600 hover:bg-pink-50 ${theme === 'dark' ? 'border-pink-600 text-pink-400 hover:bg-pink-900/20' : ''}`}
+                        className={`w-full sm:w-auto sm:px-6 py-4 sm:py-3 text-base sm:text-lg rounded-lg flex items-center justify-center space-x-2 border-pink-300 text-pink-600 hover:bg-pink-50 h-12 sm:h-11 ${theme === 'dark' ? 'border-pink-600 text-pink-400 hover:bg-pink-900/20' : ''}`}
                       >
                         <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
@@ -2207,7 +2390,7 @@ export function AdminDashboard({
             </div>
 
             {/* Two Column Layout */}
-            <div className="relative grid grid-cols-1 lg:grid-cols-2 gap-8">
+            <div className="relative grid grid-cols-1 xl:grid-cols-2 gap-6 lg:gap-8">
               {/* Left Panel - Add New Work */}
               <Card className={`shadow-lg ${getCardClasses()}`}>
                 <CardHeader className="pb-4">
@@ -2256,7 +2439,7 @@ export function AdminDashboard({
                     
                     <Button 
                       type="submit" 
-                      className={`w-full bg-green-600 hover:bg-green-700 text-white font-semibold py-3 rounded-lg flex items-center justify-center space-x-2`}
+                      className={`w-full bg-green-600 hover:bg-green-700 text-white font-semibold py-3 sm:py-2.5 rounded-lg flex items-center justify-center space-x-2 h-12 sm:h-11 text-base sm:text-lg`}
                     >
                       <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
@@ -2390,7 +2573,7 @@ export function AdminDashboard({
                           variant="outline" 
                           size="sm" 
                           onClick={() => handleUpdateTestimonial(testimonial.id, { ...testimonial, status: 'pending' })}
-                          className="w-full border-red-300 text-red-600 hover:bg-red-50 dark:border-red-600 dark:text-red-400 dark:hover:bg-red-900/20"
+                          className="w-full border-red-300 text-red-600 hover:bg-red-50 dark:border-red-600 dark:text-red-400 dark:hover:bg-red-900/20 h-10 sm:h-9 text-sm sm:text-base"
                         >
                           {
                             <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -2424,12 +2607,12 @@ export function AdminDashboard({
                       <CardContent className="p-4 space-y-3">
                         <h3 className={`font-semibold ${getTextClasses().primary}`}>{testimonial.author}</h3>
                         <p className={`text-sm ${getTextClasses().secondary} italic`}>"{testimonial.text}"</p>
-                        <div className="flex gap-2">
+                        <div className="flex flex-col gap-2">
                           <Button 
                             variant="outline" 
                             size="sm" 
                             onClick={() => handleUpdateTestimonial(testimonial.id, { ...testimonial, status: 'approved' })}
-                            className="flex-1 border-green-300 text-green-600 hover:bg-green-50 dark:border-green-600 dark:text-green-400 dark:hover:bg-green-900/20"
+                            className="w-full border-green-300 text-green-600 hover:bg-green-50 dark:border-green-600 dark:text-green-400 dark:hover:bg-green-900/20 h-10 text-sm"
                           >
                             <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 10h4.764a2 2 0 011.789 2.894l-3.5 7A2 2 0 0115.263 21h-4.017c-.163 0-.326-.02-.485-.06L7 20m7-10V18m-7-8a2 2 0 01-2-2V5a2 2 0 012-2h2.343M11 5.882l1.657-1.657a2 2 0 012.828 0l2.829 2.829a2 2 0 010 2.828l-8.486 8.485M7 7l3 3" />
@@ -2440,7 +2623,7 @@ export function AdminDashboard({
                             variant="outline" 
                             size="sm" 
                             onClick={() => handleUpdateTestimonial(testimonial.id, { ...testimonial, status: 'rejected' })}
-                            className="flex-1 border-red-300 text-red-600 hover:bg-red-50 dark:border-red-600 dark:text-red-400 dark:hover:bg-red-900/20"
+                            className="w-full border-red-300 text-red-600 hover:bg-red-50 dark:border-red-600 dark:text-red-400 dark:hover:bg-red-900/20 h-10 text-sm"
                           >
                             <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 13l3 3 7-7" />
@@ -2552,10 +2735,10 @@ export function AdminDashboard({
                       </div>
                     )}
                     
-                    <div className="flex gap-3">
+                    <div className="flex flex-col sm:flex-row gap-3">
                       <Button 
                         type="submit" 
-                        className={`flex-1 bg-teal-600 hover:bg-teal-700 text-white font-semibold py-3 rounded-lg flex items-center justify-center space-x-2`}
+                        className={`w-full sm:flex-1 bg-teal-600 hover:bg-teal-700 text-white font-semibold py-3 sm:py-2.5 rounded-lg flex items-center justify-center space-x-2 h-12 sm:h-11 text-base sm:text-lg`}
                       >
                         <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
@@ -2572,7 +2755,7 @@ export function AdminDashboard({
                             const form = document.querySelector('form');
                             if (form) form.reset();
                           }}
-                          className={`px-6 py-3 rounded-lg flex items-center justify-center space-x-2 border-teal-300 text-teal-600 hover:bg-teal-50 ${theme === 'dark' ? 'border-teal-600 text-teal-400 hover:bg-teal-900/20' : ''}`}
+                          className={`w-full sm:w-auto sm:px-6 py-3 text-base sm:text-lg rounded-lg flex items-center justify-center space-x-2 h-12 sm:h-11 border-teal-300 text-teal-600 hover:bg-teal-50 ${theme === 'dark' ? 'border-teal-600 text-teal-400 hover:bg-teal-900/20' : ''}`}
                         >
                           <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -2596,7 +2779,7 @@ export function AdminDashboard({
                     <div className="col-span-1">
                       <span className={`text-sm font-semibold ${getTextClasses().label}`}>Avatar</span>
                     </div>
-                    <div className="col-span-4">
+                    <div className="col-span-4 pl-4 sm:pl-6">
                       <span className={`text-sm font-semibold ${getTextClasses().label}`}>Nombre</span>
                     </div>
                     <div className="col-span-4">
@@ -2620,7 +2803,7 @@ export function AdminDashboard({
                         </div>
                         
                         {/* Name Column */}
-                        <div className="col-span-4 flex items-center">
+                        <div className="col-span-4 flex items-center pl-4 sm:pl-6">
                           <h3 className={`font-semibold ${getTextClasses().primary} truncate`}>{user.name}</h3>
                         </div>
                         
@@ -2656,7 +2839,7 @@ export function AdminDashboard({
                                   <KeyRound className="w-4 h-4" />
                                 </Button>
                               </DialogTrigger>
-                          <DialogContent>
+                          <DialogContent className="w-[95vw] max-w-md sm:max-w-lg md:max-w-2xl max-h-[90vh] overflow-y-auto">
                             <DialogHeader>
                                 <DialogTitle>Cambiar Contraseña para {user.name}</DialogTitle>
                                 <DialogDescription>Introduce la nueva contraseña para el usuario.</DialogDescription>
@@ -2669,7 +2852,7 @@ export function AdminDashboard({
                                 if (form) {
                                   handleChangePassword(e as any);
                                 }
-                              }}>Actualizar</Button></DialogFooter>
+                              }} className="h-12 w-full sm:w-auto sm:px-8">Actualizar</Button></DialogFooter>
                             </form>
                           </DialogContent>
                         </Dialog>

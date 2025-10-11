@@ -22,3 +22,4 @@ export function GalleryLoadingOverlay({ isVisible, text = 'Procesando...' }: Gal
 
 
 
+
