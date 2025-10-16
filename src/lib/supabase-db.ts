@@ -25,23 +25,30 @@ export const getAllItems = async <T>(tableName: string): Promise<T[]> => {
       return [];
     }
 
-    const { data, error } = await supabase
+    // Crear promesa con timeout
+    const queryPromise = supabase
       .from(tableName)
       .select('*')
       .order('created_at', { ascending: false });
 
+    const timeoutPromise = new Promise((_, reject) => 
+      setTimeout(() => reject(new Error('Timeout de consulta')), 15000) // 15 segundos
+    );
+
+    const { data, error } = await Promise.race([queryPromise, timeoutPromise]) as any;
+
     if (error) {
       console.error(`❌ Error al obtener items de ${tableName}:`, error);
-      console.error('Detalles del error:', JSON.stringify(error, null, 2));
       
       // Manejar errores específicos de conexión
-      if (error.message?.includes('Failed to fetch') || error.message?.includes('NetworkError')) {
-        console.error('🌐 Error de red detectado. Verifica tu conexión a internet.');
-        showNetworkError(error);
+      if (error.message?.includes('Failed to fetch') || 
+          error.message?.includes('NetworkError') ||
+          error.message?.includes('Timeout')) {
+        console.error('🌐 Error de red o timeout detectado.');
         return [];
       }
       
-      showDatabaseError(error, `Obtener items de ${tableName}`);
+      // No mostrar error al usuario durante la carga inicial
       return [];
     }
 
@@ -51,9 +58,9 @@ export const getAllItems = async <T>(tableName: string): Promise<T[]> => {
   } catch (error) {
     console.error(
       `❌ Error al obtener items de ${tableName}:`,
-      JSON.stringify(error, null, 2)
+      error instanceof Error ? error.message : 'Error desconocido'
     );
-    showDatabaseError(error, `Obtener items de ${tableName}`);
+    // No mostrar error al usuario durante la carga inicial
     return [];
   }
 };

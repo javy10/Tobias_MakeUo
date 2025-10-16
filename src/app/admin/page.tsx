@@ -11,6 +11,7 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { AdminDashboard } from '@/components/admin/AdminDashboard';
 import { showSuccessAlert, showErrorAlert } from '@/lib/alerts';
+import { motion } from 'framer-motion';
 // Importar hooks con sincronización en tiempo real
 import { 
   useRealtimeCrud, 
@@ -601,44 +602,174 @@ export default function AdminPage() {
 
   if (!authenticatedUser) {
     return (
-      <div className="min-h-dvh flex items-center justify-center bg-secondary p-4">
-        <Card className="w-full max-w-sm shadow-xl">
-          <CardHeader className="text-center">
-            <CardTitle className="font-headline text-3xl text-primary">Acceso Administrativo</CardTitle>
-            <CardDescription>Ingresa tus credenciales para continuar</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <form onSubmit={handleLogin} className="space-y-4">
-              <div className="space-y-2">
-                <Label htmlFor="email">Correo Electrónico</Label>
-                <Input
-                  id="email"
-                  type="email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  placeholder="admin@example.com"
-                  required
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="password">Contraseña</Label>
-                <Input
-                  id="password"
-                  type="password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  placeholder="********"
-                  required
-                />
-              </div>
-              {error && <p className="text-sm text-destructive">{error}</p>}
-              <Button type="submit" className="w-full rounded-full bg-primary text-primary-foreground hover:bg-primary/90">
-                Acceder
-              </Button>
-            </form>
-          </CardContent>
-        </Card>
-      </div>
+      <motion.div 
+        className="min-h-dvh flex items-center justify-center style-2-bg p-4"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.6 }}
+      >
+        {/* Floating Background Elements */}
+        <motion.div
+          className="absolute inset-0 overflow-hidden pointer-events-none"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 1, delay: 0.3 }}
+        >
+          <motion.div
+            className="absolute top-20 left-20 w-32 h-32 bg-cyan-500/10 rounded-full blur-xl"
+            animate={{ 
+              y: [0, -20, 0],
+              x: [0, 10, 0],
+              scale: [1, 1.1, 1]
+            }}
+            transition={{ 
+              duration: 6,
+              repeat: Infinity,
+              ease: "easeInOut"
+            }}
+          />
+          <motion.div
+            className="absolute bottom-20 right-20 w-24 h-24 bg-cyan-400/15 rounded-full blur-lg"
+            animate={{ 
+              y: [0, 15, 0],
+              x: [0, -10, 0],
+              scale: [1, 0.9, 1]
+            }}
+            transition={{ 
+              duration: 8,
+              repeat: Infinity,
+              ease: "easeInOut",
+              delay: 1
+            }}
+          />
+          <motion.div
+            className="absolute top-1/2 left-10 w-16 h-16 bg-cyan-300/20 rounded-full blur-md"
+            animate={{ 
+              y: [0, -10, 0],
+              x: [0, 5, 0],
+              scale: [1, 1.2, 1]
+            }}
+            transition={{ 
+              duration: 5,
+              repeat: Infinity,
+              ease: "easeInOut",
+              delay: 2
+            }}
+          />
+        </motion.div>
+
+        <motion.div
+          initial={{ opacity: 0, y: 30, scale: 0.9 }}
+          animate={{ opacity: 1, y: 0, scale: 1 }}
+          transition={{ duration: 0.6, delay: 0.2 }}
+          whileHover={{ scale: 1.02 }}
+        >
+          <Card className="w-full max-w-sm style-2-card shadow-2xl border-cyan-400/30">
+            <motion.div
+              initial={{ opacity: 0, y: -20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: 0.4 }}
+            >
+              <CardHeader className="text-center pb-6">
+                <motion.div
+                  className="w-16 h-16 bg-gradient-to-r from-cyan-600 to-cyan-500 rounded-full flex items-center justify-center mx-auto mb-4 style-2-glow"
+                  initial={{ scale: 0, rotate: -180 }}
+                  animate={{ scale: 1, rotate: 0 }}
+                  transition={{ duration: 0.6, delay: 0.5 }}
+                >
+                  <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                  </svg>
+                </motion.div>
+                <CardTitle className="font-headline text-3xl text-white mb-2">Acceso Administrativo</CardTitle>
+                <CardDescription className="text-gray-300">Ingresa tus credenciales para continuar</CardDescription>
+              </CardHeader>
+            </motion.div>
+            
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: 0.6 }}
+            >
+              <CardContent>
+                <form onSubmit={handleLogin} className="space-y-6">
+                  <motion.div 
+                    className="space-y-2"
+                    initial={{ opacity: 0, x: -20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ duration: 0.4, delay: 0.7 }}
+                  >
+                    <Label htmlFor="email" className="text-gray-300 font-medium">Correo Electrónico</Label>
+                    <Input
+                      id="email"
+                      type="email"
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                      placeholder="admin@example.com"
+                      required
+                      className="bg-white/10 border-cyan-400/30 text-white placeholder-gray-400 focus:border-cyan-400 focus:ring-cyan-400/20"
+                    />
+                  </motion.div>
+                  
+                  <motion.div 
+                    className="space-y-2"
+                    initial={{ opacity: 0, x: -20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ duration: 0.4, delay: 0.8 }}
+                  >
+                    <Label htmlFor="password" className="text-gray-300 font-medium">Contraseña</Label>
+                    <Input
+                      id="password"
+                      type="password"
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
+                      placeholder="********"
+                      required
+                      className="bg-white/10 border-cyan-400/30 text-white placeholder-gray-400 focus:border-cyan-400 focus:ring-cyan-400/20"
+                    />
+                  </motion.div>
+                  
+                  {error && (
+                    <motion.p 
+                      className="text-sm text-red-400 bg-red-500/10 p-3 rounded-lg border border-red-500/30"
+                      initial={{ opacity: 0, scale: 0.9 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      transition={{ duration: 0.3 }}
+                    >
+                      {error}
+                    </motion.p>
+                  )}
+                  
+                  <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.4, delay: 0.9 }}
+                  >
+                    <motion.div
+                      whileHover={{ scale: 1.02 }}
+                      whileTap={{ scale: 0.98 }}
+                      transition={{ duration: 0.2 }}
+                    >
+                      <Button 
+                        type="submit" 
+                        className="w-full bg-gradient-to-r from-cyan-600 to-cyan-500 hover:from-cyan-700 hover:to-cyan-600 text-white font-semibold py-3 rounded-lg style-2-glow transition-all duration-300"
+                      >
+                        <motion.span
+                          initial={{ opacity: 0 }}
+                          animate={{ opacity: 1 }}
+                          transition={{ delay: 1 }}
+                        >
+                          Acceder
+                        </motion.span>
+                      </Button>
+                    </motion.div>
+                  </motion.div>
+                </form>
+              </CardContent>
+            </motion.div>
+          </Card>
+        </motion.div>
+      </motion.div>
     );
   }
 

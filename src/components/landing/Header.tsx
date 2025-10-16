@@ -17,7 +17,7 @@ export function Header() {
   const visibleSections = useVisibleSectionsOnly(appState);
 
   return (
-    <header className="bg-card/80 sticky top-0 z-50 shadow-md backdrop-blur-sm">
+    <header className="glass-effect-dark sticky top-0 z-50 shadow-lg backdrop-blur-md border-b border-primary/20">
       <nav className="container mx-auto px-4 sm:px-6 lg:px-8 py-3 sm:py-4 flex justify-between items-center">
         <Logo className="w-32 sm:w-36 md:w-40" />
         
@@ -28,7 +28,7 @@ export function Header() {
               <a 
                 key={section.href} 
                 href={section.href} 
-                className="px-2 py-1 text-sm sm:text-base text-foreground/80 hover:text-primary transition-colors rounded-md hover:bg-primary/10"
+                className="px-2 py-1 text-sm sm:text-base text-white/90 hover:text-accent transition-colors rounded-md hover:bg-primary/20 hover-lift"
               >
                 {section.label}
               </a>
@@ -43,7 +43,7 @@ export function Header() {
               <a 
                 key={section.href} 
                 href={section.href} 
-                className="px-2 py-1 text-sm text-foreground/80 hover:text-primary transition-colors rounded-md hover:bg-primary/10"
+                className="px-2 py-1 text-sm text-white/90 hover:text-accent transition-colors rounded-md hover:bg-primary/20 hover-lift"
               >
                 {section.label}
               </a>
@@ -60,7 +60,7 @@ export function Header() {
                     <a
                       key={section.href}
                       href={section.href}
-                      className="text-foreground/80 hover:text-primary transition-colors px-4 py-2 rounded-md hover:bg-primary/10"
+                      className="text-white/90 hover:text-accent transition-colors px-4 py-2 rounded-md hover:bg-primary/20 hover-lift"
                       onClick={() => setIsMenuOpen(false)}
                     >
                       {section.label}
@@ -81,7 +81,7 @@ export function Header() {
                 <span className="sr-only">Open menu</span>
               </Button>
             </SheetTrigger>
-            <SheetContent side="right" className="w-full sm:w-80 bg-background/95 backdrop-blur-md">
+            <SheetContent side="right" className="w-full sm:w-80 glass-effect-dark backdrop-blur-md border-l border-primary/20">
               <SheetHeader>
                 <SheetTitle className="text-2xl font-headline">Menú</SheetTitle>
                 <SheetDescription>
@@ -94,7 +94,7 @@ export function Header() {
                   <a
                     key={section.href}
                     href={section.href}
-                    className="text-xl text-foreground/80 hover:text-primary transition-colors"
+                    className="text-xl text-white/90 hover:text-accent transition-colors hover-lift"
                     onClick={() => setIsMenuOpen(false)}
                   >
                     {section.label}

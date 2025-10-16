@@ -170,5 +170,23 @@ export class OptimizedDB {
   }
 }
 
+// Funciones optimistas para operaciones rápidas
+export async function updateItemOptimistic<T>(
+  table: string,
+  id: string | number,
+  data: Partial<T>
+): Promise<T | null> {
+  const db = OptimizedDB.getInstance();
+  return await db.update(table, id, data);
+}
+
+export async function deleteItemOptimistic(
+  table: string,
+  id: string | number
+): Promise<boolean> {
+  const db = OptimizedDB.getInstance();
+  return await db.delete(table, id);
+}
+
 // Instancia global
 export const optimizedDB = OptimizedDB.getInstance();

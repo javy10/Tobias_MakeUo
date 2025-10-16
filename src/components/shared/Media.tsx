@@ -65,7 +65,8 @@ export function Media({
   const mediaClass = `${className} transition-transform duration-300`
   const mediaStyle: CSSProperties = {
     ...style,
-    objectFit: 'cover' // Siempre usar cover para mejor ajuste
+    // Usar el objectFit del style prop si está definido, sino usar cover por defecto
+    objectFit: style?.objectFit || 'cover'
   }
 
   if (type === 'image') {
@@ -78,7 +79,7 @@ export function Media({
         <SupabaseImage
           src={src}
           alt={alt}
-          className={`${mediaClass} object-cover`}
+          className={mediaClass}
           fill={fill}
           width={!fill ? width : undefined}
           height={!fill ? height : undefined}
@@ -97,7 +98,7 @@ export function Media({
         <Image
           src={src}
           alt={alt}
-          className={`${mediaClass} object-cover`}
+          className={mediaClass}
           fill={fill}
           width={!fill ? width : undefined}
           height={!fill ? height : undefined}
@@ -121,7 +122,7 @@ export function Media({
     <div className={containerClass}>
       <video
         src={src}
-        className={`${mediaClass} w-full h-full object-cover`}
+        className={`${mediaClass} w-full h-full`}
         style={mediaStyle}
         autoPlay={true} // Siempre auto-reproducir
         loop={true} // Siempre en bucle

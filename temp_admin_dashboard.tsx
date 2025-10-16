@@ -1218,7 +1218,7 @@ export function AdminDashboard({
               className="max-w-4xl mx-auto px-4"
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
+              viewport={{ once: false }}
               transition={{ duration: 0.5, delay: 0.2 }}
             >
               <motion.div
@@ -1229,7 +1229,7 @@ export function AdminDashboard({
                   <motion.div
                     initial={{ opacity: 0, y: -20 }}
                     whileInView={{ opacity: 1, y: 0 }}
-                    viewport={{ once: true }}
+                    viewport={{ once: false }}
                     transition={{ duration: 0.5, delay: 0.3 }}
                   >
                 <CardHeader className="text-center pb-6">
@@ -1244,7 +1244,7 @@ export function AdminDashboard({
                   <motion.div
                     initial={{ opacity: 0, y: 20 }}
                     whileInView={{ opacity: 1, y: 0 }}
-                    viewport={{ once: true }}
+                    viewport={{ once: false }}
                     transition={{ duration: 0.5, delay: 0.4 }}
                   >
                 <CardContent className="px-8 pb-8">
@@ -1254,14 +1254,14 @@ export function AdminDashboard({
                           className="space-y-6"
                           initial={{ opacity: 0 }}
                           whileInView={{ opacity: 1 }}
-                          viewport={{ once: true }}
+                          viewport={{ once: false }}
                           transition={{ duration: 0.5, delay: 0.5 }}
                         >
                           <motion.div 
                             className="space-y-2"
                             initial={{ opacity: 0, x: -20 }}
                             whileInView={{ opacity: 1, x: 0 }}
-                            viewport={{ once: true }}
+                            viewport={{ once: false }}
                             transition={{ duration: 0.4, delay: 0.6 }}
                           >
                         <Label className={`text-sm font-medium ${getTextClasses().label}`}>Titulo</Label>
@@ -1275,7 +1275,7 @@ export function AdminDashboard({
                             className="space-y-2"
                             initial={{ opacity: 0, x: -20 }}
                             whileInView={{ opacity: 1, x: 0 }}
-                            viewport={{ once: true }}
+                            viewport={{ once: false }}
                             transition={{ duration: 0.4, delay: 0.7 }}
                           >
                         <Label className={`text-sm font-medium ${getTextClasses().label}`}>Subtitulo</Label>
@@ -1293,14 +1293,14 @@ export function AdminDashboard({
                           className="space-y-6"
                           initial={{ opacity: 0 }}
                           whileInView={{ opacity: 1 }}
-                          viewport={{ once: true }}
+                          viewport={{ once: false }}
                           transition={{ duration: 0.5, delay: 0.8 }}
                         >
                           <motion.div 
                             className="space-y-3"
                             initial={{ opacity: 0, x: 20 }}
                             whileInView={{ opacity: 1, x: 0 }}
-                            viewport={{ once: true }}
+                            viewport={{ once: false }}
                             transition={{ duration: 0.4, delay: 0.9 }}
                           >
                         <Label className={`text-sm font-medium ${getTextClasses().label}`}>Imagen Actual</Label>
@@ -1323,7 +1323,7 @@ export function AdminDashboard({
                             className="space-y-3"
                             initial={{ opacity: 0, x: 20 }}
                             whileInView={{ opacity: 1, x: 0 }}
-                            viewport={{ once: true }}
+                            viewport={{ once: false }}
                             transition={{ duration: 0.4, delay: 1.0 }}
                           >
                         <Label className={`text-sm font-medium ${getTextClasses().label}`}>Nueva Imagen (opcional)</Label>
@@ -1337,7 +1337,7 @@ export function AdminDashboard({
                                 className="mt-4"
                                 initial={{ opacity: 0, scale: 0.9 }}
                                 whileInView={{ opacity: 1, scale: 1 }}
-                                viewport={{ once: true }}
+                                viewport={{ once: false }}
                                 transition={{ duration: 0.3 }}
                               >
                             <Label className={`text-sm font-medium ${getTextClasses().label}`}>Vista previa de la nueva imagen</Label>
@@ -1354,7 +1354,7 @@ export function AdminDashboard({
                           className="flex justify-center pt-4"
                           initial={{ opacity: 0, y: 20 }}
                           whileInView={{ opacity: 1, y: 0 }}
-                          viewport={{ once: true }}
+                          viewport={{ once: false }}
                           transition={{ duration: 0.5, delay: 1.1 }}
                         >
                           <motion.div
@@ -1397,7 +1397,7 @@ export function AdminDashboard({
                 <motion.div
                   initial={{ opacity: 0, y: -20 }}
                   whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
+                  viewport={{ once: false }}
                   transition={{ duration: 0.5 }}
                 >
                   <CardHeader>
@@ -1407,7 +1407,7 @@ export function AdminDashboard({
                 <motion.div
                   initial={{ opacity: 0, y: 20 }}
                   whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
+                  viewport={{ once: false }}
                   transition={{ duration: 0.5, delay: 0.2 }}
                 >
               <CardContent>
@@ -1415,7 +1415,7 @@ export function AdminDashboard({
                       <motion.div
                         initial={{ opacity: 0, x: -20 }}
                         whileInView={{ opacity: 1, x: 0 }}
-                        viewport={{ once: true }}
+                        viewport={{ once: false }}
                         transition={{ duration: 0.4, delay: 0.3 }}
                       >
                         <Textarea 
@@ -1429,13 +1429,13 @@ export function AdminDashboard({
                         className="grid grid-cols-1 md:grid-cols-3 gap-4"
                         initial={{ opacity: 0 }}
                         whileInView={{ opacity: 1 }}
-                        viewport={{ once: true }}
+                        viewport={{ once: false }}
                         transition={{ duration: 0.5, delay: 0.4 }}
                       >
                         <motion.div
                           initial={{ opacity: 0, y: 20 }}
                           whileInView={{ opacity: 1, y: 0 }}
-                          viewport={{ once: true }}
+                          viewport={{ once: false }}
                           transition={{ duration: 0.4, delay: 0.5 }}
                         >
                           <Input 
@@ -1447,7 +1447,7 @@ export function AdminDashboard({
                         <motion.div
                           initial={{ opacity: 0, y: 20 }}
                           whileInView={{ opacity: 1, y: 0 }}
-                          viewport={{ once: true }}
+                          viewport={{ once: false }}
                           transition={{ duration: 0.4, delay: 0.6 }}
                         >
                           <Input 
@@ -1459,7 +1459,7 @@ export function AdminDashboard({
                         <motion.div
                           initial={{ opacity: 0, y: 20 }}
                           whileInView={{ opacity: 1, y: 0 }}
-                          viewport={{ once: true }}
+                          viewport={{ once: false }}
                           transition={{ duration: 0.4, delay: 0.7 }}
                         >
                           <Input 
@@ -1472,7 +1472,7 @@ export function AdminDashboard({
                       <motion.div
                         initial={{ opacity: 0, x: 20 }}
                         whileInView={{ opacity: 1, x: 0 }}
-                        viewport={{ once: true }}
+                        viewport={{ once: false }}
                         transition={{ duration: 0.4, delay: 0.8 }}
                       >
                         <DragDropUpload 
@@ -1484,7 +1484,7 @@ export function AdminDashboard({
                       <motion.div
                         initial={{ opacity: 0, scale: 0.9 }}
                         whileInView={{ opacity: 1, scale: 1 }}
-                        viewport={{ once: true }}
+                        viewport={{ once: false }}
                         transition={{ duration: 0.3, delay: 0.9 }}
                       >
                         <MediaPreview 
@@ -1495,7 +1495,7 @@ export function AdminDashboard({
                       <motion.div
                         initial={{ opacity: 0, y: 20 }}
                         whileInView={{ opacity: 1, y: 0 }}
-                        viewport={{ once: true }}
+                        viewport={{ once: false }}
                         transition={{ duration: 0.5, delay: 1.0 }}
                       >
                         <motion.div
@@ -1529,14 +1529,14 @@ export function AdminDashboard({
           >
             {/* Header */}
             <motion.div 
-              className="text-center"
+              className="space-y-2"
               initial={{ opacity: 0, y: -20 }}
               whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
+              viewport={{ once: false }}
               transition={{ duration: 0.5 }}
             >
-              <h1 className={`text-3xl font-bold ${getTextClasses().primary} mb-2`}>Gestionar Servicios</h1>
-              <p className={`text-lg ${getTextClasses().secondary}`}>Añade, visualiza y gestiona los servicios que ofreces.</p>
+              <h1 className="text-3xl font-bold text-foreground">Gestionar Servicios</h1>
+              <p className="text-lg text-muted-foreground">Añade, edita y elimina los servicios que ofreces.</p>
             </motion.div>
 
             {/* Two Column Layout */}
@@ -1544,36 +1544,27 @@ export function AdminDashboard({
               className="relative grid grid-cols-1 xl:grid-cols-2 gap-6 lg:gap-8"
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
+              viewport={{ once: false }}
               transition={{ duration: 0.5, delay: 0.2 }}
             >
-              {/* Left Panel - Add Service Form */}
+              {/* Left Panel - Add New Service */}
               <motion.div
                 whileHover={{ scale: 1.02 }}
                 transition={{ duration: 0.2 }}
               >
                 <Card className="bg-card border shadow-lg">
                 <CardHeader className="pb-4">
-                  <CardTitle className="text-xl font-semibold text-foreground">Añadir Nuevo Servicio</CardTitle>
+                  <CardTitle className="text-xl font-semibold text-foreground">
+                    {isEditMode ? `Editar Servicio: ${editingService?.title}` : 'Añadir Nuevo Servicio'}
+                  </CardTitle>
                 </CardHeader>
               <CardContent className="space-y-6">
                   <form onSubmit={handleAddService} className="space-y-4">
-                    <motion.div 
-                      className="space-y-2"
-                      initial={{ opacity: 0, x: -20 }}
-                      whileInView={{ opacity: 1, x: 0 }}
-                      viewport={{ once: true }}
-                      transition={{ duration: 0.4, delay: 0.5 }}
-                    >
-                      <Label className={`text-sm font-medium ${getTextClasses().label} flex items-center gap-2`}>
-                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" />
-                        </svg>
-                        Título del Servicio
-                      </Label>
+                    <div className="space-y-2">
+                      <label className="text-sm font-medium text-foreground">Titulo</label>
                       <Input 
                         name="title" 
-                        placeholder="Ej: Maquillaje Profesional" 
+                        placeholder="Ej: Diseño Web Moderno" 
                         value={isEditMode ? editingService?.title || '' : formTitle}
                         onChange={(e) => {
                           if (isEditMode && editingService) {
@@ -1583,18 +1574,12 @@ export function AdminDashboard({
                           }
                         }}
                         required 
-                        className={`w-full h-10 ${getInputClasses()}`}
+                        className={`w-full ${getInputClasses()}`}
                       />
-                    </motion.div>
+                    </div>
                     
-                    <motion.div 
-                      className="space-y-2"
-                      initial={{ opacity: 0, x: -20 }}
-                      whileInView={{ opacity: 1, x: 0 }}
-                      viewport={{ once: true }}
-                      transition={{ duration: 0.4, delay: 0.6 }}
-                    >
-                      <Label className={`text-sm font-medium ${getTextClasses().label}`}>Descripción</Label>
+                    <div className="space-y-2">
+                      <label className={`text-sm font-medium ${getTextClasses().label}`}>Descripción</label>
                       <Textarea 
                         name="description" 
                         placeholder="Describe los detalles del servicio..." 
@@ -1607,174 +1592,157 @@ export function AdminDashboard({
                           }
                         }}
                         required 
-                        rows={3}
-                        className={`w-full min-h-[80px] ${getInputClasses()} resize-none`}
+                        rows={4}
+                        className={`w-full ${getInputClasses()}`}
                       />
-                    </motion.div>
+                    </div>
                     
-                    <motion.div 
-                      className="space-y-2"
-                      initial={{ opacity: 0, x: -20 }}
-                      whileInView={{ opacity: 1, x: 0 }}
-                      viewport={{ once: true }}
-                      transition={{ duration: 0.4, delay: 0.7 }}
-                    >
-                      <Label className={`text-sm font-medium ${getTextClasses().label}`}>Imagen del Servicio</Label>
+                    <div className="space-y-2">
+                      <label className={`text-sm font-medium ${getTextClasses().label}`}>Imagen del Servicio</label>
+                      {isEditMode && editingService?.url && !serviceMediaFile && (
+                        <div className="mb-2 p-2 bg-gray-700 rounded text-xs text-gray-400">
+                          Imagen actual: {editingService.title}
+                        </div>
+                      )}
                       <DragDropUpload 
                         name="mediaFile" 
                         accept="image/*,video/*" 
-                        required 
-                        onFileSelect={(file) => handleMediaFilePreview(file, setServicePreview)}
+                        required={!isEditMode}
+                        onFileSelect={(file) => {
+                          handleMediaFilePreview(file, setServicePreview);
+                          setServiceMediaFile(file);
+                        }}
                       />
-                      <MediaPreview preview={servicePreview} onRemove={() => setServicePreview(null)} />
-                    </motion.div>
+                  <MediaPreview preview={servicePreview} onRemove={() => {
+                    setServicePreview(null);
+                    setServiceMediaFile(undefined);
+                  }} />
+                    </div>
                     
-                    <motion.div 
-                      className="flex flex-col sm:flex-row gap-3"
-                      initial={{ opacity: 0, y: 20 }}
-                      whileInView={{ opacity: 1, y: 0 }}
-                      viewport={{ once: true }}
-                      transition={{ duration: 0.4, delay: 0.8 }}
-                      whileHover={{ scale: 1.02 }}
-                      whileTap={{ scale: 0.98 }}
-                    >
+                    <div className="flex flex-col sm:flex-row gap-3">
+                      <motion.div
+                        whileHover={{ scale: 1.02 }}
+                        whileTap={{ scale: 0.98 }}
+                        transition={{ duration: 0.2 }}
+                      >
                       <Button 
                         type="submit" 
-                        className={`w-full sm:flex-1 bg-pink-500 hover:bg-pink-600 text-white font-semibold py-2 text-sm rounded-lg flex items-center justify-center space-x-2 h-10`}
+                          className="w-full sm:flex-1 bg-gradient-to-r from-cyan-600 to-cyan-500 hover:from-cyan-700 hover:to-cyan-600 text-white font-semibold py-3 sm:py-2.5 rounded-lg flex items-center justify-center space-x-2 h-12 sm:h-11 text-base sm:text-lg style-2-glow"
                       >
-                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" />
-                        </svg>
-                        <span>Añadir Servicio</span>
+                        <div className="w-5 h-5 bg-white rounded-full flex items-center justify-center">
+                          <svg className="w-3 h-3 text-teal-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+                          </svg>
+                        </div>
+                        <span>{isEditMode ? 'Actualizar Servicio' : 'Añadir Servicio'}</span>
                       </Button>
-                      <Button 
-                        type="button" 
-                        variant="outline"
-                        onClick={() => {
-                          const form = document.querySelector('form');
-                          if (form) form.reset();
-                          setServicePreview(null);
-                        }}
-                        className={`w-full sm:w-auto sm:px-6 py-4 sm:py-3 text-base sm:text-lg rounded-lg flex items-center justify-center space-x-2 border-pink-300 text-pink-600 hover:bg-pink-50 h-12 sm:h-11 ${theme === 'dark' ? 'border-pink-600 text-pink-400 hover:bg-pink-900/20' : ''}`}
-                      >
-                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                        </svg>
-                        Limpiar
-                      </Button>
-                    </motion.div>
+                      </motion.div>
+                      
+                      {isEditMode && (
+                        <Button 
+                          type="button" 
+                          variant="outline" 
+                          onClick={cancelEdit}
+                          className="w-full sm:w-auto sm:px-6 border-gray-600 text-gray-300 hover:bg-gray-700 py-3 text-base sm:text-lg rounded-lg flex items-center justify-center space-x-2 h-12 sm:h-11"
+                        >
+                          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                          </svg>
+                          <span>Cancelar Edición</span>
+                        </Button>
+                      )}
+                    </div>
                 </form>
-              </CardContent>
-                </Card>
+                </CardContent>
+              </Card>
               </motion.div>
 
-              {/* Right Panel - Service Inventory */}
-              <Card className="bg-card border shadow-lg">
+              {/* Right Panel - Active Services */}
+              <motion.div
+                whileHover={{ scale: 1.02 }}
+                transition={{ duration: 0.2 }}
+              >
+                <Card className="bg-card border shadow-lg">
                 <CardHeader className="pb-4">
-                  <CardTitle className="text-xl font-semibold text-foreground">Servicios Activos</CardTitle>
+                    <CardTitle className="text-xl font-semibold text-foreground">Servicios Activos</CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <div className="space-y-0">
-                    {/* Table Headers */}
-                    <motion.div 
-                      className={`grid grid-cols-10 gap-4 pb-3 border-b ${getTableClasses().header} sticky top-0 bg-background z-10`}
-                      initial={{ opacity: 0, y: -20 }}
-                      whileInView={{ opacity: 1, y: 0 }}
-                      viewport={{ once: true }}
-                      transition={{ duration: 0.5, delay: 0.3 }}
-                    >
-                      <div className="col-span-6">
-                        <span className={`text-sm font-medium ${getTextClasses().label}`}>SERVICIO</span>
-                      </div>
-                      <div className="col-span-2">
-                        <span className={`text-sm font-medium ${getTextClasses().label}`}>TIPO</span>
-                      </div>
-                      <div className="col-span-2 text-right">
-                        <span className={`text-sm font-medium ${getTextClasses().label}`}>ACCIONES</span>
-                      </div>
-                    </motion.div>
-                    
-                    {/* Services List */}
-                    <div className="space-y-0 max-h-96 overflow-y-auto">
-                      {services.map((service, index) => {
-                        return (
-                          <motion.div 
-                            key={service.id} 
-                            className={`grid grid-cols-10 gap-4 items-center py-4 ${index < services.length - 1 ? `border-b ${getTableClasses().row}` : ''}`}
-                            initial={{ opacity: 0, y: 20 }}
-                            whileInView={{ opacity: 1, y: 0 }}
-                            viewport={{ once: true }}
-                            transition={{ duration: 0.4, delay: index * 0.1 }}
-                            whileHover={{ scale: 1.01, backgroundColor: theme === 'dark' ? 'rgba(55, 65, 81, 0.3)' : 'rgba(249, 250, 251, 0.8)' }}
-                          >
-                            {/* Service Info */}
-                            <div className="col-span-6 flex items-center space-x-3">
-                              <div className="w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0 overflow-hidden">
-                                {service.url && service.url.trim() !== '' ? (
-                                  <img 
-                                    src={service.url} 
-                                    alt={service.title}
-                                    className="w-full h-full object-cover rounded"
-                                    onError={(e) => {
-                                      const target = e.target as HTMLImageElement;
-                                      target.style.display = 'none';
-                                      const fallback = target.nextElementSibling as HTMLElement;
-                                      if (fallback) fallback.style.display = 'flex';
-                                    }}
-                                  />
-                                ) : null}
-                                <div 
-                                  className={`w-full h-full rounded flex items-center justify-center ${service.url && service.url.trim() !== '' ? 'hidden' : 'flex'}`}
-                                  style={{ backgroundColor: '#10b981' }}
-                                >
-                                  <span className="text-xs font-semibold text-white">
-                                    {service.title.charAt(0).toUpperCase()}
-                                  </span>
-                                </div>
-                              </div>
+                  <div className="space-y-4">
+                    {/* Mobile view: Cards */}
+                    <div className="grid gap-4 md:hidden">
+                      {services.map((service) => (
+                          <Card key={service.id} className="p-4 space-y-3 bg-card border">
+                          <div className="flex items-start gap-3">
+                            <ServiceImage service={service} />
+                            <div className="flex-grow min-w-0">
+                                <h3 className="font-semibold text-foreground text-base">{service.title}</h3>
+                                <p className="text-sm text-muted-foreground line-clamp-2 mt-1">{service.description}</p>
+                            </div>
+                          </div>
+                          <div className="flex items-center justify-end gap-2 pt-2 border-t border-border">
+                            <Button 
+                              variant="ghost" 
+                              size="icon" 
+                              onClick={() => loadServiceForEdit(service)}
+                                className="h-10 w-10 text-muted-foreground hover:text-foreground hover:bg-accent"
+                            >
+                                <Pencil className="h-4 w-4" />
+                            </Button>
+                            <Button 
+                              variant="ghost" 
+                              size="icon" 
+                                onClick={() => handleDeleteService(service.id)}
+                                className="h-10 w-10 text-destructive hover:text-destructive/80 hover:bg-destructive/10"
+                            >
+                                <Trash2 className="h-4 w-4" />
+                            </Button>
+                          </div>
+                        </Card>
+                      ))}
+                    </div>
+
+                    {/* Desktop view: Table */}
+                    <div className="hidden md:block">
+                      <div className="space-y-3">
+                          {services.map((service) => (
+                            <div key={service.id} className="flex items-center gap-4 p-4 rounded-lg border border-border hover:bg-accent/50 transition-colors">
+                            <ServiceImage service={service} />
                               <div className="flex-grow min-w-0">
-                                <h3 className={`font-semibold ${getTextClasses().primary} text-sm`}>{service.title}</h3>
-                                <p className={`text-xs ${getTextClasses().secondary} line-clamp-1 mt-1`}>{service.description}</p>
-                              </div>
+                                <h3 className="font-semibold text-foreground text-base">{service.title}</h3>
+                                <p className="text-sm text-muted-foreground line-clamp-2 mt-1">{service.description}</p>
                             </div>
-                            
-                            {/* Service Type */}
-                            <div className="col-span-2">
-                              <span className={`text-sm ${getTextClasses().secondary}`}>Servicio</span>
-                            </div>
-                            
-                            {/* Actions */}
-                            <div className="col-span-2 flex items-center justify-end gap-2">
+                              <div className="flex items-center gap-2">
                               <Button 
                                 variant="ghost" 
                                 size="icon" 
                                 onClick={() => loadServiceForEdit(service)}
-                                className={getButtonClasses().primary}
+                                  className="h-10 w-10 text-muted-foreground hover:text-foreground hover:bg-accent"
                               >
-                                <Pencil className="w-4 h-4" />
+                                  <Pencil className="h-4 w-4" />
                               </Button>
                               <Button 
                                 variant="ghost" 
                                 size="icon" 
-                                onClick={() => handleDeleteService(service.id)}
-                                className={getButtonClasses().danger}
+                                  onClick={() => handleDeleteService(service.id)}
+                                  className="h-10 w-10 text-destructive hover:text-destructive/80 hover:bg-destructive/10"
                               >
-                                <Trash2 className="w-4 h-4" />
+                                  <Trash2 className="h-4 w-4" />
                               </Button>
                             </div>
-                          </motion.div>
-                        );
-                      })}
-                      
-                      {services.length === 0 && (
-                        <div className={`text-center py-8 ${getTextClasses().muted}`}>
-                          <p>No hay servicios en el inventario</p>
+                          </div>
+                        ))}
                         </div>
-                      )}
-                    </div>
-                </div>
+                      </div>
+                        
+                        {services.length === 0 && (
+                        <div className="text-center py-8">
+                          <p className="text-muted-foreground">No hay servicios activos</p>
+                          </div>
+                        )}
+                  </div>
               </CardContent>
             </Card>
+              </motion.div>
             </motion.div>
           </motion.div>
         );
@@ -1792,7 +1760,7 @@ export function AdminDashboard({
               className="text-center"
               initial={{ opacity: 0, y: -20 }}
               whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
+              viewport={{ once: false }}
               transition={{ duration: 0.5 }}
             >
               <h1 className={`text-3xl font-bold ${getTextClasses().primary} mb-2`}>Gestionar Cursos de Belleza</h1>
@@ -1804,7 +1772,7 @@ export function AdminDashboard({
               className="relative grid grid-cols-1 xl:grid-cols-2 gap-6 lg:gap-8"
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
+              viewport={{ once: false }}
               transition={{ duration: 0.5, delay: 0.2 }}
             >
               {/* Left Panel - Add Course Form */}
@@ -1816,7 +1784,7 @@ export function AdminDashboard({
                   <motion.div
                     initial={{ opacity: 0, y: -20 }}
                     whileInView={{ opacity: 1, y: 0 }}
-                    viewport={{ once: true }}
+                    viewport={{ once: false }}
                     transition={{ duration: 0.5, delay: 0.3 }}
                   >
                 <CardHeader className="pb-4">
@@ -1833,7 +1801,7 @@ export function AdminDashboard({
                   <motion.div
                     initial={{ opacity: 0, y: 20 }}
                     whileInView={{ opacity: 1, y: 0 }}
-                    viewport={{ once: true }}
+                    viewport={{ once: false }}
                     transition={{ duration: 0.5, delay: 0.4 }}
                   >
                 <CardContent className="space-y-6">
@@ -1842,7 +1810,7 @@ export function AdminDashboard({
                           className="space-y-2"
                           initial={{ opacity: 0, x: -20 }}
                           whileInView={{ opacity: 1, x: 0 }}
-                          viewport={{ once: true }}
+                          viewport={{ once: false }}
                           transition={{ duration: 0.4, delay: 0.5 }}
                         >
                       <Label className={`text-sm font-medium ${getTextClasses().label} flex items-center gap-2`}>
@@ -1863,7 +1831,7 @@ export function AdminDashboard({
                           className="space-y-2"
                           initial={{ opacity: 0, x: -20 }}
                           whileInView={{ opacity: 1, x: 0 }}
-                          viewport={{ once: true }}
+                          viewport={{ once: false }}
                           transition={{ duration: 0.4, delay: 0.6 }}
                         >
                       <Label className={`text-sm font-medium ${getTextClasses().label} flex items-center gap-2`}>
@@ -1885,7 +1853,7 @@ export function AdminDashboard({
                           className="space-y-2"
                           initial={{ opacity: 0, x: 20 }}
                           whileInView={{ opacity: 1, x: 0 }}
-                          viewport={{ once: true }}
+                          viewport={{ once: false }}
                           transition={{ duration: 0.4, delay: 0.7 }}
                         >
                       <Label className={`text-sm font-medium ${getTextClasses().label} flex items-center gap-2`}>
@@ -1909,7 +1877,7 @@ export function AdminDashboard({
                               className="mt-4"
                               initial={{ opacity: 0, scale: 0.9 }}
                               whileInView={{ opacity: 1, scale: 1 }}
-                              viewport={{ once: true }}
+                              viewport={{ once: false }}
                               transition={{ duration: 0.3 }}
                             >
                           <MediaPreview preview={coursePreview} onRemove={() => {
@@ -1924,7 +1892,7 @@ export function AdminDashboard({
                           className="flex flex-col sm:flex-row gap-3"
                           initial={{ opacity: 0, y: 20 }}
                           whileInView={{ opacity: 1, y: 0 }}
-                          viewport={{ once: true }}
+                          viewport={{ once: false }}
                           transition={{ duration: 0.5, delay: 0.8 }}
                         >
                           <motion.div
@@ -1978,7 +1946,7 @@ export function AdminDashboard({
                   <motion.div
                     initial={{ opacity: 0, y: -20 }}
                     whileInView={{ opacity: 1, y: 0 }}
-                    viewport={{ once: true }}
+                    viewport={{ once: false }}
                     transition={{ duration: 0.5, delay: 0.3 }}
                   >
                 <CardHeader className="pb-4">
@@ -1989,7 +1957,7 @@ export function AdminDashboard({
                   <motion.div
                     initial={{ opacity: 0, y: 20 }}
                     whileInView={{ opacity: 1, y: 0 }}
-                    viewport={{ once: true }}
+                    viewport={{ once: false }}
                     transition={{ duration: 0.5, delay: 0.4 }}
                   >
                 <CardContent>
@@ -1999,7 +1967,7 @@ export function AdminDashboard({
                           className="grid gap-4 md:hidden"
                           initial={{ opacity: 0 }}
                           whileInView={{ opacity: 1 }}
-                          viewport={{ once: true }}
+                          viewport={{ once: false }}
                           transition={{ duration: 0.5, delay: 0.5 }}
                         >
                           {courses.map((course, index) => (
@@ -2007,7 +1975,7 @@ export function AdminDashboard({
                               key={course.id}
                               initial={{ opacity: 0, y: 20 }}
                               whileInView={{ opacity: 1, y: 0 }}
-                              viewport={{ once: true }}
+                              viewport={{ once: false }}
                               transition={{ duration: 0.4, delay: index * 0.1 }}
                               whileHover={{ scale: 1.02 }}
                             >
@@ -2074,7 +2042,7 @@ export function AdminDashboard({
                           className="hidden md:block"
                           initial={{ opacity: 0 }}
                           whileInView={{ opacity: 1 }}
-                          viewport={{ once: true }}
+                          viewport={{ once: false }}
                           transition={{ duration: 0.5, delay: 0.6 }}
                         >
                       {/* Table Headers */}
@@ -2178,7 +2146,7 @@ export function AdminDashboard({
                  <motion.div
                    initial={{ opacity: 0, y: -20 }}
                    whileInView={{ opacity: 1, y: 0 }}
-                   viewport={{ once: true }}
+                   viewport={{ once: false }}
                    transition={{ duration: 0.5 }}
                  >
                   <CardHeader className="flex flex-row justify-between items-center">
@@ -2276,7 +2244,7 @@ export function AdminDashboard({
       case 'products':
         return (
           <motion.div 
-            className="w-full max-w-7xl mx-auto space-y-8"
+            className="space-y-8"
             initial={{ opacity: 0 }}
             whileInView={{ opacity: 1 }}
             viewport={{ once: false, margin: "-100px" }}
@@ -2287,7 +2255,7 @@ export function AdminDashboard({
               className="text-center"
               initial={{ opacity: 0, y: -20 }}
               whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
+              viewport={{ once: false }}
               transition={{ duration: 0.5 }}
             >
               <h1 className={`text-3xl font-bold ${getTextClasses().primary} mb-2`}>Gestionar Productos</h1>
@@ -2299,7 +2267,7 @@ export function AdminDashboard({
               className="relative grid grid-cols-1 xl:grid-cols-2 gap-6 lg:gap-8"
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
+              viewport={{ once: false }}
               transition={{ duration: 0.5, delay: 0.2 }}
             >
               {/* Left Panel - Add New Product */}
@@ -2307,17 +2275,30 @@ export function AdminDashboard({
                 whileHover={{ scale: 1.02 }}
                 transition={{ duration: 0.2 }}
               >
-                <Card className="bg-card border shadow-lg">
+              <Card className={`shadow-lg ${getCardClasses()}`}>
+                  <motion.div
+                    initial={{ opacity: 0, y: -20 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: false }}
+                    transition={{ duration: 0.5, delay: 0.3 }}
+                  >
                 <CardHeader className="pb-4">
-                  <CardTitle className="text-xl font-semibold text-foreground">Añadir Nuevo Producto</CardTitle>
+                  <CardTitle className={`text-xl font-semibold ${getTextClasses().primary}`}>Añadir Nuevo Producto</CardTitle>
                 </CardHeader>
+                  </motion.div>
+                  <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: false }}
+                    transition={{ duration: 0.5, delay: 0.4 }}
+                  >
               <CardContent className="space-y-6">
                   <form onSubmit={handleAddProduct} className="space-y-4">
                         <motion.div 
                           className="space-y-2"
                           initial={{ opacity: 0, x: -20 }}
                           whileInView={{ opacity: 1, x: 0 }}
-                          viewport={{ once: true }}
+                          viewport={{ once: false }}
                           transition={{ duration: 0.4, delay: 0.5 }}
                         >
                       <Label className={`text-sm font-medium ${getTextClasses().label}`}>Nombre del producto</Label>
@@ -2325,54 +2306,36 @@ export function AdminDashboard({
                         name="name" 
                         placeholder="Ej: Camiseta de Algodón" 
                         required 
-                        className={`w-full h-10 ${getInputClasses()}`}
+                        className={`w-full ${getInputClasses()}`}
                       />
                         </motion.div>
                     
-                    <motion.div 
-                      className="space-y-2"
-                      initial={{ opacity: 0, x: -20 }}
-                      whileInView={{ opacity: 1, x: 0 }}
-                      viewport={{ once: true }}
-                      transition={{ duration: 0.4, delay: 0.6 }}
-                    >
+                    <div className="space-y-2">
                       <Label className={`text-sm font-medium ${getTextClasses().label}`}>Descripción del producto</Label>
                       <Textarea 
                         name="description" 
                         placeholder="Describe las características principales" 
                         required 
-                        rows={3}
-                        className={`w-full min-h-[80px] ${getInputClasses()} resize-none`}
+                        rows={4}
+                        className={`w-full ${getInputClasses()} resize-none`}
                       />
-                    </motion.div>
+                    </div>
                     
-                    <motion.div 
-                      className="space-y-2"
-                      initial={{ opacity: 0, x: -20 }}
-                      whileInView={{ opacity: 1, x: 0 }}
-                      viewport={{ once: true }}
-                      transition={{ duration: 0.4, delay: 0.7 }}
-                    >
+                    <div className="space-y-2">
                       <Label className={`text-sm font-medium ${getTextClasses().label}`}>Stock disponible</Label>
                       <Input 
                         name="stock" 
                         type="number" 
                         placeholder="Ej: 100" 
                         required 
-                        className={`w-full h-10 ${getInputClasses()}`}
+                        className={`w-full ${getInputClasses()}`}
                       />
-                    </motion.div>
+                    </div>
                     
-                    <motion.div 
-                      className="space-y-2"
-                      initial={{ opacity: 0, x: -20 }}
-                      whileInView={{ opacity: 1, x: 0 }}
-                      viewport={{ once: true }}
-                      transition={{ duration: 0.4, delay: 0.8 }}
-                    >
+                    <div className="space-y-2">
                       <Label className={`text-sm font-medium ${getTextClasses().label}`}>Categoría</Label>
                       <Select name="categoryId" required>
-                        <SelectTrigger className={`h-10 ${getInputClasses()}`}>
+                        <SelectTrigger className={getInputClasses()}>
                           <SelectValue placeholder="Selecciona una categoría" />
                         </SelectTrigger>
                         <SelectContent className={`${getCardClasses()}`}>
@@ -2387,15 +2350,9 @@ export function AdminDashboard({
                           ))}
                         </SelectContent>
                       </Select>
-                    </motion.div>
+                    </div>
                     
-                    <motion.div 
-                      className="space-y-2"
-                      initial={{ opacity: 0, x: -20 }}
-                      whileInView={{ opacity: 1, x: 0 }}
-                      viewport={{ once: true }}
-                      transition={{ duration: 0.4, delay: 0.9 }}
-                    >
+                    <div className="space-y-2">
                       <Label className={`text-sm font-medium ${getTextClasses().label}`}>Imagen del producto</Label>
                       <DragDropUpload 
                         name="mediaFile" 
@@ -2404,35 +2361,26 @@ export function AdminDashboard({
                         onFileSelect={(file) => handleMediaFilePreview(file, setProductPreview)}
                       />
                   <MediaPreview preview={productPreview} onRemove={() => setProductPreview(null)} />
-                    </motion.div>
+                    </div>
                     
-                    <motion.div
-                      initial={{ opacity: 0, y: 20 }}
-                      whileInView={{ opacity: 1, y: 0 }}
-                      viewport={{ once: true }}
-                      transition={{ duration: 0.4, delay: 1.0 }}
-                      whileHover={{ scale: 1.02 }}
-                      whileTap={{ scale: 0.98 }}
+                    <Button 
+                      type="submit" 
+                      className={`w-full bg-green-600 hover:bg-green-700 text-white font-semibold py-3 sm:py-2.5 rounded-lg flex items-center justify-center space-x-2 h-12 sm:h-11 text-base sm:text-lg`}
                     >
-                      <Button 
-                        type="submit" 
-                        className={`w-full bg-green-600 hover:bg-green-700 text-white font-semibold py-2 rounded-lg flex items-center justify-center space-x-2 h-10 text-sm`}
-                      >
-                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-                        </svg>
-                        <span>Añadir Producto</span>
-                      </Button>
-                    </motion.div>
-                  </form>
+                      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+                      </svg>
+                      <span>Añadir Producto</span>
+                    </Button>
+                </form>
                 </CardContent>
-                </Card>
-              </motion.div>
+                  </motion.div>
+              </Card>
 
               {/* Right Panel - Active Products */}
-              <Card className="bg-card border shadow-lg">
+              <Card className={`shadow-lg ${getCardClasses()}`}>
                 <CardHeader className="pb-4">
-                  <CardTitle className="text-xl font-semibold text-foreground">Productos Activos</CardTitle>
+                  <CardTitle className={`text-xl font-semibold ${getTextClasses().primary}`}>Productos Activos</CardTitle>
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-4">
@@ -2445,65 +2393,56 @@ export function AdminDashboard({
                                          'bg-red-100 text-red-800';
                         
                         return (
-                          <motion.div
-                            key={product.id}
-                            initial={{ opacity: 0, y: 20 }}
-                            whileInView={{ opacity: 1, y: 0 }}
-                            viewport={{ once: true }}
-                            transition={{ duration: 0.4, delay: 0.2 }}
-                            whileHover={{ scale: 1.02 }}
-                          >
-                            <Card className={`p-4 space-y-3 ${getCardClasses()}`}>
-                              <div className="flex items-start gap-3">
-                                <div className="w-12 h-12 bg-teal-600 rounded-lg flex items-center justify-center flex-shrink-0">
-                                  {product.url && product.url.trim() !== '' ? (
-                                    <img 
-                                      src={product.url} 
-                                      alt={product.name}
-                                      className="w-10 h-10 rounded object-cover"
-                                      onError={(e) => {
-                                        const target = e.target as HTMLImageElement;
-                                        target.style.display = 'none';
-                                        const fallback = target.nextElementSibling as HTMLElement;
-                                        if (fallback) fallback.style.display = 'flex';
-                                      }}
-                                    />
-                                  ) : null}
-                                  <div 
-                                    className="w-8 h-8 bg-teal-500 rounded flex items-center justify-center"
-                                    style={{ display: product.url && product.url.trim() !== '' ? 'none' : 'flex' }}
-                                  >
-                                    <span className="text-sm font-semibold text-white">
-                                      {product.name.charAt(0).toUpperCase()}
-                                    </span>
-                                  </div>
-                                </div>
-                                <div className="flex-grow min-w-0">
-                                  <h3 className={`font-semibold ${getTextClasses().primary} text-base`}>{product.name}</h3>
-                                  <p className={`text-xs ${getTextClasses().muted} mt-1`}>#{product.id.slice(-6).toUpperCase()}</p>
-                                  <div className="flex items-center gap-2 mt-2">
-                                    <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${stockColor}`}>
-                                      {product.stock} Unidades
-                                    </span>
-                                    <span className={`text-xs ${getTextClasses().secondary}`}>
-                                      {category?.name || 'Sin categoría'}
-                                    </span>
-                                  </div>
-                                </div>
-                              </div>
-                              <div className="flex items-center justify-end gap-2 pt-2 border-t border-border">
-                                <EditProductDialog product={product} onSave={onUpdateProduct} />
-                                <Button 
-                                  variant="ghost" 
-                                  size="icon" 
-                                  onClick={() => showDeleteConfirm(() => onDeleteProduct(product.id))}
-                                  className={`h-10 w-10 ${getButtonClasses().danger}`}
+                          <Card key={product.id} className={`p-4 space-y-3 ${getCardClasses()}`}>
+                            <div className="flex items-start gap-3">
+                              <div className="w-12 h-12 bg-teal-600 rounded-lg flex items-center justify-center flex-shrink-0">
+                                {product.url && product.url.trim() !== '' ? (
+                                  <img 
+                                    src={product.url} 
+                                    alt={product.name}
+                                    className="w-10 h-10 rounded object-cover"
+                                    onError={(e) => {
+                                      const target = e.target as HTMLImageElement;
+                                      target.style.display = 'none';
+                                      const fallback = target.nextElementSibling as HTMLElement;
+                                      if (fallback) fallback.style.display = 'flex';
+                                    }}
+                                  />
+                                ) : null}
+                                <div 
+                                  className="w-8 h-8 bg-teal-500 rounded flex items-center justify-center"
+                                  style={{ display: product.url && product.url.trim() !== '' ? 'none' : 'flex' }}
                                 >
-                                  <Trash2 className="w-4 h-4" />
-                                </Button>
+                                  <span className="text-sm font-semibold text-white">
+                                    {product.name.charAt(0).toUpperCase()}
+                                  </span>
+                                </div>
                               </div>
-                            </Card>
-                          </motion.div>
+                              <div className="flex-grow min-w-0">
+                                <h3 className={`font-semibold ${getTextClasses().primary} text-base`}>{product.name}</h3>
+                                <p className={`text-xs ${getTextClasses().muted} mt-1`}>#{product.id.slice(-6).toUpperCase()}</p>
+                                <div className="flex items-center gap-2 mt-2">
+                                  <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${stockColor}`}>
+                                    {product.stock} Unidades
+                                  </span>
+                                  <span className={`text-xs ${getTextClasses().secondary}`}>
+                                    {category?.name || 'Sin categoría'}
+                                  </span>
+                                </div>
+                              </div>
+                            </div>
+                            <div className="flex items-center justify-end gap-2 pt-2 border-t border-border">
+                              <EditProductDialog product={product} onSave={onUpdateProduct} />
+                              <Button 
+                                variant="ghost" 
+                                size="icon" 
+                                onClick={() => showDeleteConfirm(() => onDeleteProduct(product.id))}
+                                className={`h-10 w-10 ${getButtonClasses().danger}`}
+                              >
+                                <Trash2 className="w-4 h-4" />
+                              </Button>
+                            </div>
+                          </Card>
                         );
                       })}
                       
@@ -2517,13 +2456,7 @@ export function AdminDashboard({
                     {/* Desktop view: Table */}
                     <div className="hidden md:block">
                       {/* Table Headers */}
-                      <motion.div 
-                        className={`grid grid-cols-12 gap-4 pb-3 border-b ${getTableClasses().header} sticky top-0 bg-background z-10`}
-                        initial={{ opacity: 0, y: -20 }}
-                        whileInView={{ opacity: 1, y: 0 }}
-                        viewport={{ once: true }}
-                        transition={{ duration: 0.5, delay: 0.3 }}
-                      >
+                      <div className={`grid grid-cols-12 gap-4 pb-3 border-b ${getTableClasses().header}`}>
                         <div className="col-span-5">
                           <span className={`text-sm font-medium ${getTextClasses().label}`}>PRODUCTO</span>
                         </div>
@@ -2536,10 +2469,10 @@ export function AdminDashboard({
                         <div className="col-span-2 text-right">
                           <span className={`text-sm font-medium ${getTextClasses().label}`}>ACCIONES</span>
                         </div>
-                      </motion.div>
+                      </div>
                       
                       {/* Products List */}
-                      <div className="space-y-0 max-h-96 overflow-y-auto">
+                      <div className="space-y-0">
                         {products.map((product, index) => {
                           const category = categories.find(cat => cat.id === product.categoryId);
                           const stockLevel = product.stock >= 6 ? 'high' : 'low';
@@ -2547,15 +2480,7 @@ export function AdminDashboard({
                                            'bg-red-100 text-red-800';
                           
                           return (
-                            <motion.div 
-                              key={product.id} 
-                              className={`grid grid-cols-12 gap-4 items-center py-4 ${index < products.length - 1 ? `border-b ${getTableClasses().row}` : ''}`}
-                              initial={{ opacity: 0, y: 20 }}
-                              whileInView={{ opacity: 1, y: 0 }}
-                              viewport={{ once: true }}
-                              transition={{ duration: 0.4, delay: index * 0.1 }}
-                              whileHover={{ scale: 1.01, backgroundColor: theme === 'dark' ? 'rgba(55, 65, 81, 0.3)' : 'rgba(249, 250, 251, 0.8)' }}
-                            >
+                            <div key={product.id} className={`grid grid-cols-12 gap-4 items-center py-4 ${index < products.length - 1 ? `border-b ${getTableClasses().row}` : ''}`}>
                               {/* Product Info */}
                               <div className="col-span-5 flex items-center space-x-3">
                                 <div className="w-10 h-10 bg-teal-600 rounded-lg flex items-center justify-center flex-shrink-0">
@@ -2614,7 +2539,7 @@ export function AdminDashboard({
                                   <Trash2 className="w-4 h-4" />
                                 </Button>
                               </div>
-                            </motion.div>
+                            </div>
                           );
                         })}
                         
@@ -2628,13 +2553,14 @@ export function AdminDashboard({
                 </div>
               </CardContent>
             </Card>
+              </motion.div>
             </motion.div>
           </motion.div>
         );
       case 'perfumes':
         return (
           <motion.div 
-            className="w-full max-w-7xl mx-auto space-y-8"
+            className="space-y-8"
             initial={{ opacity: 0 }}
             whileInView={{ opacity: 1 }}
             viewport={{ once: false, margin: "-100px" }}
@@ -2645,7 +2571,7 @@ export function AdminDashboard({
               className="text-center"
               initial={{ opacity: 0, y: -20 }}
               whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
+              viewport={{ once: false }}
               transition={{ duration: 0.5 }}
             >
               <h1 className={`text-3xl font-bold ${getTextClasses().primary} mb-2`}>Gestionar Perfumes</h1>
@@ -2657,7 +2583,7 @@ export function AdminDashboard({
               className="relative grid grid-cols-1 xl:grid-cols-2 gap-6 lg:gap-8"
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
+              viewport={{ once: false }}
               transition={{ duration: 0.5, delay: 0.2 }}
             >
               {/* Left Panel - Add New Perfume */}
@@ -2665,19 +2591,26 @@ export function AdminDashboard({
                 whileHover={{ scale: 1.02 }}
                 transition={{ duration: 0.2 }}
               >
-                <Card className="bg-card border shadow-lg">
+              <Card className={`shadow-lg ${getCardClasses()}`}>
+                  <motion.div
+                    initial={{ opacity: 0, y: -20 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: false }}
+                    transition={{ duration: 0.5, delay: 0.3 }}
+                  >
                 <CardHeader className="pb-4">
-                  <CardTitle className="text-xl font-semibold text-foreground">Añadir Nuevo Perfume</CardTitle>
+                  <CardTitle className={`text-xl font-semibold ${getTextClasses().primary} flex items-center gap-2`}>
+                    <div className="w-8 h-8 bg-pink-500 rounded-full flex items-center justify-center">
+                      <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+                      </svg>
+                    </div>
+                    Añadir Perfume
+                  </CardTitle>
                 </CardHeader>
               <CardContent className="space-y-6">
                   <form onSubmit={handleAddPerfume} className="space-y-4">
-                    <motion.div 
-                      className="space-y-2"
-                      initial={{ opacity: 0, x: -20 }}
-                      whileInView={{ opacity: 1, x: 0 }}
-                      viewport={{ once: true }}
-                      transition={{ duration: 0.4, delay: 0.5 }}
-                    >
+                    <div className="space-y-2">
                       <Label className={`text-sm font-medium ${getTextClasses().label} flex items-center gap-2`}>
                         <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z" />
@@ -2688,17 +2621,11 @@ export function AdminDashboard({
                         name="name" 
                         placeholder="Ej. Chanel N°5" 
                         required 
-                        className={`w-full h-10 ${getInputClasses()}`}
+                        className={`w-full h-12 text-lg ${getInputClasses()}`}
                       />
-                    </motion.div>
+                    </div>
                     
-                    <motion.div 
-                      className="space-y-2"
-                      initial={{ opacity: 0, x: -20 }}
-                      whileInView={{ opacity: 1, x: 0 }}
-                      viewport={{ once: true }}
-                      transition={{ duration: 0.4, delay: 0.6 }}
-                    >
+                    <div className="space-y-2">
                       <Label className={`text-sm font-medium ${getTextClasses().label} flex items-center gap-2`}>
                         <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
@@ -2711,34 +2638,22 @@ export function AdminDashboard({
                         placeholder="0" 
                         defaultValue="0"
                         required 
-                        className={`w-full h-10 ${getInputClasses()}`}
+                        className={`w-full h-12 text-lg ${getInputClasses()}`}
                       />
-                    </motion.div>
+                    </div>
                     
-                    <motion.div 
-                      className="space-y-2"
-                      initial={{ opacity: 0, x: -20 }}
-                      whileInView={{ opacity: 1, x: 0 }}
-                      viewport={{ once: true }}
-                      transition={{ duration: 0.4, delay: 0.7 }}
-                    >
+                    <div className="space-y-2">
                       <Label className={`text-sm font-medium ${getTextClasses().label}`}>Descripción</Label>
                       <Textarea 
                         name="description" 
                         placeholder="Describe las notas, la ocasión de uso, etc." 
                         required 
-                        rows={3}
-                        className={`w-full min-h-[80px] ${getInputClasses()} resize-none`}
+                        rows={6}
+                        className={`w-full text-lg ${getInputClasses()} resize-none`}
                       />
-                    </motion.div>
+                    </div>
                     
-                    <motion.div 
-                      className="space-y-2"
-                      initial={{ opacity: 0, x: -20 }}
-                      whileInView={{ opacity: 1, x: 0 }}
-                      viewport={{ once: true }}
-                      transition={{ duration: 0.4, delay: 0.8 }}
-                    >
+                    <div className="space-y-2">
                       <Label className={`text-sm font-medium ${getTextClasses().label}`}>Imagen del Perfume</Label>
                       <DragDropUpload 
                         name="mediaFile" 
@@ -2746,21 +2661,13 @@ export function AdminDashboard({
                         required 
                         onFileSelect={(file) => handleMediaFilePreview(file, setPerfumePreview)}
                       />
-                      <MediaPreview preview={perfumePreview} onRemove={() => setPerfumePreview(null)} />
-                    </motion.div>
+                  <MediaPreview preview={perfumePreview} onRemove={() => setPerfumePreview(null)} />
+                    </div>
                     
-                    <motion.div 
-                      className="flex flex-col sm:flex-row gap-3"
-                      initial={{ opacity: 0, y: 20 }}
-                      whileInView={{ opacity: 1, y: 0 }}
-                      viewport={{ once: true }}
-                      transition={{ duration: 0.4, delay: 0.9 }}
-                      whileHover={{ scale: 1.02 }}
-                      whileTap={{ scale: 0.98 }}
-                    >
+                    <div className="flex flex-col sm:flex-row gap-3">
                       <Button 
                         type="submit" 
-                        className={`w-full sm:flex-1 bg-pink-500 hover:bg-pink-600 text-white font-semibold py-2 text-sm rounded-lg flex items-center justify-center space-x-2 h-10`}
+                        className={`w-full sm:flex-1 bg-pink-500 hover:bg-pink-600 text-white font-semibold py-4 sm:py-3 text-base sm:text-lg rounded-lg flex items-center justify-center space-x-2 h-12 sm:h-11`}
                       >
                         <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" />
@@ -2782,40 +2689,35 @@ export function AdminDashboard({
                         </svg>
                         <span>Limpiar</span>
                       </Button>
-                    </motion.div>
+                    </div>
                   </form>
                 </CardContent>
-                </Card>
-              </motion.div>
+                  </motion.div>
+                        </Card>
 
               {/* Right Panel - Perfume Inventory */}
-              <Card className="bg-card border shadow-lg">
+              <Card className={`shadow-lg ${getCardClasses()}`}>
                 <CardHeader className="pb-4">
-                  <CardTitle className="text-xl font-semibold text-foreground">Perfumes Activos</CardTitle>
+                  <CardTitle className={`text-xl font-semibold ${getTextClasses().primary}`}>Inventario de Perfumes</CardTitle>
+                  <p className={`text-sm ${getTextClasses().secondary}`}>Lista de todos los perfumes disponibles.</p>
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-0">
                     {/* Table Headers */}
-                    <motion.div 
-                      className={`grid grid-cols-10 gap-4 pb-3 border-b ${getTableClasses().header} sticky top-0 bg-background z-10`}
-                      initial={{ opacity: 0, y: -20 }}
-                      whileInView={{ opacity: 1, y: 0 }}
-                      viewport={{ once: true }}
-                      transition={{ duration: 0.5, delay: 0.3 }}
-                    >
+                    <div className={`grid grid-cols-12 gap-4 pb-3 border-b ${getTableClasses().header}`}>
                       <div className="col-span-6">
                         <span className={`text-sm font-medium ${getTextClasses().label}`}>PERFUME</span>
-                      </div>
-                      <div className="col-span-2">
+                </div>
+                      <div className="col-span-3">
                         <span className={`text-sm font-medium ${getTextClasses().label}`}>STOCK</span>
                       </div>
-                      <div className="col-span-2 text-right">
+                      <div className="col-span-3 text-right">
                         <span className={`text-sm font-medium ${getTextClasses().label}`}>ACCIONES</span>
                       </div>
-                    </motion.div>
+                    </div>
                     
                     {/* Perfumes List */}
-                    <div className="space-y-0 max-h-96 overflow-y-auto">
+                    <div className="space-y-0">
                       {perfumes.map((perfume, index) => {
                         // Lógica de colores igual que productos: verde ≥6, rojo ≤5
                         const stockLevel = perfume.stock >= 6 ? 'high' : 'low';
@@ -2823,15 +2725,7 @@ export function AdminDashboard({
                                          'bg-red-100 text-red-800';
                         
                         return (
-                          <motion.div 
-                            key={perfume.id} 
-                            className={`grid grid-cols-10 gap-4 items-center py-4 ${index < perfumes.length - 1 ? `border-b ${getTableClasses().row}` : ''}`}
-                            initial={{ opacity: 0, y: 20 }}
-                            whileInView={{ opacity: 1, y: 0 }}
-                            viewport={{ once: true }}
-                            transition={{ duration: 0.4, delay: index * 0.1 }}
-                            whileHover={{ scale: 1.01, backgroundColor: theme === 'dark' ? 'rgba(55, 65, 81, 0.3)' : 'rgba(249, 250, 251, 0.8)' }}
-                          >
+                          <div key={perfume.id} className={`grid grid-cols-12 gap-4 items-center py-4 ${index < perfumes.length - 1 ? `border-b ${getTableClasses().row}` : ''}`}>
                             {/* Perfume Info */}
                             <div className="col-span-6 flex items-center space-x-3">
                               <div className="w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0 overflow-hidden">
@@ -2864,14 +2758,14 @@ export function AdminDashboard({
                             </div>
                             
                             {/* Stock */}
-                            <div className="col-span-2">
+                            <div className="col-span-3">
                               <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${stockColor}`}>
                                 {perfume.stock} Unidades
                               </span>
                             </div>
                             
                             {/* Actions */}
-                            <div className="col-span-2 flex items-center justify-end space-x-2">
+                            <div className="col-span-3 flex items-center justify-end space-x-2">
                               <EditPerfumeDialog perfume={perfume} onSave={onUpdatePerfume} />
                               <Button 
                                 variant="ghost" 
@@ -2882,7 +2776,7 @@ export function AdminDashboard({
                                 <Trash2 className="w-4 h-4" />
                               </Button>
                             </div>
-                          </motion.div>
+                          </div>
                         );
                       })}
                       
@@ -2895,13 +2789,14 @@ export function AdminDashboard({
                 </div>
               </CardContent>
             </Card>
+              </motion.div>
             </motion.div>
           </motion.div>
         );
       case 'gallery':
         return (
           <motion.div 
-            className="w-full max-w-7xl mx-auto space-y-8"
+            className="space-y-8"
             initial={{ opacity: 0 }}
             whileInView={{ opacity: 1 }}
             viewport={{ once: false, margin: "-100px" }}
@@ -2912,11 +2807,11 @@ export function AdminDashboard({
               className="text-center"
               initial={{ opacity: 0, y: -20 }}
               whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
+              viewport={{ once: false }}
               transition={{ duration: 0.5 }}
             >
               <h1 className={`text-3xl font-bold ${getTextClasses().primary} mb-2`}>Gestionar Mis Trabajos</h1>
-              <p className={`text-lg ${getTextClasses().secondary}`}>Añade, visualiza y gestiona tus proyectos creativos.</p>
+              <p className={`text-lg ${getTextClasses().secondary}`}>Añade y administra tus proyectos creativos con facilidad.</p>
             </motion.div>
 
             {/* Two Column Layout */}
@@ -2924,65 +2819,45 @@ export function AdminDashboard({
               className="relative grid grid-cols-1 xl:grid-cols-2 gap-6 lg:gap-8"
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
+              viewport={{ once: false }}
               transition={{ duration: 0.5, delay: 0.2 }}
             >
               {/* Left Panel - Add New Work */}
-              <motion.div
-                whileHover={{ scale: 1.02 }}
-                transition={{ duration: 0.2 }}
-              >
-                <Card className="bg-card border shadow-lg">
+              <Card className={`shadow-lg ${getCardClasses()}`}>
                 <CardHeader className="pb-4">
-                  <CardTitle className="text-xl font-semibold text-foreground">Añadir Nuevo Trabajo</CardTitle>
+                  <CardTitle className={`text-xl font-semibold ${getTextClasses().primary} flex items-center gap-2`}>
+                    <div className="w-8 h-8 bg-green-500 rounded-full flex items-center justify-center">
+                      <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+                      </svg>
+                    </div>
+                    Añadir Nuevo Trabajo
+                  </CardTitle>
                 </CardHeader>
               <CardContent className="space-y-6">
                   <form onSubmit={handleAddGalleryItem} className="space-y-4">
-                    <motion.div 
-                      className="space-y-2"
-                      initial={{ opacity: 0, x: -20 }}
-                      whileInView={{ opacity: 1, x: 0 }}
-                      viewport={{ once: true }}
-                      transition={{ duration: 0.4, delay: 0.5 }}
-                    >
-                      <Label className={`text-sm font-medium ${getTextClasses().label} flex items-center gap-2`}>
-                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" />
-                        </svg>
-                        Título
-                      </Label>
+                    <div className="space-y-2">
+                      <Label className={`text-sm font-medium ${getTextClasses().label}`}>Título</Label>
                       <Input 
                         name="title" 
                         placeholder="Ej: Diseño de Landing Page" 
                         required 
-                        className={`w-full h-10 ${getInputClasses()}`}
+                        className={`w-full ${getInputClasses()}`}
                       />
-                    </motion.div>
+                    </div>
                     
-                    <motion.div 
-                      className="space-y-2"
-                      initial={{ opacity: 0, x: -20 }}
-                      whileInView={{ opacity: 1, x: 0 }}
-                      viewport={{ once: true }}
-                      transition={{ duration: 0.4, delay: 0.6 }}
-                    >
+                    <div className="space-y-2">
                       <Label className={`text-sm font-medium ${getTextClasses().label}`}>Descripción</Label>
                       <Textarea 
                         name="description" 
                         placeholder="Describe brevemente tu trabajo..." 
                         required 
-                        rows={3}
-                        className={`w-full min-h-[80px] ${getInputClasses()} resize-none`}
+                        rows={4}
+                        className={`w-full ${getInputClasses()} resize-none`}
                       />
-                    </motion.div>
+                    </div>
                     
-                    <motion.div 
-                      className="space-y-2"
-                      initial={{ opacity: 0, x: -20 }}
-                      whileInView={{ opacity: 1, x: 0 }}
-                      viewport={{ once: true }}
-                      transition={{ duration: 0.4, delay: 0.7 }}
-                    >
+                    <div className="space-y-2">
                       <Label className={`text-sm font-medium ${getTextClasses().label}`}>Archivo del proyecto</Label>
                       <DragDropUpload 
                         name="mediaFile" 
@@ -2990,89 +2865,53 @@ export function AdminDashboard({
                         required 
                         onFileSelect={(file) => handleMediaFilePreview(file, setGalleryMediaPreview)}
                       />
-                      <MediaPreview preview={galleryMediaPreview} onRemove={() => setGalleryMediaPreview(null)} />
-                    </motion.div>
+                  <MediaPreview preview={galleryMediaPreview} onRemove={() => setGalleryMediaPreview(null)} />
+                    </div>
                     
-                    <motion.div 
-                      className="flex flex-col sm:flex-row gap-3"
-                      initial={{ opacity: 0, y: 20 }}
-                      whileInView={{ opacity: 1, y: 0 }}
-                      viewport={{ once: true }}
-                      transition={{ duration: 0.4, delay: 0.8 }}
-                      whileHover={{ scale: 1.02 }}
-                      whileTap={{ scale: 0.98 }}
+                    <Button 
+                      type="submit" 
+                      className={`w-full bg-green-600 hover:bg-green-700 text-white font-semibold py-3 sm:py-2.5 rounded-lg flex items-center justify-center space-x-2 h-12 sm:h-11 text-base sm:text-lg`}
                     >
-                      <Button 
-                        type="submit" 
-                        className={`w-full sm:flex-1 bg-pink-500 hover:bg-pink-600 text-white font-semibold py-2 text-sm rounded-lg flex items-center justify-center space-x-2 h-10`}
-                      >
-                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" />
-                        </svg>
-                        <span>Añadir Trabajo</span>
-                      </Button>
-                      <Button 
-                        type="button" 
-                        variant="outline"
-                        onClick={() => {
-                          const form = document.querySelector('form');
-                          if (form) form.reset();
-                          setGalleryMediaPreview(null);
-                        }}
-                        className={`w-full sm:w-auto sm:px-6 py-4 sm:py-3 text-base sm:text-lg rounded-lg flex items-center justify-center space-x-2 border-pink-300 text-pink-600 hover:bg-pink-50 h-12 sm:h-11 ${theme === 'dark' ? 'border-pink-600 text-pink-400 hover:bg-pink-900/20' : ''}`}
-                      >
-                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                        </svg>
-                        Limpiar
-                      </Button>
-                    </motion.div>
+                      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+                      </svg>
+                      <span>Añadir Trabajo</span>
+                    </Button>
                 </form>
-              </CardContent>
-                </Card>
-              </motion.div>
+                </CardContent>
+              </Card>
 
               {/* Right Panel - My Works */}
-              <Card className="bg-card border shadow-lg">
+              <Card className={`shadow-lg ${getCardClasses()}`}>
                 <CardHeader className="pb-4">
-                  <CardTitle className="text-xl font-semibold text-foreground">Mis Trabajos</CardTitle>
+                  <CardTitle className={`text-xl font-semibold ${getTextClasses().primary} flex items-center gap-2`}>
+                    <div className="w-8 h-8 bg-green-500 rounded-full flex items-center justify-center">
+                      <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                      </svg>
+                                </div>
+                    Mis Trabajos
+                  </CardTitle>
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-0">
                     {/* Table Headers */}
-                    <motion.div 
-                      className={`grid grid-cols-10 gap-4 pb-3 border-b ${getTableClasses().header} sticky top-0 bg-background z-10`}
-                      initial={{ opacity: 0, y: -20 }}
-                      whileInView={{ opacity: 1, y: 0 }}
-                      viewport={{ once: true }}
-                      transition={{ duration: 0.5, delay: 0.3 }}
-                    >
-                      <div className="col-span-6">
+                    <div className={`grid grid-cols-12 gap-4 pb-3 border-b ${getTableClasses().header}`}>
+                      <div className="col-span-8">
                         <span className={`text-sm font-medium ${getTextClasses().label}`}>TRABAJO</span>
                       </div>
-                      <div className="col-span-2">
-                        <span className={`text-sm font-medium ${getTextClasses().label}`}>TIPO</span>
-                      </div>
-                      <div className="col-span-2 text-right">
+                      <div className="col-span-4 text-right">
                         <span className={`text-sm font-medium ${getTextClasses().label}`}>ACCIONES</span>
                       </div>
-                    </motion.div>
+                    </div>
                     
                     {/* Works List */}
-                    <div className="space-y-0 max-h-96 overflow-y-auto">
+                    <div className="space-y-0">
                       {galleryItems.map((work, index) => {
                         return (
-                          <motion.div 
-                            key={work.id} 
-                            className={`grid grid-cols-10 gap-4 items-center py-4 ${index < galleryItems.length - 1 ? `border-b ${getTableClasses().row}` : ''}`}
-                            initial={{ opacity: 0, y: 20 }}
-                            whileInView={{ opacity: 1, y: 0 }}
-                            viewport={{ once: true }}
-                            transition={{ duration: 0.4, delay: index * 0.1 }}
-                            whileHover={{ scale: 1.01, backgroundColor: theme === 'dark' ? 'rgba(55, 65, 81, 0.3)' : 'rgba(249, 250, 251, 0.8)' }}
-                          >
+                          <div key={work.id} className={`grid grid-cols-12 gap-4 items-center py-4 ${index < galleryItems.length - 1 ? `border-b ${getTableClasses().row}` : ''}`}>
                             {/* Work Info */}
-                            <div className="col-span-6 flex items-center space-x-3">
+                            <div className="col-span-8 flex items-center space-x-3">
                               <div className="w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0 overflow-hidden">
                                 {work.url && work.url.trim() !== '' ? (
                                   work.type === 'video' ? (
@@ -3110,19 +2949,14 @@ export function AdminDashboard({
                                   </span>
                                 </div>
                               </div>
-                              <div className="flex-grow min-w-0">
-                                <h3 className={`font-semibold ${getTextClasses().primary} text-sm`}>{work.title}</h3>
-                                <p className={`text-xs ${getTextClasses().secondary} line-clamp-1 mt-1`}>{work.description}</p>
+                              <div className="flex-1 min-w-0">
+                                <h3 className={`font-semibold ${getTextClasses().primary} truncate`}>{work.title}</h3>
+                                <p className={`text-xs ${getTextClasses().muted} truncate`}>{work.description}</p>
                               </div>
                             </div>
                             
-                            {/* Work Type */}
-                            <div className="col-span-2">
-                              <span className={`text-sm ${getTextClasses().secondary}`}>Trabajo</span>
-                            </div>
-                            
                             {/* Actions */}
-                            <div className="col-span-2 flex items-center justify-end gap-2">
+                            <div className="col-span-4 flex items-center justify-end space-x-2">
                               <EditGalleryItemDialog item={work} onSave={onUpdateGalleryItem} />
                               <Button 
                                 variant="ghost" 
@@ -3133,7 +2967,7 @@ export function AdminDashboard({
                                 <Trash2 className="w-4 h-4" />
                               </Button>
                             </div>
-                          </motion.div>
+                          </div>
                         );
                       })}
                       
@@ -3167,7 +3001,7 @@ export function AdminDashboard({
               className="text-center"
               initial={{ opacity: 0, y: -20 }}
               whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
+              viewport={{ once: false }}
               transition={{ duration: 0.5 }}
             >
               <h1 className={`text-3xl font-bold text-blue-600 dark:text-blue-400 mb-2`}>Gestionar Testimonios</h1>
@@ -3179,14 +3013,14 @@ export function AdminDashboard({
               className={`rounded-lg p-6 ${theme === 'dark' ? 'bg-green-900/20' : 'bg-green-50'} border ${theme === 'dark' ? 'border-green-800' : 'border-green-200'}`}
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
+              viewport={{ once: false }}
               transition={{ duration: 0.5, delay: 0.2 }}
             >
               <motion.div 
                 className="flex items-center gap-2 mb-4"
                 initial={{ opacity: 0, x: -20 }}
                 whileInView={{ opacity: 1, x: 0 }}
-                viewport={{ once: true }}
+                viewport={{ once: false }}
                 transition={{ duration: 0.4, delay: 0.3 }}
               >
                 <div className="w-6 h-6 bg-green-500 rounded-full flex items-center justify-center">
@@ -3202,7 +3036,7 @@ export function AdminDashboard({
                   className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"
                   initial={{ opacity: 0 }}
                   whileInView={{ opacity: 1 }}
-                  viewport={{ once: true }}
+                  viewport={{ once: false }}
                   transition={{ duration: 0.5, delay: 0.4 }}
                 >
                   {approvedTestimonials.map((testimonial, index) => (
@@ -3210,7 +3044,7 @@ export function AdminDashboard({
                       key={testimonial.id}
                       initial={{ opacity: 0, y: 20 }}
                       whileInView={{ opacity: 1, y: 0 }}
-                      viewport={{ once: true }}
+                      viewport={{ once: false }}
                       transition={{ duration: 0.4, delay: index * 0.1 }}
                       whileHover={{ scale: 1.02 }}
                     >
@@ -3246,7 +3080,7 @@ export function AdminDashboard({
               className={`rounded-lg p-6 ${theme === 'dark' ? 'bg-yellow-900/20' : 'bg-yellow-50'} border ${theme === 'dark' ? 'border-yellow-800' : 'border-yellow-200'}`}
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
+              viewport={{ once: false }}
               transition={{ duration: 0.5, delay: 0.4 }}
             >
               <div className="flex items-center gap-2 mb-4">
@@ -3301,7 +3135,7 @@ export function AdminDashboard({
               className={`rounded-lg p-6 ${theme === 'dark' ? 'bg-red-900/20' : 'bg-red-50'} border ${theme === 'dark' ? 'border-red-800' : 'border-red-200'}`}
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
+              viewport={{ once: false }}
               transition={{ duration: 0.5, delay: 0.6 }}
             >
               <div className="flex items-center gap-2 mb-4">
@@ -3347,7 +3181,7 @@ export function AdminDashboard({
       case 'users':
         return (
           <motion.div 
-            className="w-full max-w-7xl mx-auto space-y-8"
+            className="space-y-8"
             initial={{ opacity: 0 }}
             whileInView={{ opacity: 1 }}
             viewport={{ once: false, margin: "-100px" }}
@@ -3358,19 +3192,18 @@ export function AdminDashboard({
               className="text-center"
               initial={{ opacity: 0, y: -20 }}
               whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
+              viewport={{ once: false }}
               transition={{ duration: 0.5 }}
             >
               <h1 className={`text-3xl font-bold ${getTextClasses().primary} mb-2`}>Panel de Gestión de Usuarios</h1>
-              <p className={`text-lg ${getTextClasses().secondary}`}>Añade, visualiza y gestiona los usuarios del sistema.</p>
             </motion.div>
 
             {/* Two Column Layout */}
             <motion.div 
-              className="relative grid grid-cols-1 xl:grid-cols-2 gap-6 lg:gap-8"
+              className="grid grid-cols-1 lg:grid-cols-2 gap-8"
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
+              viewport={{ once: false }}
               transition={{ duration: 0.5, delay: 0.2 }}
             >
               {/* Left Panel - Add New User */}
@@ -3378,185 +3211,134 @@ export function AdminDashboard({
                 whileHover={{ scale: 1.02 }}
                 transition={{ duration: 0.2 }}
               >
-                <Card className="bg-card border shadow-lg">
-                  <CardHeader className="pb-4">
-                    <CardTitle className="text-xl font-semibold text-foreground">Añadir Nuevo Usuario</CardTitle>
-                  </CardHeader>
-                  <CardContent className="space-y-6">
+              <Card className={`shadow-lg ${getCardClasses()}`}>
+                  <motion.div
+                    initial={{ opacity: 0, y: -20 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: false }}
+                    transition={{ duration: 0.5, delay: 0.3 }}
+                  >
+                <CardHeader className="pb-4">
+                  <CardTitle className={`text-xl font-semibold ${getTextClasses().primary}`}>Añadir Nuevo Usuario</CardTitle>
+                </CardHeader>
+                  </motion.div>
+                <CardContent className="space-y-6">
                     <form onSubmit={handleAddOrUpdateUser} className="space-y-4">
-                      <motion.div 
-                        className="space-y-2"
-                        initial={{ opacity: 0, x: -20 }}
-                        whileInView={{ opacity: 1, x: 0 }}
-                        viewport={{ once: true }}
-                        transition={{ duration: 0.4, delay: 0.5 }}
-                      >
-                        <Label className={`text-sm font-medium ${getTextClasses().label} flex items-center gap-2`}>
-                          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-                          </svg>
-                          Nombre de usuario
-                        </Label>
-                        <Input 
-                          name="name" 
-                          placeholder="p. ej. juan.perez" 
-                          required 
-                          defaultValue={currentUserToEdit?.name || ''}
-                          className={`w-full h-10 ${getInputClasses()}`}
-                        />
-                      </motion.div>
+                    <div className="space-y-2">
+                      <Label className={`text-sm font-medium ${getTextClasses().label}`}>Nombre de usuario</Label>
+                      <Input 
+                        name="name" 
+                        placeholder="p. ej. juan.perez" 
+                        required 
+                        defaultValue={currentUserToEdit?.name || ''}
+                        className={`w-full ${getInputClasses()}`}
+                      />
+                    </div>
                     
-                      <motion.div 
-                        className="space-y-2"
-                        initial={{ opacity: 0, x: -20 }}
-                        whileInView={{ opacity: 1, x: 0 }}
-                        viewport={{ once: true }}
-                        transition={{ duration: 0.4, delay: 0.6 }}
-                      >
-                        <Label className={`text-sm font-medium ${getTextClasses().label} flex items-center gap-2`}>
-                          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 4.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
-                          </svg>
-                          Correo
-                        </Label>
+                    <div className="space-y-2">
+                      <Label className={`text-sm font-medium ${getTextClasses().label}`}>Correo</Label>
+                      <Input 
+                        name="email" 
+                        type="email" 
+                        placeholder="nombre@compania.com" 
+                        required 
+                        defaultValue={currentUserToEdit?.email || ''}
+                        className={`w-full ${getInputClasses()}`}
+                      />
+                    </div>
+                    
+                    {isEditingUser && (
+                      <div className="space-y-2">
+                        <Label className={`text-sm font-medium ${getTextClasses().label}`}>Nueva Contraseña</Label>
                         <Input 
-                          name="email" 
-                          type="email" 
-                          placeholder="nombre@compania.com" 
-                          required 
-                          defaultValue={currentUserToEdit?.email || ''}
-                          className={`w-full h-10 ${getInputClasses()}`}
+                          name="password" 
+                          type="password" 
+                          placeholder="Dejar vacío para mantener la actual" 
+                          className={`w-full ${getInputClasses()}`}
                         />
-                      </motion.div>
-                      
-                      {isEditingUser && (
-                        <motion.div 
-                          className="space-y-2"
-                          initial={{ opacity: 0, x: -20 }}
-                          whileInView={{ opacity: 1, x: 0 }}
-                          viewport={{ once: true }}
-                          transition={{ duration: 0.4, delay: 0.7 }}
-                        >
-                          <Label className={`text-sm font-medium ${getTextClasses().label} flex items-center gap-2`}>
-                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
-                            </svg>
-                            Nueva Contraseña
-                          </Label>
-                          <Input 
-                            name="password" 
-                            type="password" 
-                            placeholder="Dejar vacío para mantener la actual" 
-                            className={`w-full h-10 ${getInputClasses()}`}
-                          />
-                          <p className={`text-xs ${getTextClasses().muted}`}>Deja este campo vacío si no quieres cambiar la contraseña</p>
-                        </motion.div>
-                      )}
-                      
-                      <motion.div 
-                        className="flex flex-col sm:flex-row gap-3"
-                        initial={{ opacity: 0, y: 20 }}
-                        whileInView={{ opacity: 1, y: 0 }}
-                        viewport={{ once: true }}
-                        transition={{ duration: 0.4, delay: 0.8 }}
-                        whileHover={{ scale: 1.02 }}
-                        whileTap={{ scale: 0.98 }}
+                        <p className={`text-xs ${getTextClasses().muted}`}>Deja este campo vacío si no quieres cambiar la contraseña</p>
+                      </div>
+                    )}
+                    
+                    <div className="flex flex-col sm:flex-row gap-3">
+                      <Button 
+                        type="submit" 
+                        className={`w-full sm:flex-1 bg-teal-600 hover:bg-teal-700 text-white font-semibold py-3 sm:py-2.5 rounded-lg flex items-center justify-center space-x-2 h-12 sm:h-11 text-base sm:text-lg`}
                       >
+                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+                        </svg>
+                        <span>{isEditingUser ? 'Guardar Cambios' : 'Añadir Usuario'}</span>
+                      </Button>
+                      {isEditingUser && (
                         <Button 
-                          type="submit" 
-                          className={`w-full sm:flex-1 bg-pink-500 hover:bg-pink-600 text-white font-semibold py-2 text-sm rounded-lg flex items-center justify-center space-x-2 h-10`}
+                          type="button" 
+                          variant="outline"
+                          onClick={() => {
+                            setIsEditingUser(false);
+                            setCurrentUserToEdit(null);
+                            const form = document.querySelector('form');
+                            if (form) form.reset();
+                          }}
+                          className={`w-full sm:w-auto sm:px-6 py-3 text-base sm:text-lg rounded-lg flex items-center justify-center space-x-2 h-12 sm:h-11 border-teal-300 text-teal-600 hover:bg-teal-50 ${theme === 'dark' ? 'border-teal-600 text-teal-400 hover:bg-teal-900/20' : ''}`}
                         >
-                          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" />
+                          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
                           </svg>
-                          <span>{isEditingUser ? 'Guardar Cambios' : 'Añadir Usuario'}</span>
+                          <span>Cancelar</span>
                         </Button>
-                        {isEditingUser && (
-                          <Button 
-                            type="button" 
-                            variant="outline"
-                            onClick={() => {
-                              setIsEditingUser(false);
-                              setCurrentUserToEdit(null);
-                              const form = document.querySelector('form');
-                              if (form) form.reset();
-                            }}
-                            className={`w-full sm:w-auto sm:px-6 py-4 sm:py-3 text-base sm:text-lg rounded-lg flex items-center justify-center space-x-2 border-pink-300 text-pink-600 hover:bg-pink-50 h-12 sm:h-11 ${theme === 'dark' ? 'border-pink-600 text-pink-400 hover:bg-pink-900/20' : ''}`}
-                          >
-                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                            </svg>
-                            Cancelar
-                          </Button>
-                        )}
-                      </motion.div>
+                      )}
+                    </div>
                     </form>
-                  </CardContent>
-                </Card>
-              </motion.div>
+                </CardContent>
+              </Card>
 
               {/* Right Panel - Existing Users */}
-              <Card className="bg-card border shadow-lg">
+              <Card className={`shadow-lg ${getCardClasses()}`}>
                 <CardHeader className="pb-4">
-                  <CardTitle className="text-xl font-semibold text-foreground">Usuarios Existentes</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-0">
-                    {/* Table Headers */}
-                    <motion.div 
-                      className={`grid grid-cols-10 gap-4 pb-3 border-b ${getTableClasses().header} sticky top-0 bg-background z-10`}
-                      initial={{ opacity: 0, y: -20 }}
-                      whileInView={{ opacity: 1, y: 0 }}
-                      viewport={{ once: true }}
-                      transition={{ duration: 0.5, delay: 0.3 }}
-                    >
-                      <div className="col-span-1">
-                        <span className={`text-sm font-medium ${getTextClasses().label}`}>AVATAR</span>
-                      </div>
-                      <div className="col-span-3">
-                        <span className={`text-sm font-medium ${getTextClasses().label}`}>NOMBRE</span>
-                      </div>
-                      <div className="col-span-4">
-                        <span className={`text-sm font-medium ${getTextClasses().label}`}>EMAIL</span>
-                      </div>
-                      <div className="col-span-2 text-right">
-                        <span className={`text-sm font-medium ${getTextClasses().label}`}>ACCIONES</span>
-                      </div>
-                    </motion.div>
+                  <CardTitle className={`text-xl font-semibold ${getTextClasses().primary}`}>Usuarios Existentes</CardTitle>
+            </CardHeader>
+            <CardContent>
+                  {/* Headers */}
+                  <div className="grid grid-cols-12 gap-4 p-4 rounded-lg border-b bg-muted border-border mb-4">
+                    <div className="col-span-1">
+                      <span className={`text-sm font-semibold ${getTextClasses().label}`}>Avatar</span>
+                    </div>
+                    <div className="col-span-4 pl-4 sm:pl-6">
+                      <span className={`text-sm font-semibold ${getTextClasses().label}`}>Nombre</span>
+                    </div>
+                    <div className="col-span-4">
+                      <span className={`text-sm font-semibold ${getTextClasses().label}`}>Email</span>
+                    </div>
+                    <div className="col-span-3">
+                      <span className={`text-sm font-semibold ${getTextClasses().label}`}>Acciones</span>
+                    </div>
+                  </div>
                   
-                    {/* Users List */}
-                    <div className="space-y-0 max-h-96 overflow-y-auto">
-                      {users.map((user, index) => (
-                        <motion.div 
-                          key={user.id} 
-                          className={`grid grid-cols-10 gap-4 items-center py-4 ${index < users.length - 1 ? `border-b ${getTableClasses().row}` : ''}`}
-                          initial={{ opacity: 0, y: 20 }}
-                          whileInView={{ opacity: 1, y: 0 }}
-                          viewport={{ once: true }}
-                          transition={{ duration: 0.4, delay: index * 0.1 }}
-                          whileHover={{ scale: 1.01, backgroundColor: theme === 'dark' ? 'rgba(55, 65, 81, 0.3)' : 'rgba(249, 250, 251, 0.8)' }}
-                        >
-                          {/* Avatar Column */}
-                          <div className="col-span-1 flex items-center">
-                            <div className="w-10 h-10 bg-teal-100 dark:bg-teal-900 rounded-full flex items-center justify-center flex-shrink-0">
-                              <svg className="w-6 h-6 text-teal-600 dark:text-teal-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-                              </svg>
-                            </div>
+                  <div className="space-y-4">
+                    {users.map((user, index) => (
+                      <div key={user.id} className={`grid grid-cols-12 gap-4 p-4 rounded-lg border ${theme === 'dark' ? 'bg-gray-700 border-gray-600' : 'bg-white border-gray-200'} shadow-sm hover:${theme === 'dark' ? 'bg-gray-600' : 'bg-gray-50'} transition-colors`}>
+                        {/* Avatar Column */}
+                        <div className="col-span-1 flex items-center">
+                          <div className="w-10 h-10 bg-teal-100 dark:bg-teal-900 rounded-full flex items-center justify-center flex-shrink-0">
+                            <svg className="w-6 h-6 text-teal-600 dark:text-teal-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                            </svg>
                           </div>
-                          
-                          {/* Name Column */}
-                          <div className="col-span-3 flex items-center">
-                            <h3 className={`font-semibold ${getTextClasses().primary} text-sm`}>{user.name}</h3>
-                          </div>
-                          
-                          {/* Email Column */}
-                          <div className="col-span-4 flex items-center">
-                            <p className={`text-sm ${getTextClasses().secondary}`}>{user.email}</p>
-                          </div>
-                          
-                          {/* Actions Column */}
-                          <div className="col-span-2 flex items-center justify-end gap-2">
+                        </div>
+                        
+                        {/* Name Column */}
+                        <div className="col-span-4 flex items-center pl-4 sm:pl-6">
+                          <h3 className={`font-semibold ${getTextClasses().primary} truncate`}>{user.name}</h3>
+                        </div>
+                        
+                        {/* Email Column */}
+                        <div className="col-span-4 flex items-center">
+                          <p className={`text-sm ${getTextClasses().secondary} truncate`}>{user.email}</p>
+                        </div>
+                        
+                        {/* Actions Column */}
+                        <div className="col-span-3 flex items-center space-x-2">
                             <Button 
                               variant="ghost" 
                               size="icon" 
@@ -3565,42 +3347,40 @@ export function AdminDashboard({
                                 setCurrentUserToEdit(user); 
                               }} 
                               disabled={user.id !== loggedInUser.id}
-                              className={getButtonClasses().primary}
+                              className="text-blue-600 hover:text-blue-700 hover:bg-blue-50 dark:text-blue-400 dark:hover:bg-blue-900/20"
                             >
                               <Pencil className="w-4 h-4" />
                             </Button>
                             
-                            <Dialog open={openPasswordDialog && currentUserForPasswordChange?.id === user.id} onOpenChange={(isOpen) => { if (!isOpen) setCurrentUserForPasswordChange(null); setOpenPasswordDialog(isOpen); }}>
+                        <Dialog open={openPasswordDialog && currentUserForPasswordChange?.id === user.id} onOpenChange={(isOpen) => { if (!isOpen) setCurrentUserForPasswordChange(null); setOpenPasswordDialog(isOpen); }}>
                               <DialogTrigger asChild>
                                 <Button 
                                   variant="ghost" 
                                   size="icon" 
                                   onClick={() => { setCurrentUserForPasswordChange(user); setOpenPasswordDialog(true); }} 
                                   disabled={user.id !== loggedInUser.id}
-                                  className={getButtonClasses().ghost}
+                                  className="text-gray-600 hover:text-gray-700 hover:bg-gray-50 dark:text-gray-400 dark:hover:bg-gray-900/20"
                                 >
                                   <KeyRound className="w-4 h-4" />
                                 </Button>
                               </DialogTrigger>
-                              <DialogContent className="w-[95vw] max-w-md sm:max-w-lg md:max-w-2xl max-h-[90vh] overflow-y-auto">
-                                <DialogHeader>
-                                  <DialogTitle>Cambiar Contraseña para {user.name}</DialogTitle>
-                                  <DialogDescription>Introduce la nueva contraseña para el usuario.</DialogDescription>
-                                </DialogHeader>
-                                <form onSubmit={handleChangePassword} className="space-y-4">
+                          <DialogContent className="w-[95vw] max-w-md sm:max-w-lg md:max-w-2xl max-h-[90vh] overflow-y-auto">
+                            <DialogHeader>
+                                <DialogTitle>Cambiar Contraseña para {user.name}</DialogTitle>
+                                <DialogDescription>Introduce la nueva contraseña para el usuario.</DialogDescription>
+                            </DialogHeader>
+                            <form onSubmit={handleChangePassword} className="space-y-4">
                                   <Input name="newPassword" type="password" required placeholder="Nueva Contraseña" className={getInputClasses()}/>
-                                  <DialogFooter>
-                                    <Button type="button" onClick={(e) => {
-                                      e.preventDefault();
-                                      const form = e.currentTarget.closest('form');
-                                      if (form) {
-                                        handleChangePassword(e as any);
-                                      }
-                                    }} className="h-12 w-full sm:w-auto sm:px-8">Actualizar</Button>
-                                  </DialogFooter>
-                                </form>
-                              </DialogContent>
-                            </Dialog>
+                              <DialogFooter><Button type="button" onClick={(e) => {
+                                e.preventDefault();
+                                const form = e.currentTarget.closest('form');
+                                if (form) {
+                                  handleChangePassword(e as any);
+                                }
+                              }} className="h-12 w-full sm:w-auto sm:px-8">Actualizar</Button></DialogFooter>
+                            </form>
+                          </DialogContent>
+                        </Dialog>
                             
                             <Button 
                               variant="ghost" 
@@ -3610,20 +3390,19 @@ export function AdminDashboard({
                               className={getButtonClasses().danger}
                             >
                               <Trash2 className="w-4 h-4" />
-                            </Button>
-                          </div>
-                        </motion.div>
-                      ))}
-                      
-                      {users.length === 0 && (
-                        <div className={`text-center py-8 ${getTextClasses().muted}`}>
-                          <p>No hay usuarios registrados</p>
+                        </Button>
                         </div>
-                      )}
-                    </div>
+                      </div>
+                    ))}
+                    
+                    {users.length === 0 && (
+                      <div className={`text-center py-8 ${getTextClasses().muted}`}>
+                        <p>No hay usuarios registrados</p>
+                      </div>
+                    )}
                   </div>
-                </CardContent>
-              </Card>
+            </CardContent>
+          </Card>
             </motion.div>
           </motion.div>
         );
@@ -3641,7 +3420,7 @@ export function AdminDashboard({
               className="flex items-center justify-between"
               initial={{ opacity: 0, y: -20 }}
               whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
+              viewport={{ once: false }}
               transition={{ duration: 0.5 }}
             >
               <h1 className="text-3xl font-bold text-foreground">Dashboard</h1>
@@ -3649,7 +3428,7 @@ export function AdminDashboard({
                 className="flex items-center space-x-4"
                 initial={{ opacity: 0, x: 20 }}
                 whileInView={{ opacity: 1, x: 0 }}
-                viewport={{ once: true }}
+                viewport={{ once: false }}
                 transition={{ duration: 0.5, delay: 0.1 }}
               >
                 <Button variant="ghost" size="icon" className="text-muted-foreground hover:text-foreground hover:bg-accent">
@@ -3840,49 +3619,3 @@ export function AdminDashboard({
                     </div>
                   </div>
                 </div>
-              </div>
-            </div>
-          </motion.div>
-        );
-      case 'ai-content':
-        return <AIContentGenerator />;
-      default:
-        return null;
-    }
-  };
-
-  const containerVariants = {
-    hidden: { opacity: 0 },
-    visible: {
-      opacity: 1,
-      transition: {
-        staggerChildren: 0.1
-      }
-    }
-  };
-
-  const itemVariants = {
-    hidden: { opacity: 0, y: 20 },
-    visible: { 
-      opacity: 1, 
-      y: 0,
-      transition: { duration: 0.5 }
-    }
-  };
-
-  return (
-    <>
-      <motion.div 
-        className="space-y-6"
-        variants={containerVariants}
-        initial="hidden"
-        animate="visible"
-      >
-        <motion.div variants={itemVariants}>
-          {renderContent()}
-        </motion.div>
-      </motion.div>
-    </>
-  );
-}
-

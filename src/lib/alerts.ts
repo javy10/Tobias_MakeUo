@@ -106,5 +106,27 @@ export class AlertManager {
   }
 }
 
+// Función para mostrar confirmación de eliminación
+export function showDeleteConfirm(
+  title: string = '¿Estás seguro?',
+  message: string = 'Esta acción no se puede deshacer',
+  confirmText: string = 'Sí, eliminar',
+  cancelText: string = 'Cancelar'
+): Promise<boolean> {
+  return Swal.fire({
+    title: title,
+    text: message,
+    icon: 'warning',
+    showCancelButton: true,
+    confirmButtonColor: '#dc2626',
+    cancelButtonColor: '#6b7280',
+    confirmButtonText: confirmText,
+    cancelButtonText: cancelText,
+    reverseButtons: true
+  }).then((result) => {
+    return result.isConfirmed;
+  });
+}
+
 // Instancia global
 export const alertManager = AlertManager.getInstance();

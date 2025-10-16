@@ -26,8 +26,8 @@ export function useRealtimeState<T>(
     // Configurar suscripción con delay para no bloquear la carga inicial
     const setupRealtimeSubscription = async () => {
       try {
-        // Pequeño delay para permitir que la UI se cargue primero
-        await new Promise(resolve => setTimeout(resolve, 100));
+        // Delay más largo para permitir que la carga inicial termine primero
+        await new Promise(resolve => setTimeout(resolve, 2000));
 
         if (!isMounted) return;
 
@@ -135,8 +135,8 @@ export function useRealtimeSingleton<T>(
     // Configurar suscripción con delay para no bloquear la carga inicial
     const setupRealtimeSubscription = async () => {
       try {
-        // Pequeño delay para permitir que la UI se cargue primero
-        await new Promise(resolve => setTimeout(resolve, 100));
+        // Delay más largo para permitir que la carga inicial termine primero
+        await new Promise(resolve => setTimeout(resolve, 2000));
 
         if (!isMounted) return;
 
