@@ -17,7 +17,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '.
 import { Badge } from '../ui/badge';
 import { cn } from '@/lib/utils';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '../ui/table';
-import { showDeleteConfirm, showSuccessAlert } from '@/lib/alerts';
+import { showDeleteConfirm, showDeleteConfirmWithCallback, showSuccessAlert } from '@/lib/alerts';
 import { showErrorAlert } from '@/lib/error-alerts';
 
 // Función para mostrar contraseña temporal por 5 segundos
@@ -1133,25 +1133,39 @@ export function AdminDashboard({
                 <div className="grid gap-4 md:hidden">
                     {list.map(t => (
                         <Card key={t.id} className="p-4 space-y-3 bg-gray-700 border-gray-600">
+                            {/* Header con avatar y info básica */}
                             <div className="flex items-start gap-3">
-                                <div className="w-10 h-10 rounded-full bg-gray-600 flex items-center justify-center font-bold text-sm shrink-0 text-gray-200">
+                                <div className="w-12 h-12 rounded-full bg-gray-600 flex items-center justify-center font-bold text-sm shrink-0 text-gray-200">
                                     {t.author.charAt(0)}
                                 </div>
-                                <div className="flex-grow">
-                                    <p className="font-bold text-gray-200">{t.author}</p>
-                                    <p className="text-sm text-gray-400 break-words">"{t.text}"</p>
+                                <div className="flex-grow min-w-0">
+                                    <div className="flex items-center gap-2 mb-1">
+                                        <p className="font-bold text-gray-200 truncate">{t.author}</p>
+                                        <Badge variant={t.status === 'approved' ? 'default' : t.status === 'pending' ? 'secondary' : 'destructive'} className={cn(
+                                            {'bg-green-900/30 text-green-400 border-green-400': t.status === 'approved'},
+                                            {'bg-yellow-900/30 text-yellow-400 border-yellow-400': t.status === 'pending'},
+                                            {'bg-red-900/30 text-red-400 border-red-400': t.status === 'rejected'}
+                                        )}>{statusTranslations[t.status]}</Badge>
+                                    </div>
+                                    <p className="text-sm text-gray-400 break-words leading-relaxed">"{t.text}"</p>
                                 </div>
                             </div>
-                            <div className="flex flex-wrap items-center justify-between gap-2 pt-2 border-t border-gray-600">
-                                <Badge variant={t.status === 'approved' ? 'default' : t.status === 'pending' ? 'secondary' : 'destructive'} className={cn(
-                                    {'bg-green-900/30 text-green-400 border-green-400': t.status === 'approved'},
-                                    {'bg-yellow-900/30 text-yellow-400 border-yellow-400': t.status === 'pending'},
-                                    {'bg-red-900/30 text-red-400 border-red-400': t.status === 'rejected'}
-                                )}>{statusTranslations[t.status]}</Badge>
-                                <div className="flex items-center">
-                                    {t.status !== 'approved' && <Button variant="ghost" size="icon" onClick={() => handleUpdateTestimonialStatus(t.id, 'approved')} className="text-green-400 hover:text-green-300 hover:bg-green-900/20"><ThumbsUp className="w-4 h-4"/></Button>}
-                                    {t.status !== 'rejected' && <Button variant="ghost" size="icon" onClick={() => handleUpdateTestimonialStatus(t.id, 'rejected')} className="text-orange-400 hover:text-orange-300 hover:bg-orange-900/20"><ThumbsDown className="w-4 h-4"/></Button>}
-                                    <Button variant="ghost" size="icon" onClick={() => showDeleteConfirm(() => handleDeleteTestimonial(t.id))} className="text-red-400 hover:text-red-300 hover:bg-red-900/20">
+                            
+                            {/* Acciones con mejor spacing para móvil */}
+                            <div className="flex items-center justify-between pt-3 border-t border-gray-600">
+                                <div className="flex items-center gap-1">
+                                    <span className="text-xs text-gray-400">Acciones:</span>
+                                </div>
+                                <div className="flex items-center gap-1">
+                                    {t.status !== 'approved' && <Button variant="ghost" size="sm" onClick={() => handleUpdateTestimonialStatus(t.id, 'approved')} className="text-green-400 hover:text-green-300 hover:bg-green-900/20 h-8 w-8 p-0"><ThumbsUp className="w-4 h-4"/></Button>}
+                                    {t.status !== 'rejected' && <Button variant="ghost" size="sm" onClick={() => handleUpdateTestimonialStatus(t.id, 'rejected')} className="text-orange-400 hover:text-orange-300 hover:bg-orange-900/20 h-8 w-8 p-0"><ThumbsDown className="w-4 h-4"/></Button>}
+                                    <Button variant="ghost" size="sm" onClick={() => showDeleteConfirmWithCallback(
+                                        () => handleDeleteTestimonial(t.id),
+                                        '¿Eliminar testimonio?',
+                                        '¿Estás seguro de que quieres eliminar este testimonio? Esta acción no se puede deshacer.',
+                                        'Sí, eliminar',
+                                        'Cancelar'
+                                    )} className="text-red-400 hover:text-red-300 hover:bg-red-900/20 h-8 w-8 p-0">
                                         <Trash2 className="w-4 h-4" />
                                     </Button>
                                 </div>
@@ -1188,7 +1202,13 @@ export function AdminDashboard({
                                         <div className="flex items-center justify-end">
                                             {t.status !== 'approved' && <Button variant="ghost" size="icon" onClick={() => handleUpdateTestimonialStatus(t.id, 'approved')} className="text-green-400 hover:text-green-300 hover:bg-green-900/20"><ThumbsUp className="w-4 h-4"/></Button>}
                                             {t.status !== 'rejected' && <Button variant="ghost" size="icon" onClick={() => handleUpdateTestimonialStatus(t.id, 'rejected')} className="text-orange-400 hover:text-orange-300 hover:bg-orange-900/20"><ThumbsDown className="w-4 h-4"/></Button>}
-                                            <Button variant="ghost" size="icon" onClick={() => showDeleteConfirm(() => handleDeleteTestimonial(t.id))} className="text-red-400 hover:text-red-300 hover:bg-red-900/20">
+                                            <Button variant="ghost" size="icon" onClick={() => showDeleteConfirmWithCallback(
+                                () => handleDeleteTestimonial(t.id),
+                                '¿Eliminar testimonio?',
+                                '¿Estás seguro de que quieres eliminar este testimonio? Esta acción no se puede deshacer.',
+                                'Sí, eliminar',
+                                'Cancelar'
+                              )} className="text-red-400 hover:text-red-300 hover:bg-red-900/20">
                                                 <Trash2 className="w-4 h-4" />
                                             </Button>
                                         </div>
@@ -1674,7 +1694,77 @@ export function AdminDashboard({
                   <CardTitle className="text-xl font-semibold text-foreground">Servicios Activos</CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <div className="space-y-0">
+                  {/* Mobile View */}
+                  <div className="grid gap-3 sm:gap-4 md:hidden">
+                    {services.map((service) => (
+                      <Card key={service.id} className={`p-3 sm:p-4 space-y-3 ${getCardClasses()} shadow-sm hover:shadow-md transition-shadow`}>
+                        {/* Header con imagen y info básica */}
+                        <div className="flex items-start gap-3">
+                          <div className="w-12 h-12 rounded-lg flex items-center justify-center flex-shrink-0 overflow-hidden">
+                            {service.url && service.url.trim() !== '' ? (
+                              <img 
+                                src={service.url} 
+                                alt={service.title}
+                                className="w-full h-full object-cover rounded"
+                                onError={(e) => {
+                                  const target = e.target as HTMLImageElement;
+                                  target.style.display = 'none';
+                                  const fallback = target.nextElementSibling as HTMLElement;
+                                  if (fallback) fallback.style.display = 'flex';
+                                }}
+                              />
+                            ) : null}
+                            <div 
+                              className={`w-full h-full rounded flex items-center justify-center ${service.url && service.url.trim() !== '' ? 'hidden' : 'flex'}`}
+                              style={{ backgroundColor: '#10b981' }}
+                            >
+                              <span className="text-xs font-semibold text-white">
+                                {service.title.charAt(0).toUpperCase()}
+                              </span>
+                            </div>
+                          </div>
+                          <div className="flex-grow min-w-0">
+                            <h3 className={`font-semibold ${getTextClasses().primary} text-base truncate`}>{service.title}</h3>
+                            <p className={`text-sm ${getTextClasses().secondary} line-clamp-2 mt-1 leading-relaxed`}>{service.description}</p>
+                          </div>
+                        </div>
+                        
+                        {/* Acciones con mejor spacing para móvil */}
+                        <div className="flex items-center justify-between pt-3 border-t border-border">
+                          <div className="flex items-center gap-1">
+                            <span className={`text-xs ${getTextClasses().muted}`}>Acciones:</span>
+                          </div>
+                          <div className="flex items-center gap-1">
+                            <Button 
+                              variant="ghost" 
+                              size="sm" 
+                              onClick={() => loadServiceForEdit(service)}
+                              className={`h-8 w-8 p-0 ${getButtonClasses().primary}`}
+                            >
+                              <Pencil className="w-4 h-4" />
+                            </Button>
+                            <Button 
+                              variant="ghost" 
+                              size="sm" 
+                              onClick={() => showDeleteConfirmWithCallback(
+                                () => onDeleteService(service.id),
+                                '¿Eliminar servicio?',
+                                `¿Estás seguro de que quieres eliminar el servicio ${service.title}? Esta acción no se puede deshacer.`,
+                                'Sí, eliminar',
+                                'Cancelar'
+                              )}
+                              className={`h-8 w-8 p-0 ${getButtonClasses().danger}`}
+                            >
+                              <Trash2 className="w-4 h-4" />
+                            </Button>
+                          </div>
+                        </div>
+                      </Card>
+                    ))}
+                  </div>
+
+                  {/* Desktop View */}
+                  <div className="hidden md:block space-y-0">
                     {/* Table Headers */}
                     <motion.div 
                       className={`grid grid-cols-10 gap-4 pb-3 border-b ${getTableClasses().header} sticky top-0 bg-background z-10`}
@@ -1756,7 +1846,13 @@ export function AdminDashboard({
                               <Button 
                                 variant="ghost" 
                                 size="icon" 
-                                onClick={() => handleDeleteService(service.id)}
+                                onClick={() => showDeleteConfirmWithCallback(
+                                () => onDeleteService(service.id),
+                                '¿Eliminar servicio?',
+                                `¿Estás seguro de que quieres eliminar el servicio ${service.title}? Esta acción no se puede deshacer.`,
+                                'Sí, eliminar',
+                                'Cancelar'
+                              )}
                                 className={getButtonClasses().danger}
                               >
                                 <Trash2 className="w-4 h-4" />
@@ -1772,7 +1868,7 @@ export function AdminDashboard({
                         </div>
                       )}
                     </div>
-                </div>
+                  </div>
               </CardContent>
             </Card>
             </motion.div>
@@ -2012,6 +2108,7 @@ export function AdminDashboard({
                               whileHover={{ scale: 1.02 }}
                             >
                               <Card className={`p-4 space-y-3 ${getCardClasses()}`}>
+                          {/* Header con imagen y info básica */}
                           <div className="flex items-start gap-3">
                             <div className="w-12 h-12 rounded-lg flex items-center justify-center flex-shrink-0 overflow-hidden">
                               {course.url && course.url.trim() !== '' ? (
@@ -2037,27 +2134,40 @@ export function AdminDashboard({
                               </div>
                             </div>
                             <div className="flex-grow min-w-0">
-                              <h3 className={`font-semibold ${getTextClasses().primary} text-base`}>{course.name}</h3>
-                              <p className={`text-sm ${getTextClasses().secondary} line-clamp-2 mt-1`}>{course.description}</p>
+                              <h3 className={`font-semibold ${getTextClasses().primary} text-base truncate`}>{course.name}</h3>
+                              <p className={`text-sm ${getTextClasses().secondary} line-clamp-2 mt-1 leading-relaxed`}>{course.description}</p>
                             </div>
                           </div>
-                          <div className="flex items-center justify-end gap-2 pt-2 border-t border-border">
-                            <Button 
-                              variant="ghost" 
-                              size="icon" 
-                              onClick={() => setEditingCourse(course)}
-                              className={`h-10 w-10 ${getButtonClasses().primary}`}
-                            >
-                              <Pencil className="w-4 h-4" />
-                            </Button>
-                            <Button 
-                              variant="ghost" 
-                              size="icon" 
-                              onClick={() => showDeleteConfirm(() => onDeleteCourse(course.id))}
-                              className={`h-10 w-10 ${getButtonClasses().danger}`}
-                            >
-                              <Trash2 className="w-4 h-4" />
-                            </Button>
+                          
+                          {/* Acciones con mejor spacing para móvil */}
+                          <div className="flex items-center justify-between pt-3 border-t border-border">
+                            <div className="flex items-center gap-1">
+                              <span className={`text-xs ${getTextClasses().muted}`}>Acciones:</span>
+                            </div>
+                            <div className="flex items-center gap-1">
+                              <Button 
+                                variant="ghost" 
+                                size="sm" 
+                                onClick={() => setEditingCourse(course)}
+                                className={`h-8 w-8 p-0 ${getButtonClasses().primary}`}
+                              >
+                                <Pencil className="w-4 h-4" />
+                              </Button>
+                              <Button 
+                                variant="ghost" 
+                                size="sm" 
+                                onClick={() => showDeleteConfirmWithCallback(
+                                  () => onDeleteCourse(course.id),
+                                  '¿Eliminar curso?',
+                                  `¿Estás seguro de que quieres eliminar el curso ${course.name}? Esta acción no se puede deshacer.`,
+                                  'Sí, eliminar',
+                                  'Cancelar'
+                                )}
+                                className={`h-8 w-8 p-0 ${getButtonClasses().danger}`}
+                              >
+                                <Trash2 className="w-4 h-4" />
+                              </Button>
+                            </div>
                           </div>
                         </Card>
                             </motion.div>
@@ -2136,7 +2246,13 @@ export function AdminDashboard({
                                 <Button 
                                   variant="ghost" 
                                   size="icon" 
-                                  onClick={() => showDeleteConfirm(() => onDeleteCourse(course.id))}
+                                  onClick={() => showDeleteConfirmWithCallback(
+                                () => onDeleteCourse(course.id),
+                                '¿Eliminar curso?',
+                                `¿Estás seguro de que quieres eliminar el curso ${course.title}? Esta acción no se puede deshacer.`,
+                                'Sí, eliminar',
+                                'Cancelar'
+                              )}
                                   className={getButtonClasses().danger}
                                 >
                                   <Trash2 className="w-4 h-4" />
@@ -2163,6 +2279,7 @@ export function AdminDashboard({
         );
       case 'categories':
          return (
+           <>
            <motion.div 
              className="relative"
              initial={{ opacity: 0 }}
@@ -2197,7 +2314,59 @@ export function AdminDashboard({
                       </Button>
                   </CardHeader>
                   <CardContent>
-                      <div className="space-y-0">
+                      {/* Mobile View */}
+                      <div className="grid gap-3 sm:gap-4 md:hidden">
+                        {categories.map((category) => (
+                          <Card key={category.id} className={`p-3 sm:p-4 space-y-3 ${getCardClasses()} shadow-sm hover:shadow-md transition-shadow`}>
+                            {/* Header con info básica */}
+                            <div className="flex items-start gap-3">
+                              <div className="w-12 h-12 bg-teal-100 dark:bg-teal-900 rounded-full flex items-center justify-center flex-shrink-0">
+                                <svg className="w-6 h-6 text-teal-600 dark:text-teal-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" />
+                                </svg>
+                              </div>
+                              <div className="flex-grow min-w-0">
+                                <h3 className={`font-semibold ${getTextClasses().primary} text-base truncate`}>{category.name}</h3>
+                                <p className={`text-sm ${getTextClasses().secondary} mt-1`}>Categoría de productos</p>
+                              </div>
+                            </div>
+                            
+                            {/* Acciones con mejor spacing para móvil */}
+                            <div className="flex items-center justify-between pt-3 border-t border-border">
+                              <div className="flex items-center gap-1">
+                                <span className={`text-xs ${getTextClasses().muted}`}>Acciones:</span>
+                              </div>
+                              <div className="flex items-center gap-1">
+                                <Button 
+                                  variant="ghost" 
+                                  size="sm" 
+                                  onClick={() => { setIsEditingCategory(true); setCurrentCategoryToEdit(category); setOpenCategoryDialog(true); }}
+                                  className={`h-8 w-8 p-0 ${getButtonClasses().ghost}`}
+                                >
+                                  <Pencil className="w-4 h-4" />
+                                </Button>
+                                <Button 
+                                  variant="ghost" 
+                                  size="sm" 
+                                  onClick={() => showDeleteConfirmWithCallback(
+                                    () => handleDeleteCategory(category.id),
+                                    '¿Eliminar categoría?',
+                                    `¿Estás seguro de que quieres eliminar la categoría ${category.name}? Esta acción no se puede deshacer.`,
+                                    'Sí, eliminar',
+                                    'Cancelar'
+                                  )}
+                                  className={`h-8 w-8 p-0 ${getButtonClasses().danger}`}
+                                >
+                                  <Trash2 className="w-4 h-4" />
+                                </Button>
+                              </div>
+                            </div>
+                          </Card>
+                        ))}
+                      </div>
+
+                      {/* Desktop View */}
+                      <div className="hidden md:block space-y-0">
                           {/* Table Headers */}
                           <div className={`grid grid-cols-12 gap-4 pb-3 border-b ${getTableClasses().header}`}>
                               <div className="col-span-8">
@@ -2227,7 +2396,13 @@ export function AdminDashboard({
                                           <Button 
                                               variant="ghost" 
                                               size="icon" 
-                                              onClick={() => showDeleteConfirm(() => handleDeleteCategory(category.id))}
+                                              onClick={() => showDeleteConfirmWithCallback(
+                                () => handleDeleteCategory(category.id),
+                                '¿Eliminar categoría?',
+                                `¿Estás seguro de que quieres eliminar la categoría ${category.name}? Esta acción no se puede deshacer.`,
+                                'Sí, eliminar',
+                                'Cancelar'
+                              )}
                                               className={getButtonClasses().danger}
                                           >
                                               <Trash2 className="w-4 h-4" />
@@ -2244,34 +2419,35 @@ export function AdminDashboard({
                           </div>
                       </div>
                   </CardContent>
-                  <Dialog open={openCategoryDialog} onOpenChange={setOpenCategoryDialog}>
-                      <DialogContent className={`w-[95vw] max-w-md sm:max-w-lg md:max-w-2xl max-h-[90vh] overflow-y-auto ${getCardClasses()}`}>
-                          <DialogHeader>
-                            <DialogTitle className={getTextClasses().primary}>{isEditingCategory ? 'Editar' : 'Añadir'} Categoría</DialogTitle>
-                            <DialogDescription className={getTextClasses().secondary}>
-                                {isEditingCategory ? 'Modifica el nombre de la categoría.' : 'Crea una nueva categoría para tus productos.'}
-                            </DialogDescription>
-                          </DialogHeader>
-                          <form onSubmit={handleAddOrUpdateCategory} className="space-y-4">
-                              <Input 
-                                  name="name" 
-                                  placeholder="Nombre de la categoría" 
-                                  defaultValue={currentCategoryToEdit?.name || ''} 
-                                  required 
-                                  className={getInputClasses()}
-                              />
-                              <DialogFooter>
-                                  <Button type="submit" className={getButtonClasses().primary}>
-                                      {isEditingCategory ? 'Actualizar' : 'Guardar'}
-                                  </Button>
-                              </DialogFooter>
-                          </form>
-                      </DialogContent>
-                  </Dialog>
                 </motion.div>
-              </Card>
+                </Card>
+                <Dialog open={openCategoryDialog} onOpenChange={setOpenCategoryDialog}>
+                    <DialogContent className={`w-[95vw] max-w-md sm:max-w-lg md:max-w-2xl max-h-[90vh] overflow-y-auto ${getCardClasses()}`}>
+                        <DialogHeader>
+                          <DialogTitle className={getTextClasses().primary}>{isEditingCategory ? 'Editar' : 'Añadir'} Categoría</DialogTitle>
+                          <DialogDescription className={getTextClasses().secondary}>
+                              {isEditingCategory ? 'Modifica el nombre de la categoría.' : 'Crea una nueva categoría para tus productos.'}
+                          </DialogDescription>
+                        </DialogHeader>
+                        <form onSubmit={handleAddOrUpdateCategory} className="space-y-4">
+                            <Input 
+                                name="name" 
+                                placeholder="Nombre de la categoría" 
+                                defaultValue={currentCategoryToEdit?.name || ''} 
+                                required 
+                                className={getInputClasses()}
+                            />
+                            <DialogFooter>
+                                <Button type="submit" className={getButtonClasses().primary}>
+                                    {isEditingCategory ? 'Actualizar' : 'Guardar'}
+                                </Button>
+                            </DialogFooter>
+                        </form>
+                    </DialogContent>
+                </Dialog>
+              </motion.div>
             </motion.div>
-          </motion.div>
+          </>
         );
       case 'products':
         return (
@@ -2454,6 +2630,7 @@ export function AdminDashboard({
                             whileHover={{ scale: 1.02 }}
                           >
                             <Card className={`p-4 space-y-3 ${getCardClasses()}`}>
+                              {/* Header con imagen y info básica */}
                               <div className="flex items-start gap-3">
                                 <div className="w-12 h-12 bg-teal-600 rounded-lg flex items-center justify-center flex-shrink-0">
                                   {product.url && product.url.trim() !== '' ? (
@@ -2479,7 +2656,7 @@ export function AdminDashboard({
                                   </div>
                                 </div>
                                 <div className="flex-grow min-w-0">
-                                  <h3 className={`font-semibold ${getTextClasses().primary} text-base`}>{product.name}</h3>
+                                  <h3 className={`font-semibold ${getTextClasses().primary} text-base truncate`}>{product.name}</h3>
                                   <p className={`text-xs ${getTextClasses().muted} mt-1`}>#{product.id.slice(-6).toUpperCase()}</p>
                                   <div className="flex items-center gap-2 mt-2">
                                     <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${stockColor}`}>
@@ -2491,16 +2668,29 @@ export function AdminDashboard({
                                   </div>
                                 </div>
                               </div>
-                              <div className="flex items-center justify-end gap-2 pt-2 border-t border-border">
-                                <EditProductDialog product={product} onSave={onUpdateProduct} />
-                                <Button 
-                                  variant="ghost" 
-                                  size="icon" 
-                                  onClick={() => showDeleteConfirm(() => onDeleteProduct(product.id))}
-                                  className={`h-10 w-10 ${getButtonClasses().danger}`}
-                                >
-                                  <Trash2 className="w-4 h-4" />
-                                </Button>
+                              
+                              {/* Acciones con mejor spacing para móvil */}
+                              <div className="flex items-center justify-between pt-3 border-t border-border">
+                                <div className="flex items-center gap-1">
+                                  <span className={`text-xs ${getTextClasses().muted}`}>Acciones:</span>
+                                </div>
+                                <div className="flex items-center gap-1">
+                                  <EditProductDialog product={product} onSave={onUpdateProduct} />
+                                  <Button 
+                                    variant="ghost" 
+                                    size="sm" 
+                                    onClick={() => showDeleteConfirmWithCallback(
+                                      () => onDeleteProduct(product.id),
+                                      '¿Eliminar producto?',
+                                      `¿Estás seguro de que quieres eliminar el producto ${product.name}? Esta acción no se puede deshacer.`,
+                                      'Sí, eliminar',
+                                      'Cancelar'
+                                    )}
+                                    className={`h-8 w-8 p-0 ${getButtonClasses().danger}`}
+                                  >
+                                    <Trash2 className="w-4 h-4" />
+                                  </Button>
+                                </div>
                               </div>
                             </Card>
                           </motion.div>
@@ -2608,7 +2798,13 @@ export function AdminDashboard({
                                 <Button 
                                   variant="ghost" 
                                   size="icon" 
-                                  onClick={() => showDeleteConfirm(() => onDeleteProduct(product.id))}
+                                  onClick={() => showDeleteConfirmWithCallback(
+                                () => onDeleteProduct(product.id),
+                                '¿Eliminar producto?',
+                                `¿Estás seguro de que quieres eliminar el producto ${product.name}? Esta acción no se puede deshacer.`,
+                                'Sí, eliminar',
+                                'Cancelar'
+                              )}
                                   className={getButtonClasses().danger}
                                 >
                                   <Trash2 className="w-4 h-4" />
@@ -2794,7 +2990,88 @@ export function AdminDashboard({
                   <CardTitle className="text-xl font-semibold text-foreground">Perfumes Activos</CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <div className="space-y-0">
+                  {/* Mobile View */}
+                  <div className="grid gap-3 sm:gap-4 md:hidden">
+                    {perfumes.map((perfume) => {
+                      const stockLevel = perfume.stock >= 6 ? 'high' : 'low';
+                      const stockColor = stockLevel === 'high' ? 'bg-green-100 text-green-800' : 
+                                       'bg-red-100 text-red-800';
+                      
+                      return (
+                        <Card key={perfume.id} className={`p-3 sm:p-4 space-y-3 ${getCardClasses()} shadow-sm hover:shadow-md transition-shadow`}>
+                          {/* Header con imagen y info básica */}
+                          <div className="flex items-start gap-3">
+                            <div className="w-12 h-12 rounded-lg flex items-center justify-center flex-shrink-0 overflow-hidden">
+                              {perfume.url && perfume.url.trim() !== '' ? (
+                                <img 
+                                  src={perfume.url} 
+                                  alt={perfume.name}
+                                  className="w-full h-full object-cover rounded"
+                                  onError={(e) => {
+                                    const target = e.target as HTMLImageElement;
+                                    target.style.display = 'none';
+                                    const fallback = target.nextElementSibling as HTMLElement;
+                                    if (fallback) fallback.style.display = 'flex';
+                                  }}
+                                />
+                              ) : null}
+                              <div 
+                                className={`w-full h-full rounded flex items-center justify-center ${perfume.url && perfume.url.trim() !== '' ? 'hidden' : 'flex'}`}
+                                style={{ backgroundColor: '#ec4899' }}
+                              >
+                                <span className="text-xs font-semibold text-white">
+                                  {perfume.name.charAt(0).toUpperCase()}
+                                </span>
+                              </div>
+                            </div>
+                            <div className="flex-grow min-w-0">
+                              <h3 className={`font-semibold ${getTextClasses().primary} text-base truncate`}>{perfume.name}</h3>
+                              <p className={`text-xs ${getTextClasses().muted} mt-1`}>#{perfume.id.slice(-6).toUpperCase()}</p>
+                              <div className="flex items-center gap-2 mt-2">
+                                <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${stockColor}`}>
+                                  {perfume.stock} Unidades
+                                </span>
+                              </div>
+                            </div>
+                          </div>
+                          
+                          {/* Acciones con mejor spacing para móvil */}
+                          <div className="flex items-center justify-between pt-3 border-t border-border">
+                            <div className="flex items-center gap-1">
+                              <span className={`text-xs ${getTextClasses().muted}`}>Acciones:</span>
+                            </div>
+                            <div className="flex items-center gap-1">
+                              <Button 
+                                variant="ghost" 
+                                size="sm" 
+                                onClick={() => {/* TODO: Implementar función de edición de perfume */}}
+                                className={`h-8 w-8 p-0 ${getButtonClasses().primary}`}
+                              >
+                                <Pencil className="w-4 h-4" />
+                              </Button>
+                              <Button 
+                                variant="ghost" 
+                                size="sm" 
+                                onClick={() => showDeleteConfirmWithCallback(
+                                  () => onDeletePerfume(perfume.id),
+                                  '¿Eliminar perfume?',
+                                  `¿Estás seguro de que quieres eliminar el perfume ${perfume.name}? Esta acción no se puede deshacer.`,
+                                  'Sí, eliminar',
+                                  'Cancelar'
+                                )}
+                                className={`h-8 w-8 p-0 ${getButtonClasses().danger}`}
+                              >
+                                <Trash2 className="w-4 h-4" />
+                              </Button>
+                            </div>
+                          </div>
+                        </Card>
+                      );
+                    })}
+                  </div>
+
+                  {/* Desktop View */}
+                  <div className="hidden md:block space-y-0">
                     {/* Table Headers */}
                     <motion.div 
                       className={`grid grid-cols-10 gap-4 pb-3 border-b ${getTableClasses().header} sticky top-0 bg-background z-10`}
@@ -2876,7 +3153,13 @@ export function AdminDashboard({
                               <Button 
                                 variant="ghost" 
                                 size="icon" 
-                                onClick={() => showDeleteConfirm(() => onDeletePerfume(perfume.id))}
+                                onClick={() => showDeleteConfirmWithCallback(
+                                () => onDeletePerfume(perfume.id),
+                                '¿Eliminar perfume?',
+                                `¿Estás seguro de que quieres eliminar el perfume ${perfume.name}? Esta acción no se puede deshacer.`,
+                                'Sí, eliminar',
+                                'Cancelar'
+                              )}
                                 className={getButtonClasses().danger}
                               >
                                 <Trash2 className="w-4 h-4" />
@@ -2892,7 +3175,7 @@ export function AdminDashboard({
                         </div>
                       )}
                     </div>
-                </div>
+                  </div>
               </CardContent>
             </Card>
             </motion.div>
@@ -3038,10 +3321,87 @@ export function AdminDashboard({
                   <CardTitle className="text-xl font-semibold text-foreground">Mis Trabajos</CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <div className="space-y-0">
+                  {/* Mobile View */}
+                  <div className="grid gap-3 sm:gap-4 md:hidden">
+                    {galleryItems.map((work) => (
+                      <Card key={work.id} className={`p-3 sm:p-4 space-y-3 ${getCardClasses()} shadow-sm hover:shadow-md transition-shadow`}>
+                        {/* Header con imagen y info básica */}
+                        <div className="flex items-start gap-3">
+                          <div className="w-12 h-12 rounded-lg flex items-center justify-center flex-shrink-0 overflow-hidden">
+                            {work.url && work.url.trim() !== '' ? (
+                              work.type === 'video' ? (
+                                <video 
+                                  src={work.url} 
+                                  className="w-full h-full object-cover rounded"
+                                  muted
+                                  onError={(e) => {
+                                    const target = e.target as HTMLVideoElement;
+                                    target.style.display = 'none';
+                                    const fallback = target.nextElementSibling as HTMLElement;
+                                    if (fallback) fallback.style.display = 'flex';
+                                  }}
+                                />
+                              ) : (
+                                <img 
+                                  src={work.url} 
+                                  alt={work.title}
+                                  className="w-full h-full object-cover rounded"
+                                  onError={(e) => {
+                                    const target = e.target as HTMLImageElement;
+                                    target.style.display = 'none';
+                                    const fallback = target.nextElementSibling as HTMLElement;
+                                    if (fallback) fallback.style.display = 'flex';
+                                  }}
+                                />
+                              )
+                            ) : null}
+                            <div 
+                              className={`w-full h-full rounded flex items-center justify-center ${work.url && work.url.trim() !== '' ? 'hidden' : 'flex'}`}
+                              style={{ backgroundColor: '#10b981' }}
+                            >
+                              <span className="text-xs font-semibold text-white">
+                                {work.title.charAt(0).toUpperCase()}
+                              </span>
+                            </div>
+                          </div>
+                          <div className="flex-grow min-w-0">
+                            <h3 className={`font-semibold ${getTextClasses().primary} text-base truncate`}>{work.title}</h3>
+                            <p className={`text-sm ${getTextClasses().secondary} line-clamp-2 mt-1 leading-relaxed`}>{work.description}</p>
+                          </div>
+                        </div>
+                        
+                        {/* Acciones con mejor spacing para móvil */}
+                        <div className="flex items-center justify-between pt-3 border-t border-border">
+                          <div className="flex items-center gap-1">
+                            <span className={`text-xs ${getTextClasses().muted}`}>Acciones:</span>
+                          </div>
+                          <div className="flex items-center gap-1">
+                            <EditGalleryItemDialog item={work} onSave={onUpdateGalleryItem} />
+                            <Button 
+                              variant="ghost" 
+                              size="sm" 
+                              onClick={() => showDeleteConfirmWithCallback(
+                                () => onDeleteGalleryItem(work.id),
+                                '¿Eliminar elemento de galería?',
+                                `¿Estás seguro de que quieres eliminar este elemento de la galería? Esta acción no se puede deshacer.`,
+                                'Sí, eliminar',
+                                'Cancelar'
+                              )}
+                              className={`h-8 w-8 p-0 ${getButtonClasses().danger}`}
+                            >
+                              <Trash2 className="w-4 h-4" />
+                            </Button>
+                          </div>
+                        </div>
+                      </Card>
+                    ))}
+                  </div>
+
+                  {/* Desktop View */}
+                  <div className="hidden md:block space-y-0">
                     {/* Table Headers */}
                     <motion.div 
-                      className={`grid grid-cols-10 gap-4 pb-3 border-b ${getTableClasses().header} sticky top-0 bg-background z-10`}
+                      className={`grid grid-cols-8 gap-4 pb-3 border-b ${getTableClasses().header} sticky top-0 bg-background z-10`}
                       initial={{ opacity: 0, y: -20 }}
                       whileInView={{ opacity: 1, y: 0 }}
                       viewport={{ once: true }}
@@ -3049,9 +3409,6 @@ export function AdminDashboard({
                     >
                       <div className="col-span-6">
                         <span className={`text-sm font-medium ${getTextClasses().label}`}>TRABAJO</span>
-                      </div>
-                      <div className="col-span-2">
-                        <span className={`text-sm font-medium ${getTextClasses().label}`}>TIPO</span>
                       </div>
                       <div className="col-span-2 text-right">
                         <span className={`text-sm font-medium ${getTextClasses().label}`}>ACCIONES</span>
@@ -3064,7 +3421,7 @@ export function AdminDashboard({
                         return (
                           <motion.div 
                             key={work.id} 
-                            className={`grid grid-cols-10 gap-4 items-center py-4 ${index < galleryItems.length - 1 ? `border-b ${getTableClasses().row}` : ''}`}
+                            className={`grid grid-cols-8 gap-4 items-center py-4 ${index < galleryItems.length - 1 ? `border-b ${getTableClasses().row}` : ''}`}
                             initial={{ opacity: 0, y: 20 }}
                             whileInView={{ opacity: 1, y: 0 }}
                             viewport={{ once: true }}
@@ -3116,18 +3473,19 @@ export function AdminDashboard({
                               </div>
                             </div>
                             
-                            {/* Work Type */}
-                            <div className="col-span-2">
-                              <span className={`text-sm ${getTextClasses().secondary}`}>Trabajo</span>
-                            </div>
-                            
                             {/* Actions */}
                             <div className="col-span-2 flex items-center justify-end gap-2">
                               <EditGalleryItemDialog item={work} onSave={onUpdateGalleryItem} />
                               <Button 
                                 variant="ghost" 
                                 size="icon" 
-                                onClick={() => showDeleteConfirm(() => onDeleteGalleryItem(work.id))}
+                                onClick={() => showDeleteConfirmWithCallback(
+                                () => onDeleteGalleryItem(work.id),
+                                '¿Eliminar elemento de galería?',
+                                `¿Estás seguro de que quieres eliminar este elemento de la galería? Esta acción no se puede deshacer.`,
+                                'Sí, eliminar',
+                                'Cancelar'
+                              )}
                                 className={getButtonClasses().danger}
                               >
                                 <Trash2 className="w-4 h-4" />
@@ -3323,7 +3681,13 @@ export function AdminDashboard({
                         <Button 
                           variant="outline" 
                           size="sm" 
-                          onClick={() => showDeleteConfirm(() => handleDeleteTestimonial(testimonial.id))}
+                          onClick={() => showDeleteConfirmWithCallback(
+                                () => handleDeleteTestimonial(testimonial.id),
+                                '¿Eliminar testimonio?',
+                                `¿Estás seguro de que quieres eliminar el testimonio de ${testimonial.name}? Esta acción no se puede deshacer.`,
+                                'Sí, eliminar',
+                                'Cancelar'
+                              )}
                           className="w-full border-gray-300 text-gray-600 hover:bg-gray-50 dark:border-gray-600 dark:text-gray-400 dark:hover:bg-gray-900/20"
                         >
                           {
@@ -3501,19 +3865,110 @@ export function AdminDashboard({
                   <CardTitle className="text-xl font-semibold text-foreground">Usuarios Existentes</CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <div className="space-y-0">
+                  {/* Mobile View */}
+                  <div className="grid gap-3 sm:gap-4 lg:hidden">
+                    {users.map((user) => (
+                      <Card key={user.id} className={`p-3 sm:p-4 space-y-3 ${getCardClasses()} shadow-sm hover:shadow-md transition-shadow`}>
+                        {/* Header con avatar y info básica */}
+                        <div className="flex items-start gap-3">
+                          <div className="w-12 h-12 bg-teal-100 dark:bg-teal-900 rounded-full flex items-center justify-center flex-shrink-0">
+                            <svg className="w-6 h-6 text-teal-600 dark:text-teal-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                            </svg>
+                          </div>
+                          <div className="flex-grow min-w-0">
+                            <div className="flex items-center gap-2 mb-1">
+                              <p className={`font-semibold text-base ${getTextClasses().primary} truncate`}>{user.name}</p>
+                              <Badge variant="secondary" className="text-xs px-2 py-1">{user.role}</Badge>
+                            </div>
+                            <p className={`text-sm ${getTextClasses().secondary} break-all leading-relaxed`}>{user.email}</p>
+                          </div>
+                        </div>
+                        
+                        {/* Acciones con mejor spacing para móvil */}
+                        <div className="flex items-center justify-between pt-3 border-t border-border">
+                          <div className="flex items-center gap-1">
+                            <span className={`text-xs ${getTextClasses().muted}`}>Acciones:</span>
+                          </div>
+                          <div className="flex items-center gap-1">
+                            <Button 
+                              variant="ghost" 
+                              size="sm"
+                              onClick={() => { 
+                                setIsEditingUser(true); 
+                                setCurrentUserToEdit(user); 
+                              }} 
+                              disabled={user.id !== loggedInUser.id}
+                              className={`${getButtonClasses().primary} h-8 w-8 p-0`}
+                            >
+                              <Pencil className="w-4 h-4" />
+                            </Button>
+                            <Dialog open={openPasswordDialog && currentUserForPasswordChange?.id === user.id} onOpenChange={(isOpen) => { if (!isOpen) setCurrentUserForPasswordChange(null); setOpenPasswordDialog(isOpen); }}>
+                              <DialogTrigger asChild>
+                                <Button 
+                                  variant="ghost" 
+                                  size="sm"
+                                  onClick={() => { setCurrentUserForPasswordChange(user); setOpenPasswordDialog(true); }} 
+                                  disabled={user.id !== loggedInUser.id}
+                                  className={`${getButtonClasses().ghost} h-8 w-8 p-0`}
+                                >
+                                  <KeyRound className="w-4 h-4" />
+                                </Button>
+                              </DialogTrigger>
+                              <DialogContent className="w-[95vw] max-w-md">
+                                <DialogHeader>
+                                  <DialogTitle>Cambiar Contraseña para {user.name}</DialogTitle>
+                                  <DialogDescription>Introduce la nueva contraseña para el usuario.</DialogDescription>
+                                </DialogHeader>
+                                <form onSubmit={handleChangePassword} className="space-y-4">
+                                  <Input name="newPassword" type="password" required placeholder="Nueva Contraseña" className={getInputClasses()}/>
+                                  <DialogFooter>
+                                    <Button type="button" onClick={(e) => {
+                                      e.preventDefault();
+                                      const form = e.currentTarget.closest('form');
+                                      if (form) {
+                                        handleChangePassword(e as any);
+                                      }
+                                    }} className="h-12 w-full sm:w-auto sm:px-8">Actualizar</Button>
+                                  </DialogFooter>
+                                </form>
+                              </DialogContent>
+                            </Dialog>
+                            <Button 
+                              variant="ghost" 
+                              size="sm"
+                              disabled={user.id === loggedInUser.id} 
+                              onClick={() => showDeleteConfirmWithCallback(
+                                () => handleDeleteUser(user.id),
+                                '¿Eliminar usuario?',
+                                `¿Estás seguro de que quieres eliminar al usuario ${user.name}? Esta acción no se puede deshacer.`,
+                                'Sí, eliminar',
+                                'Cancelar'
+                              )}
+                              className={`${getButtonClasses().danger} h-8 w-8 p-0`}
+                            >
+                              <Trash2 className="w-4 h-4" />
+                            </Button>
+                          </div>
+                        </div>
+                      </Card>
+                    ))}
+                  </div>
+
+                  {/* Tablet View - Vista intermedia para tablets */}
+                  <div className="hidden md:block lg:hidden space-y-0">
                     {/* Table Headers */}
                     <motion.div 
-                      className={`grid grid-cols-10 gap-4 pb-3 border-b ${getTableClasses().header} sticky top-0 bg-background z-10`}
+                      className={`grid grid-cols-12 gap-3 pb-3 border-b ${getTableClasses().header} sticky top-0 bg-background z-10`}
                       initial={{ opacity: 0, y: -20 }}
                       whileInView={{ opacity: 1, y: 0 }}
                       viewport={{ once: true }}
                       transition={{ duration: 0.5, delay: 0.3 }}
                     >
-                      <div className="col-span-1">
+                      <div className="col-span-2">
                         <span className={`text-sm font-medium ${getTextClasses().label}`}>AVATAR</span>
                       </div>
-                      <div className="col-span-3">
+                      <div className="col-span-4">
                         <span className={`text-sm font-medium ${getTextClasses().label}`}>NOMBRE</span>
                       </div>
                       <div className="col-span-4">
@@ -3529,15 +3984,15 @@ export function AdminDashboard({
                       {users.map((user, index) => (
                         <motion.div 
                           key={user.id} 
-                          className={`grid grid-cols-10 gap-4 items-center py-4 ${index < users.length - 1 ? `border-b ${getTableClasses().row}` : ''}`}
+                          className={`grid grid-cols-12 gap-3 items-center py-4 ${index < users.length - 1 ? `border-b ${getTableClasses().row}` : ''}`}
                           initial={{ opacity: 0, y: 20 }}
                           whileInView={{ opacity: 1, y: 0 }}
                           viewport={{ once: true }}
                           transition={{ duration: 0.4, delay: index * 0.1 }}
-                          whileHover={{ scale: 1.01, backgroundColor: theme === 'dark' ? 'rgba(55, 65, 81, 0.3)' : 'rgba(249, 250, 251, 0.8)' }}
+                          whileHover={{ scale: 1.005, backgroundColor: theme === 'dark' ? 'rgba(55, 65, 81, 0.3)' : 'rgba(249, 250, 251, 0.8)' }}
                         >
                           {/* Avatar Column */}
-                          <div className="col-span-1 flex items-center">
+                          <div className="col-span-2 flex items-center">
                             <div className="w-10 h-10 bg-teal-100 dark:bg-teal-900 rounded-full flex items-center justify-center flex-shrink-0">
                               <svg className="w-6 h-6 text-teal-600 dark:text-teal-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
@@ -3546,26 +4001,26 @@ export function AdminDashboard({
                           </div>
                           
                           {/* Name Column */}
-                          <div className="col-span-3 flex items-center">
-                            <h3 className={`font-semibold ${getTextClasses().primary} text-sm`}>{user.name}</h3>
+                          <div className="col-span-4 flex items-center">
+                            <h3 className={`font-semibold ${getTextClasses().primary} text-sm truncate`}>{user.name}</h3>
                           </div>
                           
                           {/* Email Column */}
                           <div className="col-span-4 flex items-center">
-                            <p className={`text-sm ${getTextClasses().secondary}`}>{user.email}</p>
+                            <p className={`text-sm ${getTextClasses().secondary} truncate`}>{user.email}</p>
                           </div>
                           
                           {/* Actions Column */}
                           <div className="col-span-2 flex items-center justify-end gap-2">
                             <Button 
                               variant="ghost" 
-                              size="icon" 
+                              size="sm"
                               onClick={() => { 
                                 setIsEditingUser(true); 
                                 setCurrentUserToEdit(user); 
                               }} 
                               disabled={user.id !== loggedInUser.id}
-                              className={getButtonClasses().primary}
+                              className={`${getButtonClasses().primary} h-8 w-8 p-0`}
                             >
                               <Pencil className="w-4 h-4" />
                             </Button>
@@ -3574,15 +4029,15 @@ export function AdminDashboard({
                               <DialogTrigger asChild>
                                 <Button 
                                   variant="ghost" 
-                                  size="icon" 
+                                  size="sm"
                                   onClick={() => { setCurrentUserForPasswordChange(user); setOpenPasswordDialog(true); }} 
                                   disabled={user.id !== loggedInUser.id}
-                                  className={getButtonClasses().ghost}
+                                  className={`${getButtonClasses().ghost} h-8 w-8 p-0`}
                                 >
                                   <KeyRound className="w-4 h-4" />
                                 </Button>
                               </DialogTrigger>
-                              <DialogContent className="w-[95vw] max-w-md sm:max-w-lg md:max-w-2xl max-h-[90vh] overflow-y-auto">
+                              <DialogContent className="w-[95vw] max-w-md">
                                 <DialogHeader>
                                   <DialogTitle>Cambiar Contraseña para {user.name}</DialogTitle>
                                   <DialogDescription>Introduce la nueva contraseña para el usuario.</DialogDescription>
@@ -3604,12 +4059,147 @@ export function AdminDashboard({
                             
                             <Button 
                               variant="ghost" 
-                              size="icon" 
+                              size="sm"
                               disabled={user.id === loggedInUser.id} 
-                              onClick={() => showDeleteConfirm(() => handleDeleteUser(user.id))}
-                              className={getButtonClasses().danger}
+                              onClick={() => showDeleteConfirmWithCallback(
+                                () => handleDeleteUser(user.id),
+                                '¿Eliminar usuario?',
+                                `¿Estás seguro de que quieres eliminar al usuario ${user.name}? Esta acción no se puede deshacer.`,
+                                'Sí, eliminar',
+                                'Cancelar'
+                              )}
+                              className={`${getButtonClasses().danger} h-8 w-8 p-0`}
                             >
                               <Trash2 className="w-4 h-4" />
+                            </Button>
+                          </div>
+                        </motion.div>
+                      ))}
+                      
+                      {users.length === 0 && (
+                        <div className={`text-center py-8 ${getTextClasses().muted}`}>
+                          <p>No hay usuarios registrados</p>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Desktop View - Mejorado para responsive */}
+                  <div className="hidden lg:block space-y-0">
+                    {/* Table Headers */}
+                    <motion.div 
+                      className={`grid grid-cols-12 gap-2 lg:gap-4 pb-3 border-b ${getTableClasses().header} sticky top-0 bg-background z-10 px-1`}
+                      initial={{ opacity: 0, y: -20 }}
+                      whileInView={{ opacity: 1, y: 0 }}
+                      viewport={{ once: true }}
+                      transition={{ duration: 0.5, delay: 0.3 }}
+                    >
+                      <div className="col-span-1">
+                        <span className={`text-xs lg:text-sm font-medium ${getTextClasses().label}`}>AVATAR</span>
+                      </div>
+                      <div className="col-span-3 lg:col-span-3">
+                        <span className={`text-xs lg:text-sm font-medium ${getTextClasses().label}`}>NOMBRE</span>
+                      </div>
+                      <div className="col-span-5 lg:col-span-4">
+                        <span className={`text-xs lg:text-sm font-medium ${getTextClasses().label}`}>EMAIL</span>
+                      </div>
+                      <div className="col-span-3 lg:col-span-4 text-right">
+                        <span className={`text-xs lg:text-sm font-medium ${getTextClasses().label}`}>ACCIONES</span>
+                      </div>
+                    </motion.div>
+                  
+                    {/* Users List */}
+                    <div className="space-y-0 max-h-96 overflow-y-auto">
+                      {users.map((user, index) => (
+                        <motion.div 
+                          key={user.id} 
+                          className={`grid grid-cols-12 gap-2 lg:gap-4 items-center py-3 lg:py-4 px-1 ${index < users.length - 1 ? `border-b ${getTableClasses().row}` : ''}`}
+                          initial={{ opacity: 0, y: 20 }}
+                          whileInView={{ opacity: 1, y: 0 }}
+                          viewport={{ once: true }}
+                          transition={{ duration: 0.4, delay: index * 0.1 }}
+                          whileHover={{ scale: 1.005, backgroundColor: theme === 'dark' ? 'rgba(55, 65, 81, 0.3)' : 'rgba(249, 250, 251, 0.8)' }}
+                        >
+                          {/* Avatar Column */}
+                          <div className="col-span-1 flex items-center">
+                            <div className="w-8 h-8 lg:w-10 lg:h-10 bg-teal-100 dark:bg-teal-900 rounded-full flex items-center justify-center flex-shrink-0">
+                              <svg className="w-4 h-4 lg:w-6 lg:h-6 text-teal-600 dark:text-teal-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                              </svg>
+                            </div>
+                          </div>
+                          
+                          {/* Name Column */}
+                          <div className="col-span-3 lg:col-span-3 flex items-center">
+                            <h3 className={`font-semibold ${getTextClasses().primary} text-xs lg:text-sm truncate`}>{user.name}</h3>
+                          </div>
+                          
+                          {/* Email Column */}
+                          <div className="col-span-5 lg:col-span-4 flex items-center">
+                            <p className={`text-xs lg:text-sm ${getTextClasses().secondary} truncate`}>{user.email}</p>
+                          </div>
+                          
+                          {/* Actions Column */}
+                          <div className="col-span-3 lg:col-span-4 flex items-center justify-end gap-1 lg:gap-2">
+                            <Button 
+                              variant="ghost" 
+                              size="sm"
+                              onClick={() => { 
+                                setIsEditingUser(true); 
+                                setCurrentUserToEdit(user); 
+                              }} 
+                              disabled={user.id !== loggedInUser.id}
+                              className={`${getButtonClasses().primary} h-7 w-7 lg:h-8 lg:w-8 p-0`}
+                            >
+                              <Pencil className="w-3 h-3 lg:w-4 lg:h-4" />
+                            </Button>
+                            
+                            <Dialog open={openPasswordDialog && currentUserForPasswordChange?.id === user.id} onOpenChange={(isOpen) => { if (!isOpen) setCurrentUserForPasswordChange(null); setOpenPasswordDialog(isOpen); }}>
+                              <DialogTrigger asChild>
+                                <Button 
+                                  variant="ghost" 
+                                  size="sm"
+                                  onClick={() => { setCurrentUserForPasswordChange(user); setOpenPasswordDialog(true); }} 
+                                  disabled={user.id !== loggedInUser.id}
+                                  className={`${getButtonClasses().ghost} h-7 w-7 lg:h-8 lg:w-8 p-0`}
+                                >
+                                  <KeyRound className="w-3 h-3 lg:w-4 lg:h-4" />
+                                </Button>
+                              </DialogTrigger>
+                              <DialogContent className="w-[95vw] max-w-md">
+                                <DialogHeader>
+                                  <DialogTitle>Cambiar Contraseña para {user.name}</DialogTitle>
+                                  <DialogDescription>Introduce la nueva contraseña para el usuario.</DialogDescription>
+                                </DialogHeader>
+                                <form onSubmit={handleChangePassword} className="space-y-4">
+                                  <Input name="newPassword" type="password" required placeholder="Nueva Contraseña" className={getInputClasses()}/>
+                                  <DialogFooter>
+                                    <Button type="button" onClick={(e) => {
+                                      e.preventDefault();
+                                      const form = e.currentTarget.closest('form');
+                                      if (form) {
+                                        handleChangePassword(e as any);
+                                      }
+                                    }} className="h-12 w-full sm:w-auto sm:px-8">Actualizar</Button>
+                                  </DialogFooter>
+                                </form>
+                              </DialogContent>
+                            </Dialog>
+                            
+                            <Button 
+                              variant="ghost" 
+                              size="sm"
+                              disabled={user.id === loggedInUser.id} 
+                              onClick={() => showDeleteConfirmWithCallback(
+                                () => handleDeleteUser(user.id),
+                                '¿Eliminar usuario?',
+                                `¿Estás seguro de que quieres eliminar al usuario ${user.name}? Esta acción no se puede deshacer.`,
+                                'Sí, eliminar',
+                                'Cancelar'
+                              )}
+                              className={`${getButtonClasses().danger} h-7 w-7 lg:h-8 lg:w-8 p-0`}
+                            >
+                              <Trash2 className="w-3 h-3 lg:w-4 lg:h-4" />
                             </Button>
                           </div>
                         </motion.div>

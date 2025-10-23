@@ -128,5 +128,30 @@ export function showDeleteConfirm(
   });
 }
 
+// Función para mostrar confirmación de eliminación con callback
+export function showDeleteConfirmWithCallback(
+  deleteCallback: () => void,
+  title: string = '¿Estás seguro?',
+  message: string = 'Esta acción no se puede deshacer',
+  confirmText: string = 'Sí, eliminar',
+  cancelText: string = 'Cancelar'
+): void {
+  Swal.fire({
+    title: title,
+    text: message,
+    icon: 'warning',
+    showCancelButton: true,
+    confirmButtonColor: '#dc2626',
+    cancelButtonColor: '#6b7280',
+    confirmButtonText: confirmText,
+    cancelButtonText: cancelText,
+    reverseButtons: true
+  }).then((result) => {
+    if (result.isConfirmed) {
+      deleteCallback();
+    }
+  });
+}
+
 // Instancia global
 export const alertManager = AlertManager.getInstance();
