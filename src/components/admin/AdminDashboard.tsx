@@ -1767,19 +1767,16 @@ export function AdminDashboard({
                   <div className="hidden md:block space-y-0">
                     {/* Table Headers */}
                     <motion.div 
-                      className={`grid grid-cols-10 gap-4 pb-3 border-b ${getTableClasses().header} sticky top-0 bg-background z-10`}
+                      className={`grid grid-cols-12 gap-4 pb-3 border-b ${getTableClasses().header} sticky top-0 bg-background z-10`}
                       initial={{ opacity: 0, y: -20 }}
                       whileInView={{ opacity: 1, y: 0 }}
                       viewport={{ once: true }}
                       transition={{ duration: 0.5, delay: 0.3 }}
                     >
-                      <div className="col-span-6">
+                      <div className="col-span-8 text-center">
                         <span className={`text-sm font-medium ${getTextClasses().label}`}>SERVICIO</span>
                       </div>
-                      <div className="col-span-2">
-                        <span className={`text-sm font-medium ${getTextClasses().label}`}>TIPO</span>
-                      </div>
-                      <div className="col-span-2 text-right">
+                      <div className="col-span-4 text-center">
                         <span className={`text-sm font-medium ${getTextClasses().label}`}>ACCIONES</span>
                       </div>
                     </motion.div>
@@ -1790,7 +1787,7 @@ export function AdminDashboard({
                         return (
                           <motion.div 
                             key={service.id} 
-                            className={`grid grid-cols-10 gap-4 items-center py-4 ${index < services.length - 1 ? `border-b ${getTableClasses().row}` : ''}`}
+                            className={`grid grid-cols-12 gap-4 items-center py-4 ${index < services.length - 1 ? `border-b ${getTableClasses().row}` : ''}`}
                             initial={{ opacity: 0, y: 20 }}
                             whileInView={{ opacity: 1, y: 0 }}
                             viewport={{ once: true }}
@@ -1798,7 +1795,7 @@ export function AdminDashboard({
                             whileHover={{ scale: 1.01, backgroundColor: theme === 'dark' ? 'rgba(55, 65, 81, 0.3)' : 'rgba(249, 250, 251, 0.8)' }}
                           >
                             {/* Service Info */}
-                            <div className="col-span-6 flex items-center space-x-3">
+                            <div className="col-span-8 flex items-center space-x-3">
                               <div className="w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0 overflow-hidden">
                                 {service.url && service.url.trim() !== '' ? (
                                   <img 
@@ -1828,13 +1825,8 @@ export function AdminDashboard({
                               </div>
                             </div>
                             
-                            {/* Service Type */}
-                            <div className="col-span-2">
-                              <span className={`text-sm ${getTextClasses().secondary}`}>Servicio</span>
-                            </div>
-                            
                             {/* Actions */}
-                            <div className="col-span-2 flex items-center justify-end gap-2">
+                            <div className="col-span-4 flex items-center justify-center gap-2">
                               <Button 
                                 variant="ghost" 
                                 size="icon" 
@@ -2660,7 +2652,7 @@ export function AdminDashboard({
                                   <p className={`text-xs ${getTextClasses().muted} mt-1`}>#{product.id.slice(-6).toUpperCase()}</p>
                                   <div className="flex items-center gap-2 mt-2">
                                     <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${stockColor}`}>
-                                      {product.stock} Unidades
+                                      {product.stock} Uni
                                     </span>
                                     <span className={`text-xs ${getTextClasses().secondary}`}>
                                       {category?.name || 'Sin categoría'}
@@ -2781,7 +2773,7 @@ export function AdminDashboard({
                               {/* Stock */}
                               <div className="col-span-2">
                                 <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${stockColor}`}>
-                                  {product.stock} Unidades
+                                  {product.stock} Uni
                                 </span>
                               </div>
                               
@@ -3029,7 +3021,7 @@ export function AdminDashboard({
                               <p className={`text-xs ${getTextClasses().muted} mt-1`}>#{perfume.id.slice(-6).toUpperCase()}</p>
                               <div className="flex items-center gap-2 mt-2">
                                 <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${stockColor}`}>
-                                  {perfume.stock} Unidades
+                                  {perfume.stock} Uni
                                 </span>
                               </div>
                             </div>
@@ -3143,7 +3135,7 @@ export function AdminDashboard({
                             {/* Stock */}
                             <div className="col-span-2">
                               <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${stockColor}`}>
-                                {perfume.stock} Unidades
+                                {perfume.stock} Uni
                               </span>
                             </div>
                             
@@ -3965,16 +3957,13 @@ export function AdminDashboard({
                       viewport={{ once: true }}
                       transition={{ duration: 0.5, delay: 0.3 }}
                     >
-                      <div className="col-span-2">
-                        <span className={`text-sm font-medium ${getTextClasses().label}`}>AVATAR</span>
-                      </div>
-                      <div className="col-span-4">
+                      <div className="col-span-4 text-center">
                         <span className={`text-sm font-medium ${getTextClasses().label}`}>NOMBRE</span>
                       </div>
-                      <div className="col-span-4">
+                      <div className="col-span-4 text-center">
                         <span className={`text-sm font-medium ${getTextClasses().label}`}>EMAIL</span>
                       </div>
-                      <div className="col-span-2 text-right">
+                      <div className="col-span-4 text-center">
                         <span className={`text-sm font-medium ${getTextClasses().label}`}>ACCIONES</span>
                       </div>
                     </motion.div>
@@ -3991,27 +3980,18 @@ export function AdminDashboard({
                           transition={{ duration: 0.4, delay: index * 0.1 }}
                           whileHover={{ scale: 1.005, backgroundColor: theme === 'dark' ? 'rgba(55, 65, 81, 0.3)' : 'rgba(249, 250, 251, 0.8)' }}
                         >
-                          {/* Avatar Column */}
-                          <div className="col-span-2 flex items-center">
-                            <div className="w-10 h-10 bg-teal-100 dark:bg-teal-900 rounded-full flex items-center justify-center flex-shrink-0">
-                              <svg className="w-6 h-6 text-teal-600 dark:text-teal-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-                              </svg>
-                            </div>
-                          </div>
-                          
                           {/* Name Column */}
-                          <div className="col-span-4 flex items-center">
+                          <div className="col-span-4 flex items-center justify-center">
                             <h3 className={`font-semibold ${getTextClasses().primary} text-sm truncate`}>{user.name}</h3>
                           </div>
                           
                           {/* Email Column */}
-                          <div className="col-span-4 flex items-center">
+                          <div className="col-span-4 flex items-center justify-center">
                             <p className={`text-sm ${getTextClasses().secondary} truncate`}>{user.email}</p>
                           </div>
                           
                           {/* Actions Column */}
-                          <div className="col-span-2 flex items-center justify-end gap-2">
+                          <div className="col-span-4 flex items-center justify-center gap-2">
                             <Button 
                               variant="ghost" 
                               size="sm"
@@ -4094,16 +4074,13 @@ export function AdminDashboard({
                       viewport={{ once: true }}
                       transition={{ duration: 0.5, delay: 0.3 }}
                     >
-                      <div className="col-span-1">
-                        <span className={`text-xs lg:text-sm font-medium ${getTextClasses().label}`}>AVATAR</span>
-                      </div>
-                      <div className="col-span-3 lg:col-span-3">
+                      <div className="col-span-4 text-center">
                         <span className={`text-xs lg:text-sm font-medium ${getTextClasses().label}`}>NOMBRE</span>
                       </div>
-                      <div className="col-span-5 lg:col-span-4">
+                      <div className="col-span-4 text-center">
                         <span className={`text-xs lg:text-sm font-medium ${getTextClasses().label}`}>EMAIL</span>
                       </div>
-                      <div className="col-span-3 lg:col-span-4 text-right">
+                      <div className="col-span-4 text-center">
                         <span className={`text-xs lg:text-sm font-medium ${getTextClasses().label}`}>ACCIONES</span>
                       </div>
                     </motion.div>
@@ -4120,27 +4097,18 @@ export function AdminDashboard({
                           transition={{ duration: 0.4, delay: index * 0.1 }}
                           whileHover={{ scale: 1.005, backgroundColor: theme === 'dark' ? 'rgba(55, 65, 81, 0.3)' : 'rgba(249, 250, 251, 0.8)' }}
                         >
-                          {/* Avatar Column */}
-                          <div className="col-span-1 flex items-center">
-                            <div className="w-8 h-8 lg:w-10 lg:h-10 bg-teal-100 dark:bg-teal-900 rounded-full flex items-center justify-center flex-shrink-0">
-                              <svg className="w-4 h-4 lg:w-6 lg:h-6 text-teal-600 dark:text-teal-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-                              </svg>
-                            </div>
-                          </div>
-                          
                           {/* Name Column */}
-                          <div className="col-span-3 lg:col-span-3 flex items-center">
+                          <div className="col-span-4 flex items-center justify-center">
                             <h3 className={`font-semibold ${getTextClasses().primary} text-xs lg:text-sm truncate`}>{user.name}</h3>
                           </div>
                           
                           {/* Email Column */}
-                          <div className="col-span-5 lg:col-span-4 flex items-center">
+                          <div className="col-span-4 flex items-center justify-center">
                             <p className={`text-xs lg:text-sm ${getTextClasses().secondary} truncate`}>{user.email}</p>
                           </div>
                           
                           {/* Actions Column */}
-                          <div className="col-span-3 lg:col-span-4 flex items-center justify-end gap-1 lg:gap-2">
+                          <div className="col-span-4 flex items-center justify-center gap-1 lg:gap-2">
                             <Button 
                               variant="ghost" 
                               size="sm"
