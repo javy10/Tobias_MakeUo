@@ -3866,7 +3866,7 @@ export function AdminDashboard({
                 </CardHeader>
                 <CardContent>
                   {/* Mobile View */}
-                  <div className="grid gap-3 sm:gap-4 lg:hidden">
+                  <div className="grid gap-3 sm:gap-4 md:hidden">
                     {users.map((user) => (
                       <Card key={user.id} className={`p-3 sm:p-4 space-y-3 ${getCardClasses()} shadow-sm hover:shadow-md transition-shadow`}>
                         {/* Header con avatar y info básica */}
